@@ -282,12 +282,21 @@ RegisterNetEvent("community_bridge:client:DeleteEntity", function(id)
 end)
 
 RegisterNetEvent("community_bridge:client:UpdateEntity", function(id, data)
-    ClientEntity.Update(id, data)
+    for k, v in pairs(data) do
+        ClientEntity.Set(id, k, v)
+    end
+end)
+
+local Loaded = false
+AddEventHandler('community_bridge:Client:OnPlayerLoaded', function(resourceName)
+    if Loaded then return end
+    Loaded = true
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
-    Behaviors.Setup()
+    if Loaded then return end
+    Loaded = true
 end)
 
 -- Resource Stop Cleanup

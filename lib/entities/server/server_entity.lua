@@ -117,6 +117,19 @@ function ServerEntity.Remove(id)
     Entities[id] = nil
 end
 
+--- Updates data for a server-side entity and notifies clients.
+-- @param id string|number The ID of the entity to update.
+-- @param data table The data fields to update.
+function ServerEntity.Set(id, data)
+    local entity = Entities[id]
+    if not entity then return false end
+    for key, value in pairs(data) do
+        entity[key] = value
+    end
+    TriggerClientEvent("community_bridge:client:UpdateEntity", -1, id, data)
+    return true
+end
+
 -- Clean up entities associated with a stopped resource
 AddEventHandler('onResourceStop', function(resourceName)
     local toDelete = {}

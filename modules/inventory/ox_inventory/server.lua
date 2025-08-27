@@ -131,17 +131,16 @@ Inventory.OpenStash = function(src, _type, id)
 end
 
 ---This will register a stash
----@param id number|string
+---@param id string
 ---@param label string
 ---@param slots number
 ---@param weight number
 ---@param owner string
 ---@param groups table
 ---@param coords table
----@return boolean
----@return string|number
+---@return string
 Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
-    if Inventory.Stashes[id] then return true, id end
+    if Inventory.Stashes[id] then return id end
     Inventory.Stashes[id] = {
         id = id,
         label = label,
@@ -151,8 +150,8 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
         groups = groups,
         coords = coords
     }
-    ox_inventory:RegisterStash(id, label, slots, weight, owner, groups)
-    return true, id
+    ox_inventory:RegisterStash(id, label, slots, weight, owner, groups, coords)
+    return id
 end
 
 ---This will return a boolean if the player has the item.
@@ -194,24 +193,47 @@ end
 
 -- This will open the specified shop for the src passed.
 ---@param src number
----@param shopTitle string
-Inventory.OpenShop = function(src, shopTitle)
-    TriggerClientEvent('ox_inventory:openInventory', src, 'shop', {type = shopTitle})
+---@param id string
+Inventory.OpenShop = function(src, id)
+    local title = registeredShops[id]?.title or id
+    TriggerClientEvent('ox_inventory:openInventory', src, 'shop', {type = title})
 end
 
 -- This will register a shop, if it already exists it will return true.
----@param shopTitle string
----@param shopInventory table
----@param shopCoords table
----@param shopGroups table
-Inventory.RegisterShop = function(shopTitle, shopInventory, shopCoords, shopGroups)
-    if registeredShops[shopTitle] then return true end
-    registeredShops[shopTitle] = true
-    ox_inventory:RegisterShop(shopTitle, { name = shopTitle, inventory = shopInventory, groups = shopGroups, })
-    --return Inventory.OpenShop(src, shopTitle)
-    return true
+---@param title string
+---@param items table
+---@param coords table
+---@param groups table
+Inventory.RegisterShop = function(title, items, coords, groups)
+    return Inventory.CreateShop({id = title, name = title, items = items, coords = coords, groups = groups})
 end
 
+--- Creates a new shop if it doesn't already exist.
+---
+--- @class ShopData
+--- @field id string|nil         -- Unique identifier for the shop (optional, falls back to title)
+--- @field name string           -- Display name of the shop
+--- @field items table           -- Table of items available in the shop
+--- @field coords table|nil      -- Optional coordinates for the shop location
+--- @field groups table|nil      -- Optional groups allowed to access the shop
+---
+--- @param data ShopData         -- Table containing shop properties
+--- @return string|boolean       -- Returns the shop ID if the shop was created, false if it already exists
+Inventory.CreateShop = function(data)
+    assert(data, "CreateShop: data is required")
+    local id = data.id or data.name
+    if registeredShops[id] then return id end
+    assert(data.name, "CreateShop: name is required")
+    assert(data.items and type(data.items) == "table", "CreateShop: items table is required")
+    registeredShops[id] = {
+        name = data.name,
+        items = data.items,
+        coords = data.coords,
+        groups = data.groups
+    }
+    ox_inventory:RegisterShop(id, data)
+    return id
+end
 
 ---UNUSED:
 ---This will return generic item data from the specified inventory, with the items total count.

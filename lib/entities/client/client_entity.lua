@@ -1,9 +1,11 @@
 Utility = Utility or Require("lib/utility/client/utility.lua")
 Ids = Ids or Require("lib/utility/shared/ids.lua")
 Point = Point or Require("lib/points/client/points.lua")
-Behaviors = Behaviors or Require("lib/entities/client/behaviors.lua")
+Behaviors = Behaviors or Require("lib/entities/shared/behaviors.lua")
 local Entities = {} -- Stores entity data received from server
-ClientEntity = {} -- Renamed from BaseEntity
+ClientEntity = {
+    Invoked = {}
+} -- Renamed from BaseEntity
 ClientEntity.Behaviors = Behaviors
 
 
@@ -113,6 +115,9 @@ function ClientEntity.Create(entityData)
  
     local entityPoint = Point.Register(entityData.id, entityData.coords, entityData.spawnDistance or 50.0, entityData, SpawnEntity, RemoveEntity, UpdateEntity)
     Entities[entityData.id] = entityPoint
+    entityData.invoked = GetInvokingResource() or "community_bridge"
+    ClientEntity.Invoked[entityData.invoked] = ClientEntity.Invoked[entityData.invoked] or {}
+    ClientEntity.Invoked[entityData.invoked][entityData.id] = entityData
     Behaviors.Trigger("OnCreate", entityPoint)
     return entityPoint
 end
@@ -146,7 +151,9 @@ function ClientEntity.Destroy(id)
 end
 ClientEntity.Unregister = ClientEntity.Destroy
 
-
+function ClientEntity.RegisterBehavior(id, behavior)
+    Behaviors.Create(id, behavior)
+end
 
 function ClientEntity.Set(id, key, value)
     local entityData = ClientEntity.Get(id)
@@ -307,6 +314,12 @@ AddEventHandler('onResourceStop', function(resourceName)
             RemoveEntity(entityData) -- Clean up spawned game entity
         end
         Entities = {} -- Clear local cache
+    else
+        for id, entityData in pairs(ClientEntity.Invoked[resourceName] or {}) do
+            Point.Remove(id) -- Clean up point registration
+            RemoveEntity(entityData) -- Clean up spawned game entity
+            Entities[id] = nil
+        end
     end
 end)
 

@@ -59,6 +59,7 @@ cLib.Cache = Cache or Require("lib/cache/shared/cache.lua")
 cLib.Marker = Marker or Require("lib/markers/server/server.lua")
 cLib.Particle = Particle or Require("lib/particles/server/particles.lua")
 cLib.Shell = Shells or Require("lib/shells/server/shells.lua")
+cLib.ServerEntity = ServerEntity or Require("lib/entities/server/server_entity.lua")
 if IsDuplicityVersion() then return cLib end
 ::client::
 

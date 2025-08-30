@@ -130,17 +130,19 @@ Inventory.OpenStash = function(src, _type, id)
     ox_inventory:forceOpenInventory(src, _type, id)
 end
 
+-- restores stashes to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 ---This will register a stash
----@param id string
+---@param id number|string
 ---@param label string
 ---@param slots number
 ---@param weight number
 ---@param owner string
 ---@param groups table
 ---@param coords table
----@return string
+---@return boolean
+---@return string|number
 Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
-    if Inventory.Stashes[id] then return id end
+    if Inventory.Stashes[id] then return true, id end
     Inventory.Stashes[id] = {
         id = id,
         label = label,
@@ -151,7 +153,7 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
         coords = coords
     }
     ox_inventory:RegisterStash(id, label, slots, weight, owner, groups, coords)
-    return id
+    return true, id
 end
 
 ---This will return a boolean if the player has the item.

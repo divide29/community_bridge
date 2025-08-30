@@ -103,7 +103,7 @@ AddEventHandler('onResourceStop', function(resourceName)
 end)
 
 AddEventHandler('community_bridge:Server:OnPlayerLoaded', function(source)
-    print("Player loaded:", source)
+    -- print("Player loaded:", source)
     TriggerClientEvent("community_bridge:client:CreateEntities", source, Entities)
 end)
 

@@ -191,16 +191,15 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
+-- restores shops to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 -- This will open the specified shop for the src passed.
 ---@param src number
----@param id string
-Inventory.OpenShop = function(src, id)
-    local title = registeredShops[id]?.title or id
-    TriggerClientEvent('ox_inventory:openInventory', src, 'shop', {type = title})
+---@param shopTitle string
+Inventory.OpenShop = function(src, shopTitle)
+    TriggerClientEvent('ox_inventory:openInventory', src, 'shop', {type = shopTitle})
 end
 
 -- restores shops to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
-
 -- This will register a shop, if it already exists it will return true.
 ---@param shopTitle string
 ---@param shopInventory table

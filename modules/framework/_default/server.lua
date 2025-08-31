@@ -53,4 +53,14 @@ Framework.RemoveJobCount = function(src, jobName)
     return true, #jobsRegisteredTable[jobName]
 end
 
+AddEventHandler('community_bridge:Server:OnPlayerJobChange', function(src, newJobName)
+    local previousJob = Framework.SearchJobCountBySource(src)
+    if previousJob then Framework.RemoveJobCount(src, previousJob) end
+    if newJobName then Framework.AddJobCount(src, newJobName) end
+end)
+
+AddEventHandler('community_bridge:Server:OnPlayerUnload', function(src)
+    Framework.RemoveJobCount(src)
+end)
+
 return Framework

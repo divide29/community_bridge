@@ -452,6 +452,9 @@ end
 RegisterNetEvent("esx:playerLoaded", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerLoaded", src)
+    local jobData = Framework.GetPlayerJobData(src)
+    if not jobData then return end
+    Framework.AddJobCount(src, jobData.jobName)
 end)
 
 RegisterNetEvent("esx:playerLogout", function(src)

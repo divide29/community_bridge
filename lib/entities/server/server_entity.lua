@@ -93,6 +93,9 @@ function ServerEntity.Set(id, data)
     return true
 end
 
+function ServerEntity.RegisterBehavior(id, behavior)
+    Behaviors.Create(id, behavior)
+end
 
 -- Clean up entities associated with a stopped resource
 AddEventHandler('onResourceStop', function(resourceName)

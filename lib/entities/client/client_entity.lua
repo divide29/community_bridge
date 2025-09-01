@@ -112,10 +112,10 @@ function ClientEntity.Create(entityData)
     entityData.rotation = entityData.rotation or vector3(0.0, 0.0, entityData.heading or 0.0)
     entityData.oldCoords = entityData.oldCoords or vector3(0.0, 0.0, 0.0)
     entityData.oldRotation = entityData.rotation
- 
+    entityData.invoked =  entityData.invoked or GetInvokingResource() or "community_bridge"
     local entityPoint = Point.Register(entityData.id, entityData.coords, entityData.spawnDistance or 50.0, entityData, SpawnEntity, RemoveEntity, UpdateEntity)
     Entities[entityData.id] = entityPoint
-    entityData.invoked = GetInvokingResource() or "community_bridge"
+   
     ClientEntity.Invoked[entityData.invoked] = ClientEntity.Invoked[entityData.invoked] or {}
     ClientEntity.Invoked[entityData.invoked][entityData.id] = entityData
     Behaviors.Trigger("OnCreate", entityPoint)

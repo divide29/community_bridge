@@ -4,29 +4,31 @@ Behaviors = {
     invoked = {}
 }
 
-
 function Behaviors.Create(behaviorId, behavior)
     if not behaviorId or not behavior then return end
-    if Behaviors.All[behaviorId] then return print(string.format("[ClientEntity] Behavior %s already exists", behaviorId)) end
+    Behaviors.All = Behaviors.All or {}
     local invoking = GetInvokingResource() or "community_bridge"
-    Behaviors.All[behaviorId] = behavior
-    Behaviors.invoked[invoking] = Behaviors.invoked[invoking] or {}
-    table.insert(Behaviors.invoked[invoking], behaviorId)
+    Behaviors.All[invoking] = Behaviors.All[invoking] or {}
+    Behaviors.All[invoking][behaviorId] = behavior
 end
 
 function Behaviors.Get(behaviorId)
-    return Behaviors.All[behaviorId]
+    local invoking = GetInvokingResource() or "community_bridge"
+    return Behaviors.All[invoking] and Behaviors.All[invoking][behaviorId]
 end
 
 function Behaviors.Remove(behaviorId)
-    if not Behaviors.All[behaviorId] then return end
-    Behaviors.All[behaviorId] = nil
+    local invoking = GetInvokingResource() or "community_bridge"
+    if not Behaviors.All[invoking] or not Behaviors.All[invoking][behaviorId] then return end
+    Behaviors.All[invoking][behaviorId] = nil
     return true
 end
 
 function Behaviors.Trigger(actionName, clientEntityData, ...)
     if not clientEntityData or not actionName then return end
-    for property, behavior in pairs(Behaviors.All) do
+
+    local invoking = clientEntityData.invoked or GetInvokingResource() or "community_bridge"
+    for property, behavior in pairs(Behaviors.All[invoking] or {}) do
         local hasBehaviorArgs = Behaviors.Has(property, clientEntityData) -- this is everything that's contained inside the object's individual property
         if hasBehaviorArgs and behavior[actionName] then
             local success, result = pcall(behavior[actionName], clientEntityData, hasBehaviorArgs, ...)
@@ -38,7 +40,8 @@ function Behaviors.Trigger(actionName, clientEntityData, ...)
 end
 
 function Behaviors.Inherit(behaviorId, clientEntityData, defaultData)
-    if not Behaviors.All[behaviorId] then
+    local invoking = GetInvokingResource() or "community_bridge"
+    if not Behaviors.All[invoking] or not Behaviors.All[invoking][behaviorId] then
         print(string.format("[ClientEntity] Behavior %s does not exist", behaviorId))
         return false
     end
@@ -55,18 +58,20 @@ function Behaviors.Has(behaviorId, clientEntityData)
 end
 
 function Behaviors.Cleanup(resourceName)
-    if not resourceName or not Behaviors.invoked[resourceName] then return end
-    for _, behaviorId in ipairs(Behaviors.invoked[resourceName]) do
+    if not resourceName or not Behaviors.All[resourceName] then return end
+    for _, behaviorId in ipairs(Behaviors.All[resourceName]) do
         Behaviors.Remove(behaviorId)
     end
-    Behaviors.invoked[resourceName] = nil
+    Behaviors.All[resourceName] = nil
 end
 
 AddEventHandler("onResourceStop", function(resourceName)
     Behaviors.Cleanup(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
-    for behaviorId, _ in pairs(Behaviors.All) do
-        Behaviors.Remove(behaviorId)
+    for invoking, behaviors in pairs(Behaviors.All) do
+        for behaviorId, _ in pairs(behaviors) do
+            Behaviors.Remove(behaviorId)
+        end
     end
 end)
 

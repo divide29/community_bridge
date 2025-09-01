@@ -2,7 +2,7 @@
 if GetResourceState('es_extended') ~= 'started' then return end
 
 Prints = Prints or Require("lib/utility/shared/prints.lua")
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 ESX = exports.es_extended:getSharedObject()
 

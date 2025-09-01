@@ -3,7 +3,7 @@ if GetResourceState('core_inventory') ~= 'started' then return end
 
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 local core = exports.core_inventory
 
 ---This will add an item, and return true or false based on success

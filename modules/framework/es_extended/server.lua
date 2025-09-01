@@ -248,22 +248,32 @@ Framework.AddHunger = function(src, value)
     return levelForEsx
 end
 
---- @description This will get the hunger of a player
+--- @description This will get the hunger of a player (ESX we get the percent of the status)
 --- @param src number
 --- @return number | nil
 Framework.GetHunger = function(src)
     local status = Framework.GetStatus(src, "status")
-    if not status then return 0 end
-    return status.hunger
+    if not status then return nil end
+
+    for _, entry in ipairs(status) do
+        if entry.name == "hunger" then
+            return entry.percent
+        end
+    end
 end
 
---- @description This will get the thirst of a player
+--- @description This will get the thirst of a player (ESX we get the percent of the status)
 --- @param src any
 --- @return number | nil
 Framework.GetThirst = function(src)
     local status = Framework.GetStatus(src, "status")
-    if not status then return 0 end
-    return status.thirst
+    if not status then return nil end
+
+    for _, entry in ipairs(status) do
+        if entry.name == "thirst" then
+            return entry.percent
+        end
+    end
 end
 
 --- @description This will get the phone number of a player

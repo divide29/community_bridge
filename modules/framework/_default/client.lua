@@ -17,7 +17,7 @@ Framework.GetJobCount = function(jobName)
 end
 
 ---This will allow passing a table of job names and returning a sum of the total count.
----@param tbl any
+---@param tbl table
 ---@return number
 Framework.GetJobCountTotal = function(tbl)
     local total = 0

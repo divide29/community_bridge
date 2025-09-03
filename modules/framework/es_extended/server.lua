@@ -257,7 +257,7 @@ Framework.GetHunger = function(src)
 
     for _, entry in ipairs(status) do
         if entry.name == "hunger" then
-            return entry.percent
+            return math.floor(entry.percent)
         end
     end
 end
@@ -271,7 +271,7 @@ Framework.GetThirst = function(src)
 
     for _, entry in ipairs(status) do
         if entry.name == "thirst" then
-            return entry.percent
+            return math.floor(entry.percent)
         end
     end
 end

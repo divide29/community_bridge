@@ -25,6 +25,8 @@ function Stash.OnCreate(entityData)
         entityData.targets['stash'] = {
             label = entityData.stash.target.label or Stash.default.target.label,
             icon = entityData.stash.target.icon or Stash.default.target.icon,
+            description = entityData.stash.target.description, 
+            groups = entityData.stash.target.groups,
             canInteract = function(_)
                 local entData = Bridge.Entity.Get(entityData.id)
                 return not entData.stash.disable

@@ -12,33 +12,35 @@ ClientEntity.Behaviors = Behaviors
 
 local function SpawnEntity(entityData)
     if entityData.spawned and DoesEntityExist(entityData.spawned) then return end -- Already spawned
-    local loaded, model = Utility.LoadModel(entityData.model)
-    if not loaded then
-        print(string.format("[ClientEntity] Failed to load model %s for entity %s", entityData.model, entityData.id))
-        return
-    end
+    if entityData.model then 
+        local loaded, model = Utility.LoadModel(entityData.model)
+        if not loaded then
+            print(string.format("[ClientEntity] Failed to load model %s for entity %s", entityData.model, entityData.id))
+            return
+        end
 
-    local entity = nil
-    local coords = entityData.coords
-    local rotation = entityData.rotation or vector3(0.0, 0.0, entityData.heading or 0.0) -- Default rotation if not provided
+        local entity = nil
+        local coords = entityData.coords
+        local rotation = entityData.rotation or vector3(0.0, 0.0, entityData.heading or 0.0) -- Default rotation if not provided
 
-    if entityData.entityType == 'object' then
-        entity = CreateObject(model, coords.x, coords.y, coords.z, false, false, false)
-        SetEntityRotation(entity, rotation.x, rotation.y, rotation.z, 2, true)
-    elseif entityData.entityType == 'ped' then
-        entity = CreatePed(4, model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
-    elseif entityData.entityType == 'vehicle' then
-        entity = CreateVehicle(model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
-    else
-        print(string.format("[ClientEntity] Unknown entity type '%s' for entity %s", entityData.entityType, entityData.id))
-    end
-    if entity and model then
-        entityData.spawned = entity
-        SetModelAsNoLongerNeeded(model)
-        SetEntityAsMissionEntity(entity, true, true)
-        FreezeEntityPosition(entity, true)
-    else
-        SetModelAsNoLongerNeeded(model)
+        if entityData.entityType == 'object' then
+            entity = CreateObject(model, coords.x, coords.y, coords.z, false, false, false)
+            SetEntityRotation(entity, rotation.x, rotation.y, rotation.z, 2, true)
+        elseif entityData.entityType == 'ped' then
+            entity = CreatePed(4, model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
+        elseif entityData.entityType == 'vehicle' then
+            entity = CreateVehicle(model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
+        else
+            print(string.format("[ClientEntity] Unknown entity type '%s' for entity %s", entityData.entityType, entityData.id))
+        end
+        if entity and model then
+            entityData.spawned = entity
+            SetModelAsNoLongerNeeded(model)
+            SetEntityAsMissionEntity(entity, true, true)
+            FreezeEntityPosition(entity, true)
+        else
+            SetModelAsNoLongerNeeded(model)
+        end
     end
     if entityData.OnSpawn then
         pcall(function (...)
@@ -78,9 +80,8 @@ local function UpdateEntity(_entityData)
         local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
         entityData.oldCoords = vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z)
         local dist = #(coords.xyz - entityData.oldCoords.xyz)
-        if dist > 1.0 then
+        if dist > 0.5 then
             if entityData.spawned then 
-                print("Moving entity:", entityData.id)
                 SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
             end    
             -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
@@ -243,6 +244,7 @@ end)
 
 RegisterNetEvent("community_bridge:client:UpdateEntity", function(id, data)
     for k, v in pairs(data) do
+        print(json.encode({k, v}))
         ClientEntity.Set(id, k, v)
     end
 end)

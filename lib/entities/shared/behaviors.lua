@@ -104,8 +104,18 @@ AddEventHandler("onResourceStop", function(resourceName)
     end
 end)
 
-AddEventHandler("onResourceStart", function(resourceName)
-    Behaviors.Init()
-end)
+if IsDuplicityVersion() then
+    RegisterNetEvent("onResourceStart", function(resourceName)
+        if resourceName ~= GetCurrentResourceName() then return end
+        Wait(500)
+        Behaviors.Init()
+    end)
+else
+    RegisterNetEvent("onClientResourceStart", function(resource)
+        if resource ~= GetCurrentResourceName() then return end
+        Wait(500)
+        Behaviors.Init()
+    end)
+end
 
 return Behaviors

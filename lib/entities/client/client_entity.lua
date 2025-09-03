@@ -71,10 +71,21 @@ end
 local function UpdateEntity(_entityData)
     local entityData = ClientEntity.Get(_entityData.id)
     if not entityData then return end
+    if entityData.OnUpdate then
+        pcall(function (...)
+            return entityData.OnUpdate(entityData)
+        end)
+    end
+    Behaviors.Trigger("OnUpdate", entityData)
     if entityData.oldCoords and entityData.oldCoords ~= entityData.coords then
         local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
+        entityData.oldCoords = vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z)
         local dist = #(coords.xyz - entityData.oldCoords.xyz)
-        if dist > 0.1 then
+        if dist > 0.05 then
+            if entityData.spawned then 
+                print("Moving entity:", entityData.id)
+                SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
+            end    
             -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
             if entityData.OnMove then
                 pcall(function (...)
@@ -96,12 +107,7 @@ local function UpdateEntity(_entityData)
         end
         entityData.oldRotation = entityData.rotation
     end
-    if entityData.OnUpdate then
-        pcall(function (...)
-            return entityData.OnUpdate(entityData)
-        end)
-    end
-    Behaviors.Trigger("OnUpdate", entityData)
+    
 end
 
 --- Registers an entity received from the server and sets up proximity spawning.
@@ -258,9 +264,7 @@ function ClientEntity.UpdateCoords(id, coords)
         return
     end
     entityData.coords = coords
-    Point.UpdateCoords(id, coords)
-    if not entityData.spawned or not DoesEntityExist(entityData.spawned) then return end
-    SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
+    Point.UpdateCoords(id, coords) 
 end
 
 function ClientEntity.ChangeModel(id, model)

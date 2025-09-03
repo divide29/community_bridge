@@ -1,13 +1,33 @@
+---@diagnostic disable: duplicate-set-field
 Framework = Framework or {}
 
 local jobsRegisteredTable = {}
 local invertedJobsRegisteredTable = {}
+local globalState = GlobalState
+
+globalState.jobcounts = {}
 
 ---This is an internal function that will be used to retrieve job counts later.
 ---@param jobName string
 ---@return number
 Framework.GetJobCount = function(jobName)
-    return #jobsRegisteredTable[jobName] or 0
+    if not jobsRegisteredTable[jobName] then return 0 end
+    local count = 0
+    for _ in pairs(jobsRegisteredTable[jobName]) do
+        count = count + 1
+    end
+    return count
+end
+
+---This will allow passing a table of job names and returning a sum of the total count.
+---@param tbl any
+---@return number
+Framework.GetJobCountTotal = function(tbl)
+    local total = 0
+    for _, jobName in pairs(tbl) do
+        total = total + Framework.GetJobCount(jobName)
+    end
+    return total
 end
 
 ---This will return a list of player sources for a given job.
@@ -15,7 +35,11 @@ end
 ---@return table
 Framework.GetPlayerSourcesByJob = function(jobName)
     if not jobsRegisteredTable[jobName] then return {} end
-    return jobsRegisteredTable[jobName]
+    local sources = {}
+    for src in pairs(jobsRegisteredTable[jobName]) do
+        table.insert(sources, src)
+    end
+    return sources
 end
 
 ---This will update the cached tables for job counts.
@@ -23,18 +47,25 @@ end
 ---@param src number
 ---@param jobName string
 Framework.AddJobCount = function(src, jobName)
+    if not src or not jobName then return false end
     if not jobsRegisteredTable[jobName] then jobsRegisteredTable[jobName] = {} end
     if jobsRegisteredTable[jobName][src] then return false end
+
     jobsRegisteredTable[jobName][src] = true
     invertedJobsRegisteredTable[src] = jobName
-    return true, #jobsRegisteredTable[jobName]
+
+    local newJobCounts = {}
+    for job, _ in pairs(jobsRegisteredTable) do
+        newJobCounts[job] = Framework.GetJobCount(job)
+    end
+    globalState.jobcounts = newJobCounts
+
+    return true
 end
 
 ---This will return the job name for a given source.
----This is an internal function that will be used to retrieve job names in situations where player data is unavailable.
 ---@param src number
 Framework.SearchJobCountBySource = function(src)
-    if not invertedJobsRegisteredTable[src] then return nil end
     return invertedJobsRegisteredTable[src]
 end
 
@@ -42,15 +73,36 @@ end
 ---@param src number
 ---@param jobName string | nil
 Framework.RemoveJobCount = function(src, jobName)
-    if not jobName then
-        jobName = Framework.SearchJobCountBySource(src)
-    end
+    if not src then return false end
+
+    if not jobName then jobName = invertedJobsRegisteredTable[src] end
     if not jobName then return false end
-    if not jobsRegisteredTable[jobName] then return false end
-    if not jobsRegisteredTable[jobName][src] then return false end
+
     invertedJobsRegisteredTable[src] = nil
-    jobsRegisteredTable[jobName][src] = nil
-    return true, #jobsRegisteredTable[jobName]
+    if jobsRegisteredTable[jobName] then
+        jobsRegisteredTable[jobName][src] = nil
+    end
+
+    local newJobCounts = {}
+    for job, _ in pairs(jobsRegisteredTable) do
+        local count = Framework.GetJobCount(job)
+        if count > 0 then
+            newJobCounts[job] = count
+        end
+    end
+    globalState.jobcounts = newJobCounts
+
+    return true
 end
+
+AddEventHandler('community_bridge:Server:OnPlayerJobChange', function(src, newJobName)
+    local previousJob = invertedJobsRegisteredTable[src]
+    if previousJob then Framework.RemoveJobCount(src, previousJob) end
+    if newJobName then Framework.AddJobCount(src, newJobName) end
+end)
+
+AddEventHandler('community_bridge:Server:OnPlayerUnload', function(src)
+    Framework.RemoveJobCount(src)
+end)
 
 return Framework

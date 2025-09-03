@@ -36,12 +36,12 @@ function Shop.OnCreate(entityData)
     )
 end
 
-if not IsDuplicityVersion() then return Bridge.ClientEntity.RegisterBehavior("shop", Shop) end
+if not IsDuplicityVersion() then return Bridge.Entity.RegisterBehavior("shop", Shop) end
 
 RegisterNetEvent("community_bridge:server:OpenShop", function(id)
     local src = source
     if not src then return end
-    local entityData = Bridge.ServerEntity.Get(id)
+    local entityData = Bridge.Entity.Get(id)
     if not entityData or not entityData.shop then 
         return print(string.format("[Shop] OpenShop: Entity %s does not exist or has no shop", id)) 
     end

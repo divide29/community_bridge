@@ -21,7 +21,7 @@ function Follow.PedWalkToPos(entityData)
             targetCoords = GetEntityCoords(targetCoords)
         end
     elseif type(targetCoords) == "string" then
-        local targetEntityData = Bridge.ClientEntity.Get(targetCoords)
+        local targetEntityData = Bridge.Entity.Get(targetCoords)
         if targetEntityData then
             targetCoords = GetEntityCoords(targetEntityData.spawned)
         end
@@ -31,32 +31,32 @@ function Follow.PedWalkToPos(entityData)
     if distance > (entityData.follow.distance or Follow.default.distance) then
         if entityData.anim then
             entityData.anim.disable = true
-            Bridge.ClientEntity.Set(entityData.id, "anim", entityData.anim)
+            Bridge.Entity.Set(entityData.id, "anim", entityData.anim)
         end
         if entityData.scenarios then
             entityData.scenarios.disable = true
-            Bridge.ClientEntity.Set(entityData.id, "scenarios", entityData.scenarios)
+            Bridge.Entity.Set(entityData.id, "scenarios", entityData.scenarios)
         end
         local speed = entityData.follow.speed or Follow.default.speed
         local heading = GetHeadingFromVector_2d(targetCoords.x - entityPos.x, targetCoords.y - entityPos.y)
         TaskGoStraightToCoord(entity, targetCoords.x, targetCoords.y, targetCoords.z, speed, -1, heading, 0.0)
         entityData.coords = GetEntityCoords(entity)
         entityData.follow.walking = true
-        Bridge.ClientEntity.Set(entityData.id, "coords", entityData.coords - vector3(0,0,1))
-        Bridge.ClientEntity.Set(entityData.id, "follow", entityData.follow)
+        Bridge.Entity.Set(entityData.id, "coords", entityData.coords - vector3(0,0,1))
+        Bridge.Entity.Set(entityData.id, "follow", entityData.follow)
         if entityData.follow.OnExit then entityData.follow.OnExit(entityData) end
         return false
     end
     if not entityData.follow.walking then return end
     entityData.follow.walking = false
-    Bridge.ClientEntity.Set(entityData.id, "follow", entityData.follow)
+    Bridge.Entity.Set(entityData.id, "follow", entityData.follow)
     if entityData.anim then
         entityData.anim.disable = false
-        Bridge.ClientEntity.Set(entityData.id, "anim", entityData.anim)
+        Bridge.Entity.Set(entityData.id, "anim", entityData.anim)
     end
     if entityData.scenarios then
         entityData.scenarios.disable = false
-        Bridge.ClientEntity.Set(entityData.id, "scenarios", entityData.scenarios)
+        Bridge.Entity.Set(entityData.id, "scenarios", entityData.scenarios)
     end    
     ClearPedTasks(entity)
     if entityData.follow.OnEnter then entityData.follow.OnEnter(entityData) end
@@ -71,5 +71,5 @@ function Follow.OnUpdate(entityData)
     return Follow.PedWalkToPos(entityData)
 end
 
-Bridge.ClientEntity.RegisterBehavior("follow", Follow)
+Bridge.Entity.RegisterBehavior("follow", Follow)
 return Follow

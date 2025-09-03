@@ -18,13 +18,13 @@ function Animation.Play(entityData)
     local flags = entityData.anim.flags or Animation.default.flags
     local duration = entityData.anim.duration or Animation.default.duration
     entityData.anim.id = Bridge.Anim.Play(nil, entity, dict, name, 8.0, -8.0, duration, flags, 0.0, onComplete)
-    Bridge.ClientEntity.Set(entityData.id, "anim", entityData.anim)
+    Bridge.Entity.Set(entityData.id, "anim", entityData.anim)
     entityData.oldAnim = entityData.anim
-    Bridge.ClientEntity.Set(entityData.id, "oldAnim", entityData.oldAnim)
+    Bridge.Entity.Set(entityData.id, "oldAnim", entityData.oldAnim)
     --  SetTimeout(1000, function()
     --     if entityData.anim then
     --         entityData.anim.disable = false
-    --         Bridge.ClientEntity.Set(entityData.id, "anim", entityData.anim)
+    --         Bridge.Entity.Set(entityData.id, "anim", entityData.anim)
     --     end
     -- end)
 end
@@ -36,15 +36,15 @@ function Animation.OnSpawn(entityData)
     entityData.anim.disable = false
     TaskSetBlockingOfNonTemporaryEvents(entityData.spawned, true)
     SetBlockingOfNonTemporaryEvents(entityData.spawned, true)
-    Bridge.ClientEntity.Set(entityData.id, "anim", entityData.anim)
+    Bridge.Entity.Set(entityData.id, "anim", entityData.anim)
 end
 
 function Animation.OnRemove(entityData)
     if not entityData.spawned or not entityData.anim then return end
     entityData.oldAnim = nil
     entityData.anim.disable = true
-    Bridge.ClientEntity.Set(entityData.id, "anim", entityData.anim) 
-    Bridge.ClientEntity.Set(entityData.id, "oldAnim", entityData.oldAnim)
+    Bridge.Entity.Set(entityData.id, "anim", entityData.anim) 
+    Bridge.Entity.Set(entityData.id, "oldAnim", entityData.oldAnim)
 end
 
 function Animation.OnUpdate(entityData)
@@ -58,5 +58,5 @@ function Animation.OnUpdate(entityData)
     end
 end
 
-Bridge.ClientEntity.RegisterBehavior("anim", Animation)
+Bridge.Entity.RegisterBehavior("anim", Animation)
 return Animation

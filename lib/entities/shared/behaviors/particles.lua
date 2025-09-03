@@ -76,5 +76,5 @@ function ParticlesBehaviors.OnMove(entityData)
     end
 end
 
-Bridge.ClientEntity.RegisterBehavior("particles", ParticlesBehaviors)
+Bridge.Entity.RegisterBehavior("particles", ParticlesBehaviors)
 return ParticlesBehaviors

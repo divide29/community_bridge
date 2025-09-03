@@ -19,7 +19,7 @@ function Weapon.GiveWeapon(entityData)
         TaskSwapWeapon(entity, true)
     end
     entityData.oldWeapon = entityData.weapon
-    Bridge.ClientEntity.Set(entityData.id, "oldWeapon", entityData.oldWeapon)
+    Bridge.Entity.Set(entityData.id, "oldWeapon", entityData.oldWeapon)
 end
 
 function Weapon.OnSpawn(entityData)
@@ -44,11 +44,11 @@ function Weapon.OnUpdate(entityData)
     SetTimeout(1000, function()
         if entityData.weapon then
             entityData.weapon.updating = false
-            Bridge.ClientEntity.Set(entityData.id, "weapon", entityData.weapon)
+            Bridge.Entity.Set(entityData.id, "weapon", entityData.weapon)
         end
     end)
-    Bridge.ClientEntity.Set(entityData.id, "weapon", entityData.weapon)
+    Bridge.Entity.Set(entityData.id, "weapon", entityData.weapon)
 end
 
-Bridge.ClientEntity.RegisterBehavior("weapon", Weapon)
+Bridge.Entity.RegisterBehavior("weapon", Weapon)
 return Weapon

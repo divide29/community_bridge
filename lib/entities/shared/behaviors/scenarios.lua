@@ -23,7 +23,7 @@ function Scenarios.Play(entityData)
         ClearPedTasks(entity)
         if not entityData.scenarios.onComplete then return end
         entityData.scenarios.disabled = true
-        Bridge.ClientEntity.Set(entityData.id, "scenarios", entityData.scenarios)
+        Bridge.Entity.Set(entityData.id, "scenarios", entityData.scenarios)
         entityData.scenarios.onComplete(entityData)        
     end)
    
@@ -60,5 +60,5 @@ function Scenarios.OnUpdate(entityData)
     Scenarios.Play(entityData)
 end
 
-Bridge.ClientEntity.RegisterBehavior("scenarios", Scenarios)
+Bridge.Entity.RegisterBehavior("scenarios", Scenarios)
 return Scenarios

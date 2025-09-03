@@ -26,7 +26,7 @@ function Targets.OnSpawn(entityData)
     table.sort(numberedTargets, function(a, b) return (a.label < b.label) end)
     Bridge.Target.AddLocalEntity(entityData.spawned, numberedTargets)
     entityData.oldTargets = entityData.targets
-    Bridge.ClientEntity.Set(entityData.id, "oldTargets", entityData.oldTargets)
+    Bridge.Entity.Set(entityData.id, "oldTargets", entityData.oldTargets)
 end
 
 function Targets.OnRemove(entityData)
@@ -57,5 +57,5 @@ function Targets.OnUpdate(entityData)
         Targets.OnSpawn(entityData)
     end
 end
-Bridge.ClientEntity.RegisterBehavior("targets", Targets)
+Bridge.Entity.RegisterBehavior("targets", Targets)
 return Targets

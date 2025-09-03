@@ -19,7 +19,7 @@ function Clothing.ChangeClothes(entityData)
                 clothing = Bridge.Clothing.GetAppearance(GetPlayerPed(player))
             end
         elseif type(clothing) == "string" then 
-            local targetEntityData = Bridge.ClientEntity.Get(clothing)
+            local targetEntityData = Bridge.Entity.Get(clothing)
             if targetEntityData then
                 clothing = Bridge.Clothing.GetAppearance(targetEntityData.spawned)
             end
@@ -29,9 +29,9 @@ function Clothing.ChangeClothes(entityData)
     end
    
     Bridge.Clothing.SetAppearance(entity, clothing)
-    Bridge.ClientEntity.Set(entityData.id, "clothing", clothing)
+    Bridge.Entity.Set(entityData.id, "clothing", clothing)
     entityData.oldClothing = clothing
-    Bridge.ClientEntity.Set(entityData.id, "oldClothing", clothing)
+    Bridge.Entity.Set(entityData.id, "oldClothing", clothing)
 
 end
 
@@ -73,10 +73,10 @@ function Clothing.OnUpdate(entityData)
     SetTimeout(1000, function()
         if entityData.clothing then
             entityData.clothing.updating = false
-            Bridge.ClientEntity.Set(entityData.id, "clothing", entityData.clothing)
+            Bridge.Entity.Set(entityData.id, "clothing", entityData.clothing)
         end
     end)
 end
 
-Bridge.ClientEntity.RegisterBehavior("clothing", Clothing)
+Bridge.Entity.RegisterBehavior("clothing", Clothing)
 return Clothing

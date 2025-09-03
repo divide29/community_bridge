@@ -26,7 +26,7 @@ function Stash.OnCreate(entityData)
             label = entityData.stash.target.label or Stash.default.target.label,
             icon = entityData.stash.target.icon or Stash.default.target.icon,
             canInteract = function(_)
-                local entData = Bridge.ClientEntity.Get(entityData.id)
+                local entData = Bridge.Entity.Get(entityData.id)
                 return not entData.stash.disable
             end,
             onSelect = function()                    
@@ -34,16 +34,16 @@ function Stash.OnCreate(entityData)
             end
         }
         
-        Bridge.ClientEntity.Set(entityData.id, 'targets', entityData.targets)
+        Bridge.Entity.Set(entityData.id, 'targets', entityData.targets)
     end    
 end
 
-if not IsDuplicityVersion() then return Bridge.ClientEntity.RegisterBehavior("stash", Stash) end
+if not IsDuplicityVersion() then return Bridge.Entity.RegisterBehavior("stash", Stash) end
 
 RegisterNetEvent("community_bridge:server:OpenStash", function(id)
     local src = source
     if not src then return end
-    local entityData = Bridge.ServerEntity.Get(id)
+    local entityData = Bridge.Entity.Get(id)
     if not entityData or not entityData.stash then 
         return print(string.format("[Stash] OpenStash: Entity %s does not exist or has no stash", id)) 
     end
@@ -56,4 +56,4 @@ RegisterNetEvent("community_bridge:server:OpenStash", function(id)
     Bridge.Inventory.OpenStash(src, "stash", id)
 end)
 
-Bridge.ServerEntity.RegisterBehavior("stash", Stash)
+Bridge.Entity.RegisterBehavior("stash", Stash)

@@ -42,7 +42,7 @@ function Follow.PedWalkToPos(entityData)
         TaskGoStraightToCoord(entity, targetCoords.x, targetCoords.y, targetCoords.z, speed, -1, heading, 0.0)
         entityData.coords = GetEntityCoords(entity)
         entityData.follow.walking = true
-        Bridge.ClientEntity.Set(entityData.id, "coords", entityData.coords)
+        Bridge.ClientEntity.Set(entityData.id, "coords", entityData.coords - vector3(0,0,1))
         Bridge.ClientEntity.Set(entityData.id, "follow", entityData.follow)
         if entityData.follow.OnExit then entityData.follow.OnExit(entityData) end
         return false

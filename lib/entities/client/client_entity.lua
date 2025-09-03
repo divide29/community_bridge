@@ -8,9 +8,6 @@ ClientEntity = {
 } -- Renamed from BaseEntity
 ClientEntity.Behaviors = Behaviors
 
-
-
-
 --------------------
 
 local function SpawnEntity(entityData)
@@ -81,7 +78,7 @@ local function UpdateEntity(_entityData)
         local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
         entityData.oldCoords = vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z)
         local dist = #(coords.xyz - entityData.oldCoords.xyz)
-        if dist > 0.05 then
+        if dist > 1.0 then
             if entityData.spawned then 
                 print("Moving entity:", entityData.id)
                 SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)

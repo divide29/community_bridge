@@ -61,8 +61,14 @@ function Targets.OnUpdate(entityData)
             break
         end
     end
+
+    for k, v in pairs(entityData.oldTargets) do
+        if not entityData.targets or not entityData.targets[k] then
+            doesntMatch = true
+            break
+        end
+    end
     if doesntMatch then
-        print("ASDFASDFASDF")
         Targets.OnRemove(entityData)
         Wait(100)
         Targets.OnSpawn(entityData)

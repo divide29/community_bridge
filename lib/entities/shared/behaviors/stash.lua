@@ -20,24 +20,24 @@ function Stash.OnCreate(entityData)
         local owner = entityData.stash.owner
         local groups = entityData.stash.groups
         Bridge.Inventory.RegisterStash(entityData.id, label, slots, weight, owner, groups)
-    else
-        entityData.targets = entityData.targets or {}
-        entityData.targets['stash'] = {
-            label = entityData.stash.target.label or Stash.default.target.label,
-            icon = entityData.stash.target.icon or Stash.default.target.icon,
-            description = entityData.stash.target.description, 
-            groups = entityData.stash.target.groups,
-            canInteract = function(_)
-                local entData = Bridge.Entity.Get(entityData.id)
-                return not entData.stash.disable
-            end,
-            onSelect = function()                    
-                TriggerServerEvent("community_bridge:server:OpenStash", entityData.id)
-            end
-        }
-        
-        Bridge.Entity.Set(entityData.id, 'targets', entityData.targets)
-    end    
+        return
+    end
+    entityData.targets = entityData.targets or {}
+    entityData.targets['stash'] = {
+        label = entityData.stash.target.label or Stash.default.target.label,
+        icon = entityData.stash.target.icon or Stash.default.target.icon,
+        description = entityData.stash.target.description, 
+        groups = entityData.stash.target.groups,
+        canInteract = function(_)
+            local entData = Bridge.Entity.Get(entityData.id)
+            return not entData.stash.disable
+        end,
+        onSelect = function()                    
+            TriggerServerEvent("community_bridge:server:OpenStash", entityData.id)
+        end
+    }
+    
+    Bridge.Entity.Set(entityData.id, 'targets', entityData.targets)    
 end
 
 if not IsDuplicityVersion() then return Bridge.Entity.RegisterBehavior("stash", Stash) end

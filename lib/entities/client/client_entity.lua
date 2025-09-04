@@ -76,24 +76,21 @@ local function UpdateEntity(_entityData)
         end)
     end
     Behaviors.Trigger("OnUpdate", entityData)
-    if entityData.oldCoords and entityData.oldCoords ~= entityData.coords then
-        local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
-        entityData.oldCoords = vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z)
-        local dist = #(coords.xyz - entityData.oldCoords.xyz)
-        if dist > 0.5 then
-            if entityData.spawned then 
-                SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
-            end    
-            -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
-            if entityData.OnMove then
-                pcall(function (...)
-                    return entityData.OnMove(entityData)
-                end)
-            end
-            Behaviors.Trigger("OnMove", entityData, entityData.oldCoords, entityData.coords)
-        end       
-        entityData.oldCoords = entityData.coords
-    end   
+    local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
+    entityData.oldCoords = entityData.oldCoords and vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z) or coords
+    local dist = #(coords - entityData.oldCoords)
+    if entityData.oldCoords and dist > 0.5 then
+        if entityData.spawned then 
+            SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
+        end    
+        -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
+        if entityData.OnMove then
+            pcall(function (...)
+                return entityData.OnMove(entityData)
+            end)
+        end
+        Behaviors.Trigger("OnMove", entityData, entityData.oldCoords, entityData.coords)
+    end
 
     if not entityData.oldRotation or entityData.oldRotation ~= entityData.rotation then
         if entityData.spawned and DoesEntityExist(entityData.spawned) then

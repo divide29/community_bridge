@@ -4,6 +4,27 @@ Behaviors = {
     invoked = {}
 }
 
+Behaviors.init = {
+    "anim",
+    "attach",
+    'clothing',
+    'follow',
+    'particles',
+    'scenarios',
+    'shop',
+    'stash',
+    'targets',
+    'weapon'
+}
+
+function Behaviors.Init()
+    if Behaviors.isSetup then return end
+    Behaviors.isSetup = true
+    for k, v in pairs(Behaviors.init) do
+        Require(string.format("lib/entities/shared/behaviors/%s.lua", v))
+    end
+end
+
 function Behaviors.Create(behaviorId, behavior)
     if not behaviorId or not behavior then return end
     Behaviors.All = Behaviors.All or {}
@@ -26,11 +47,19 @@ end
 
 function Behaviors.Trigger(actionName, clientEntityData, ...)
     if not clientEntityData or not actionName then return end
-
     local invoking = clientEntityData.invoked or GetInvokingResource() or "community_bridge"
     for property, behavior in pairs(Behaviors.All[invoking] or {}) do
         local hasBehaviorArgs = Behaviors.Has(property, clientEntityData) -- this is everything that's contained inside the object's individual property
         if hasBehaviorArgs and behavior[actionName] then
+            local success, result = pcall(behavior[actionName], clientEntityData, hasBehaviorArgs, ...)
+            if not success then
+                print(string.format("[ClientEntity] Behavior %s failed: %s", property, result))
+            end
+        end
+    end
+    for property, behavior in pairs(Behaviors.All['community_bridge'] or {}) do
+        local hasBehaviorArgs = Behaviors.Has(property, clientEntityData) -- this is everything that's contained inside the object's individual property
+        if hasBehaviorArgs and behavior[actionName] and not Behaviors.All[invoking]?[actionName] then
             local success, result = pcall(behavior[actionName], clientEntityData, hasBehaviorArgs, ...)
             if not success then
                 print(string.format("[ClientEntity] Behavior %s failed: %s", property, result))
@@ -74,5 +103,19 @@ AddEventHandler("onResourceStop", function(resourceName)
         end
     end
 end)
+
+if IsDuplicityVersion() then
+    RegisterNetEvent("onResourceStart", function(resourceName)
+        if resourceName ~= GetCurrentResourceName() then return end
+        Wait(500)
+        Behaviors.Init()
+    end)
+else
+    RegisterNetEvent("onClientResourceStart", function(resource)
+        if resource ~= GetCurrentResourceName() then return end
+        Wait(500)
+        Behaviors.Init()
+    end)
+end
 
 return Behaviors

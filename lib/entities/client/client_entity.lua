@@ -8,40 +8,39 @@ ClientEntity = {
 } -- Renamed from BaseEntity
 ClientEntity.Behaviors = Behaviors
 
-
-
-
 --------------------
 
 local function SpawnEntity(entityData)
     if entityData.spawned and DoesEntityExist(entityData.spawned) then return end -- Already spawned
-    local loaded, model = Utility.LoadModel(entityData.model)
-    if not loaded then
-        print(string.format("[ClientEntity] Failed to load model %s for entity %s", entityData.model, entityData.id))
-        return
-    end
+    if entityData.model then 
+        local loaded, model = Utility.LoadModel(entityData.model)
+        if not loaded then
+            print(string.format("[ClientEntity] Failed to load model %s for entity %s", entityData.model, entityData.id))
+            return
+        end
 
-    local entity = nil
-    local coords = entityData.coords
-    local rotation = entityData.rotation or vector3(0.0, 0.0, entityData.heading or 0.0) -- Default rotation if not provided
+        local entity = nil
+        local coords = entityData.coords
+        local rotation = entityData.rotation or vector3(0.0, 0.0, entityData.heading or 0.0) -- Default rotation if not provided
 
-    if entityData.entityType == 'object' then
-        entity = CreateObject(model, coords.x, coords.y, coords.z, false, false, false)
-        SetEntityRotation(entity, rotation.x, rotation.y, rotation.z, 2, true)
-    elseif entityData.entityType == 'ped' then
-        entity = CreatePed(4, model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
-    elseif entityData.entityType == 'vehicle' then
-        entity = CreateVehicle(model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
-    else
-        print(string.format("[ClientEntity] Unknown entity type '%s' for entity %s", entityData.entityType, entityData.id))
-    end
-    if entity and model then
-        entityData.spawned = entity
-        SetModelAsNoLongerNeeded(model)
-        SetEntityAsMissionEntity(entity, true, true)
-        FreezeEntityPosition(entity, true)
-    else
-        SetModelAsNoLongerNeeded(model)
+        if entityData.entityType == 'object' then
+            entity = CreateObject(model, coords.x, coords.y, coords.z, false, false, false)
+            SetEntityRotation(entity, rotation.x, rotation.y, rotation.z, 2, true)
+        elseif entityData.entityType == 'ped' then
+            entity = CreatePed(4, model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
+        elseif entityData.entityType == 'vehicle' then
+            entity = CreateVehicle(model, coords.x, coords.y, coords.z, type(rotation) == 'number' and rotation or rotation.z, false, false)
+        else
+            print(string.format("[ClientEntity] Unknown entity type '%s' for entity %s", entityData.entityType, entityData.id))
+        end
+        if entity and model then
+            entityData.spawned = entity
+            SetModelAsNoLongerNeeded(model)
+            SetEntityAsMissionEntity(entity, true, true)
+            FreezeEntityPosition(entity, true)
+        else
+            SetModelAsNoLongerNeeded(model)
+        end
     end
     if entityData.OnSpawn then
         pcall(function (...)
@@ -71,20 +70,27 @@ end
 local function UpdateEntity(_entityData)
     local entityData = ClientEntity.Get(_entityData.id)
     if not entityData then return end
-    if entityData.oldCoords and entityData.oldCoords ~= entityData.coords then
-        local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
-        local dist = #(coords.xyz - entityData.oldCoords.xyz)
-        if dist > 0.1 then
-            -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
-            if entityData.OnMove then
-                pcall(function (...)
-                    return entityData.OnMove(entityData)
-                end)
-            end
-            Behaviors.Trigger("OnMove", entityData, entityData.oldCoords, entityData.coords)
-        end       
-        entityData.oldCoords = entityData.coords
-    end   
+    if entityData.OnUpdate then
+        pcall(function (...)
+            return entityData.OnUpdate(entityData)
+        end)
+    end
+    Behaviors.Trigger("OnUpdate", entityData)
+    local coords = vector3(entityData.coords.x, entityData.coords.y, entityData.coords.z)
+    entityData.oldCoords = entityData.oldCoords and vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z) or coords
+    local dist = #(coords - entityData.oldCoords)
+    if entityData.oldCoords and dist > 0.5 then
+        if entityData.spawned then 
+            SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
+        end    
+        -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
+        if entityData.OnMove then
+            pcall(function (...)
+                return entityData.OnMove(entityData)
+            end)
+        end
+        Behaviors.Trigger("OnMove", entityData, entityData.oldCoords, entityData.coords)
+    end
 
     if not entityData.oldRotation or entityData.oldRotation ~= entityData.rotation then
         if entityData.spawned and DoesEntityExist(entityData.spawned) then
@@ -96,12 +102,10 @@ local function UpdateEntity(_entityData)
         end
         entityData.oldRotation = entityData.rotation
     end
-    if entityData.OnUpdate then
-        pcall(function (...)
-            return entityData.OnUpdate(entityData)
-        end)
+
+    if entityData.freeze ~= nil and entityData.spawned and IsEntityPositionFrozen(entityData.spawned) then
+        FreezeEntityPosition(entityData.spawned, entityData.freeze)
     end
-    Behaviors.Trigger("OnUpdate", entityData)
 end
 
 --- Registers an entity received from the server and sets up proximity spawning.
@@ -144,9 +148,9 @@ ClientEntity.RegisterBulk = ClientEntity.CreateBulk
 function ClientEntity.Destroy(id)
     local entityData = Entities[id]
     if not entityData then return end
-
+    Behaviors.Trigger("OnDestroy", entityData)
     Point.Remove(id)
-    RemoveEntity(entityData)
+    RemoveEntity(entityData)    
     Entities[id] = nil
 end
 ClientEntity.Unregister = ClientEntity.Destroy
@@ -155,67 +159,16 @@ function ClientEntity.RegisterBehavior(id, behavior)
     Behaviors.Create(id, behavior)
 end
 
+--- Sets a key-value pair for a client entity.
+---@param id any
+---@param key any
+---@param value any
+---@return nil
 function ClientEntity.Set(id, key, value)
     local entityData = ClientEntity.Get(id)
     if not entityData then return print(string.format("[ClientEntity] SetKey: Entity %s does not exist", id)) end
     entityData[key] = value
-    -- TriggerServerEvent("community_bridge:server:UpdateEntity", id, {[key] = value})
 end
-
---- Updates the data for a registered entity.
--- @param id string|number The ID of the entity to update.
--- @param data table The data fields to update.
--- function ClientEntity.Update(id, data)
---     local entityData = ClientEntity.Get(id)
---     if not entityData then return end
-
---     local needsPointUpdate = false
---     for key, value in pairs(data) do
---         if key == 'coords' and #(entityData.coords - value) > 0.1 then
---              needsPointUpdate = true
---         end
---         if key == 'spawnDistance' and entityData.spawnDistance ~= value then
---              needsPointUpdate = true
---         end
---         entityData[key] = value
---     end
-
---     -- If entity is currently spawned, apply updates
---     if entityData.spawned and DoesEntityExist(entityData.spawned) then
---         if data.coords then
---             SetEntityCoords(entityData.spawned, entityData.coords.x, entityData.coords.y, entityData.coords.z, false, false, false, true)
---         end
---         if data.rotation then
---              if entityData.entityType == 'object' then
---                  SetEntityRotation(entityData.spawned, entityData.rotation.x, entityData.rotation.y, entityData.rotation.z, 2, true)
---              else -- Ped/Vehicle heading
---                  SetEntityHeading(entityData.spawned, type(entityData.rotation) == 'number' and entityData.rotation or entityData.rotation.z)
---              end
---         end
---         if data.freeze ~= nil then
---             FreezeEntityPosition(entityData.spawned, data.freeze)
---         end
---         -- Add other updatable properties as needed
---     end
-
---     -- Update Point registration if coords or distance changed
---     if needsPointUpdate then
---         Point.Remove(id)
---         Point.Register(
---             entityData.id,
---             entityData.coords,
---             entityData.spawnDistance or 50.0,
---             entityData,
---             SpawnEntity,
---             RemoveEntity,
---             OnUpdateEntity
---         )
---     end
-
---     if entityData.OnUpdate and type(entityData.OnUpdate) == 'function' then
---         entityData.OnUpdate(entityData, data)
---     end
--- end
 
 function ClientEntity.Get(id)
     return Entities[id]
@@ -258,9 +211,7 @@ function ClientEntity.UpdateCoords(id, coords)
         return
     end
     entityData.coords = coords
-    Point.UpdateCoords(id, coords)
-    if not entityData.spawned or not DoesEntityExist(entityData.spawned) then return end
-    SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
+    Point.UpdateCoords(id, coords) 
 end
 
 function ClientEntity.ChangeModel(id, model)
@@ -290,6 +241,7 @@ end)
 
 RegisterNetEvent("community_bridge:client:UpdateEntity", function(id, data)
     for k, v in pairs(data) do
+        print(json.encode({k, v}))
         ClientEntity.Set(id, k, v)
     end
 end)

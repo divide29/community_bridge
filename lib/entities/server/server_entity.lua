@@ -14,8 +14,6 @@ local Invoked = {}
 -- @param meta table Optional additional data
 -- @return table The created entity data
 function ServerEntity.New(id, entityType, model, coords, rotation, args)
-    assert(entityType, "EntityType is required")
-    assert(model, "Model is required for entity creation")
     assert(coords, "Coords are required for entity creation")
     local self = args or {}
     self.id = id or Ids.CreateUniqueId(Entities)

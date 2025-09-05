@@ -3,7 +3,7 @@ Math = Math or {}
 
 
 ---@class Math
-------@field public name string @add name field to class Car, you'll see it in code completion
+---@field public name string @add name field to class Car, you'll see it in code completion
 Math = {}
 
 
@@ -42,6 +42,13 @@ end
 function Math.Smooth(value, min, max)
     value = Math.Clamp((value - min) / (max - min), 0, 1)
     return value * value * (3 - 2 * value)
+end
+
+--- Gets the nearest whole number.
+--- @param value number The value to round.
+--- @return number The rounded value.
+function Math.Nearest(value)
+    return math.floor(value + 0.5)
 end
 
 --- Maps a value from one range to another.

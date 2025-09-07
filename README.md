@@ -56,8 +56,7 @@ By bridging core game systems including inventory, dispatch, targeting, door loc
 ## Documentation
 
 Complete developer documentation is available at:
-[Community Bridge Documentation](https://mrnewbs-scrips.gitbook.io/the-order-of-the-sacred-framework)
-
+[Community Bridge Documentation](https://theorderfivem.github.io/public_docs/)
 ---
 
 ## Community and Support

@@ -11,7 +11,6 @@ shared_scripts {
     '@ox_lib/init.lua',
     'settings/sharedConfig.lua',
     'lib/init.lua',
-    'modules/math/*.lua',
     'modules/locales/*.lua',
     'modules/clothing/**/shared.lua',
 }

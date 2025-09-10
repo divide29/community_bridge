@@ -304,18 +304,33 @@ end
 ---@param scale number
 function Utility.Draw3DHelpText(coords, text, scale)
     local onScreen, x, y = GetScreenCoordFromWorldCoord(coords.x, coords.y, coords.z)
-    if onScreen then
-        SetTextScale(scale or 0.35, scale or 0.35)
-        SetTextFont(4)
-        SetTextProportional(true)
-        SetTextColour(255, 255, 255, 215)
-        SetTextEntry("STRING")
-        SetTextCentre(true)
-        AddTextComponentString(text)
-        DrawText(x, y)
-        local factor = (string.len(text)) / 370
-        DrawRect(x, y + 0.0125, 0.015 + factor, 0.03, 41, 11, 41, 100)
+    if not onScreen then return end
+    local lineCount = 0
+    local maxLineLen = 0
+    for line in string.gmatch(text, "[^\n]+") do
+        lineCount = lineCount + 1
+        maxLineLen = math.max(maxLineLen, string.len(line))
     end
+    local widthFactor = maxLineLen * 0.012 * scale
+    local height = 0.06 * scale * lineCount
+    
+    -- Set text properties
+    SetTextScale(scale or 0.35, scale or 0.35)
+    SetTextFont(4)
+    SetTextProportional(true)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(true)
+    AddTextComponentString(text)
+    DrawText(x, y)
+    
+    -- Draw background rectangle
+    DrawRect(x, y + height / 2, widthFactor + 0.015 + 0.006, height + 0.015 + 0.006, 10, 25, 47, 200)
+    DrawRect(x, y + height / 2, widthFactor + 0.015, height + 0.015, 17, 45, 78, 50)
+end
+
+function Utility.Draw3DHelpTextExt(coords, text, scale)
+
 end
 
 ---Show a native notification

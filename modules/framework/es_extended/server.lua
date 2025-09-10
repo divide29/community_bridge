@@ -253,11 +253,11 @@ end
 --- @return number | nil
 Framework.GetHunger = function(src)
     local status = Framework.GetStatus(src, "status")
-    if not status then return nil end
-
+    if not status then return end
+    if type(status) ~= "table" then return end
     for _, entry in ipairs(status) do
         if entry.name == "hunger" then
-            return math.floor(entry.percent)
+            return math.floor((entry.percent) + 0.5) or 0
         end
     end
 end
@@ -268,10 +268,10 @@ end
 Framework.GetThirst = function(src)
     local status = Framework.GetStatus(src, "status")
     if not status then return nil end
-
+    if type(status) ~= "table" then return end
     for _, entry in ipairs(status) do
         if entry.name == "thirst" then
-            return math.floor(entry.percent)
+            return math.floor((entry.percent) + 0.5) or 0
         end
     end
 end

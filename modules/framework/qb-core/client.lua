@@ -109,6 +109,20 @@ Framework.GetItemInfo = function(item)
     return repackedTable
 end
 
+---This will get the hunger of a player
+---@return number
+Framework.GetHunger = function()
+    local hunger = Framework.GetPlayerMetaData("hunger") or 0
+    return math.floor((hunger) + 0.5) or 0
+end
+
+---This will get the thirst of a player
+---@return number
+Framework.GetThirst = function()
+    local thirst = Framework.GetPlayerMetaData("thirst") or 0
+    return math.floor((thirst) + 0.5) or 0
+end
+
 ---This will get the players identifier (citizenid) etc.
 ---@return string
 Framework.GetPlayerIdentifier = function()

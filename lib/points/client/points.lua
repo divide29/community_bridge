@@ -99,6 +99,7 @@ function Point.Register(id, target, distance, args, _onEnter, _onExit, _onUpdate
     self.onExit = _onExit or function() end
     self.onUpdate = _onUpdate or function() end
     self.inside = false -- Track if player is inside
+    self.args = args or {} --DEPRICATED 2025-09-10
     local grid = Grid.GetCellByCoords(coords)
     grid[id] = self
     Point.All[id] = self

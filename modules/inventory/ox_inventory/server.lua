@@ -22,6 +22,12 @@ Inventory.AddItem = function(src, item, count, slot, metadata)
     return ox_inventory:AddItem(src, item, count, metadata)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "ox_inventory"
+end
+
 ---This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -130,6 +136,7 @@ Inventory.OpenStash = function(src, _type, id)
     ox_inventory:forceOpenInventory(src, _type, id)
 end
 
+-- restores stashes to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 ---This will register a stash
 ---@param id number|string
 ---@param label string
@@ -151,7 +158,7 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
         groups = groups,
         coords = coords
     }
-    ox_inventory:RegisterStash(id, label, slots, weight, owner, groups)
+    ox_inventory:RegisterStash(id, label, slots, weight, owner, groups, coords)
     return true, id
 end
 
@@ -192,6 +199,7 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
+-- restores shops to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 -- This will open the specified shop for the src passed.
 ---@param src number
 ---@param shopTitle string
@@ -199,6 +207,7 @@ Inventory.OpenShop = function(src, shopTitle)
     TriggerClientEvent('ox_inventory:openInventory', src, 'shop', {type = shopTitle})
 end
 
+-- restores shops to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 -- This will register a shop, if it already exists it will return true.
 ---@param shopTitle string
 ---@param shopInventory table
@@ -211,7 +220,6 @@ Inventory.RegisterShop = function(shopTitle, shopInventory, shopCoords, shopGrou
     --return Inventory.OpenShop(src, shopTitle)
     return true
 end
-
 
 ---UNUSED:
 ---This will return generic item data from the specified inventory, with the items total count.

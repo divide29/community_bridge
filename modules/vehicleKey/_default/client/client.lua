@@ -1,19 +1,24 @@
 ---@diagnostic disable: duplicate-set-field
 VehicleKey = VehicleKey or {}
 
----This will give keys to the specifed vehicle/plate.
----@param vehicle number The vehicle entity ID.
----@param plate string The plate of the vehicle.
+---Gives the player (self) the keys of the specified vehicle.
+---@param vehicle number The vehicle entity handle.
+---@param plate? string The plate of the vehicle.
+---@return nil
 VehicleKey.GiveKeys = function(vehicle, plate)
-    return true, Prints.Error("There Is No Vehicle Key System Installed")
+    print("There is no compatible vehicle key resource.")
 end
 
----This will remove keys from the specifed vehicle/plate.
----@param vehicle number The vehicle entity ID.
----@param plate string The plate of the vehicle.
----@return boolean | nil
+---Removes the keys of the specified vehicle from the player (self).
+---@param vehicle number The vehicle entity handle.
+---@param plate? string The plate of the vehicle.
+---@return nil
 VehicleKey.RemoveKeys = function(vehicle, plate)
-    return true, Prints.Error("There Is No Vehicle Key System Installed")
+    print("There is no compatible vehicle key resource.")
+end
+
+VehicleKey.GetResourceName = function()
+    return "default"
 end
 
 return VehicleKey

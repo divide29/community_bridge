@@ -14,6 +14,12 @@ Framework.GetFrameworkName = function()
     return 'qb-core'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'qb-core'
+end
+
 ---This will return if the player is an admin in the framework.
 ---@param src any
 ---@return boolean
@@ -303,7 +309,7 @@ Framework.GetHunger = function(src)
     if not player then return end
     local playerData = player.PlayerData
     local newHunger = (playerData.metadata.hunger or 0)
-    return newHunger
+    return math.floor((newHunger) + 0.5) or 0
 end
 
 ---This will return a boolean if the player is dead or in last stand.
@@ -335,7 +341,7 @@ Framework.GetThirst = function(src)
     if not player then return end
     local playerData = player.PlayerData
     local newThirst = (playerData.metadata.thirst or 0)
-    return newThirst
+    return math.floor((newThirst) + 0.5) or 0
 end
 
 -- Framework.GetPlayerPhone(src)
@@ -557,6 +563,9 @@ end
 RegisterNetEvent("QBCore:Server:OnPlayerLoaded", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerLoaded", src)
+    local jobData = Framework.GetPlayerJobData(src)
+    if not jobData then return end
+    Framework.AddJobCount(src, jobData.jobName)
 end)
 
 RegisterNetEvent("QBCore:Server:OnPlayerUnload", function(src)

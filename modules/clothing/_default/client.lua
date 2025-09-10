@@ -2,7 +2,7 @@
 Clothing = Clothing or {}
 
 ClothingBackup = {}
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 Ultility = Utility or Require('lib/utility/client/utility.lua')
 Cache = Cache or Require('lib/cache/shared/cache.lua')
 
@@ -14,6 +14,13 @@ function Clothing.IsMale()
         return true
     end
     return false
+end
+
+
+---This will get the name of the in use resource.
+---@return string
+Clothing.GetResourceName = function()
+    return 'default'
 end
 
 ---Get the skin data of a ped

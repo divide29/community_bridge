@@ -141,9 +141,8 @@ Skills.SetXP = function(src, skillName, xp)
     return true
 end
 
--- Get resource name
 Skills.GetResourceName = function()
-    return "community_bridge"
+    return "default"
 end
 
 -- Debug Commands

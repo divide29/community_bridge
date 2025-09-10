@@ -1,7 +1,7 @@
 Particles = {}
 Particle = {}
 ---@diagnostic disable: duplicate-set-field
-local Ids = Ids or Require("lib/utility/shared/ids.lua")
+Ids = Ids or Require("lib/utility/shared/ids.lua")
 local point =  Require("lib/points/client/points.lua")
 
 ---Loads a ptfx asset into memory.
@@ -28,21 +28,58 @@ end
 --- @param looped boolean
 --- @param loopLength number|nil
 --- @return number|nil ptfxHandle -- The handle of the particle effect, or nil if it failed to create.
-function Particle.Play(dict, ptfx, pos, rot, scale, color, looped, loopLength)
+function Particle.Play(dict, ptfx, pos, rot, scale, color, looped, removeAfter)
     LoadPtfxAsset(dict)
     UseParticleFxAssetNextCall(dict)
     SetParticleFxNonLoopedColour(color.x, color.y, color.z)
     local particle = nil
+    removeAfter = removeAfter or 5000
     if looped then
         particle = StartParticleFxLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
-        CreateThread(function()
-            if loopLength then 
-                Wait(loopLength)
-                Particle.Remove(particle)
+        local strParticle = tostring(particle)
+        Particles[strParticle] = particle
+        Wait(10)
+        if particle == 0 or not DoesParticleFxLoopedExist(particle) then            
+            particle = StartParticleFxNonLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
+            if not particle and particle == 0 then
+                print(string.format("[Particle] Failed to start particle fx: %s from dict: %s", ptfx, dict))
+                return nil
             end
-        end)
-    else
-        particle = StartParticleFxNonLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
+            local strParticle = tostring(particle)
+            Particles[strParticle] = particle
+            CreateThread(function()
+                while Particles[strParticle] do
+                    Wait(removeAfter)
+                    if not Particles[strParticle] then break end
+                    RemoveParticleFx(particle, false)                
+                    particle = StartParticleFxNonLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
+                    Particles[strParticle] = particle
+                end
+            end)
+            return strParticle
+        else
+            if not removeAfter or removeAfter <= 0 then return particle end
+            CreateThread(function()
+                while Particles[strParticle] do
+                    Wait(removeAfter)
+                    if not Particles[strParticle] then break end
+                    StopParticleFxLooped(particle, false)
+                    UseParticleFxAssetNextCall(dict)
+                    LoadPtfxAsset(dict)
+                    particle = StartParticleFxLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
+                    Particles[strParticle] = particle
+                end
+            end)     
+            return strParticle
+        end
+    else 
+        particle = StartParticleFxLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
+        Wait(10)
+        if not DoesParticleFxLoopedExist(particle) then            
+            particle = StartParticleFxNonLoopedAtCoord(ptfx, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, scale, false, false, false, false)
+        end
+        Wait(removeAfter)
+        Particle.Stop(particle)
     end
 
     return particle
@@ -53,66 +90,7 @@ function Particle.Stop(particle)
     StopParticleFxLooped(particle, false)
     RemoveParticleFx(particle, false)
     RemoveNamedPtfxAsset(particle)
-end
-
-function Particle.Create(data)
-    assert(data, "Particle data is nil")
-    assert(data.dict, "Invalid particle data. Must contain string dict.")
-    assert(data.ptfx, "Invalid particle data. Must contain string ptfx.")
-
-    local _id = data.id or Ids.CreateUniqueId(Particles)
-    data = {
-        id = _id,
-        dict = data.dict,
-        ptfx = data.ptfx,
-        position = data.position or vector3(0.0, 0.0, 0.0),
-        rotation = data.rotation or vector3(0, 0, 0),
-        size = data.size or 1.0,
-        color = data.color or vector3(255, 255, 255),
-        looped = data.looped or false,
-        loopLength = data.loopLength or nil,
-        spawned = false,
-    }
-    Particles[_id] = data
-
-    point.Register( -- checking if players in range
-        _id, 
-        data.position, 
-        data.drawDistance or 50.0, 
-        data,
-        function(_)     
-            if not Particles[_id] then return point.Remove(_id) end
-            local particleData = Particles[_id]
-            if particleData.spawned then return end
-            particleData.spawned = Particle.Play(
-                particleData.dict, 
-                particleData.ptfx, 
-                particleData.position, 
-                particleData.rotation, 
-                particleData.size, 
-                particleData.color, 
-                particleData.looped, 
-                particleData.loopLength
-            )
-        end,
-        function(markerData)  
-            if not Particles[_id] then return end
-            local particleData = Particles[_id]
-            if not particleData.spawned then return end
-            Particle.Stop(particleData.spawned)
-            particleData.spawned = nil
-        end
-    )
-    return _id
-end
-
-function Particle.Remove(id)
-    if not id then return end
-    local particle = Particles[id]
-    if not particle then return end
-    Particle.Stop(particle.spawned)
-    Particles[id] = nil
-    point.Remove(id)
+    Particles[tostring(particle)] = nil
 end
 
 

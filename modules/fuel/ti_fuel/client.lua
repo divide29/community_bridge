@@ -3,28 +3,30 @@ local resourceName = "ti_fuel"
 if GetResourceState(resourceName) == 'missing' then return end
 Fuel = Fuel or {}
 
----This will get the name of the Fuel being used (if a supported Fuel).
+---Returns the name of the active fuel resource.
+---If no supported resource is found, "default" will be returned.
 ---@return string
 Fuel.GetResourceName = function()
     return resourceName
 end
 
----This will get the fuel level of the vehicle.
----@param vehicle number The vehicle entity ID.
----@return number fuel The fuel level of the vehicle.
+---Returns the current fuel level of a vehicle.
+---@param vehicle number The vehicle entity handle.
+---@return number The vehicle fuel level.
 Fuel.GetFuel = function(vehicle)
     if not DoesEntityExist(vehicle) then return 0.0 end
     local level, _ = exports["ti_fuel"]:getFuel(vehicle)
     return level
 end
 
----This will set the fuel level of the vehicle.
----@param vehicle number The vehicle entity ID.
----@param fuel number The fuel level to set.
+---Sets the fuel level of a vehicle.
+---@param vehicle number The vehicle entity handle.
+---@param fuel number The fuel level to assign.
+---@param type? string The fuel type, used only in ti_fuel. (default: RON91)
 ---@return nil
-Fuel.SetFuel = function(vehicle, fuel)
+Fuel.SetFuel = function(vehicle, fuel, type)
     if not DoesEntityExist(vehicle) then return end
-    return exports['ti_fuel']:setFuel(vehicle, fuel, "RON91")
+    exports['ti_fuel']:setFuel(vehicle, fuel, type or "RON91")
 end
 
 return Fuel

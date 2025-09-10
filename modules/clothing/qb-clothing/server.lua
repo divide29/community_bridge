@@ -38,6 +38,12 @@ function Clothing.GetFullAppearanceData(src)
     return Clothing.Players[citId]
 end
 
+---This will get the name of the in use resource.
+---@return string
+Clothing.GetResourceName = function()
+    return 'qb-clothing'
+end
+
 --- Retrieves a player's converted appearance data for easy use across modules
 ---@param src number The server ID of the player
 ---@param fullData boolean Optional - If true, returns the full data object including skin and model

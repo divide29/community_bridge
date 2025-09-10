@@ -11,6 +11,12 @@ Framework.GetFrameworkName = function()
     return 'qbx_core'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'qbx_core'
+end
+
 ---This will return true if the player is loaded, false otherwise.
 ---This could be useful in scripts that rely on player loaded events and offer a debug mode to hit this function.
 ---@return boolean
@@ -66,6 +72,20 @@ end
 ---@return nil
 Framework.Notify = function(message, type, time)
     return QBox:Notify("Notification", type, time, message)
+end
+
+---This will get the hunger of a player
+---@return number
+Framework.GetHunger = function()
+    local hunger = Framework.GetPlayerMetaData("hunger") or 0
+    return math.floor((hunger) + 0.5) or 0
+end
+
+---This will get the thirst of a player
+---@return number
+Framework.GetThirst = function()
+    local thirst = Framework.GetPlayerMetaData("thirst") or 0
+    return math.floor((thirst) + 0.5) or 0
 end
 
 ---This will get the players identifier (citizenid) etc.
@@ -168,8 +188,8 @@ end
 ---This will get a players dead status.
 ---@return boolean
 Framework.GetIsPlayerDead = function()
-    local platerData = Framework.GetPlayerData()
-    return platerData.metadata["isdead"] or platerData.metadata["inlaststand"]
+    local playerData = Framework.GetPlayerData()
+    return playerData.metadata["isdead"] or playerData.metadata["inlaststand"]
 end
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()

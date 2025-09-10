@@ -1,12 +1,18 @@
 ---@diagnostic disable: duplicate-set-field
 Clothing = Clothing or {}
 Clothing.LastAppearance = Clothing.LastAppearance or {}
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 function Clothing.IsMale(src)
     local ped = GetPlayerPed(src)
     if not ped or not DoesEntityExist(ped) then return end
     return GetEntityModel(ped) == `mp_m_freemode_01`
+end
+
+---This will get the name of the in use resource.
+---@return string
+Clothing.GetResourceName = function()
+    return 'default'
 end
 
 function Clothing.GetAppearance(src)

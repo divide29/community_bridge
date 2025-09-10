@@ -19,6 +19,12 @@ Inventory.AddItem = function(src, item, count, slot, metadata)
     return quasar:AddItem(src, item, count, slot, metadata)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "qs-inventory"
+end
+
 ---This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string

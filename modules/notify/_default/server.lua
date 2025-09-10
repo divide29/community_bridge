@@ -10,6 +10,10 @@ Notify.SendNotify = function(src, message, _type, time)
     TriggerClientEvent('community_bridge:Client:Notify', src, message, _type, time)
 end
 
+Notify.GetResourceName = function()
+    return "default"
+end
+
 ---------[[Depricated Stuff Below, please adjust to the HelpText module instead]]--------
 ---Depricated -- This will show a help text message to the specified player at the screen position passed
 ---@param src number

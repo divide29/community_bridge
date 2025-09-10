@@ -17,6 +17,16 @@ local targetZones = {}
 Target = Target or {}
 local qb_target = exports['qb-target']
 
+function GetLargestDistance(data)
+    local largestDistance = -1
+    for _, v in pairs(data) do
+        if v.distance and v.distance > largestDistance then
+            largestDistance = v.distance
+        end
+    end
+    return largestDistance ~= -1 and largestDistance or 2.0
+end
+
 
 ---This is an internal function that is used to fix the options passed to fit alternative target systems, for example qb-ox or ox-qb etc.
 ---@param options table
@@ -40,6 +50,13 @@ Target.FixOptions = function(options)
         options[k].action = select
         options[k].job = v.job or v.groups
         options[k].jobType = v.jobType
+        local optionsCanInteract = v.canInteract      
+        if optionsCanInteract then 
+            local id = Target.CreateCanInteract(optionsCanInteract)
+            v.canInteract = function(...)
+                return Target.CanInteract(id, ...)
+            end
+        end
     end
     return options
 end
@@ -56,7 +73,7 @@ Target.AddGlobalPlayer = function(options)
     options = Target.FixOptions(options)
     qb_target:AddGlobalPlayer({
         options = options,
-        distance = options.distance or 1.5
+        distance = GetLargestDistance(options)
     })
 end
 
@@ -71,7 +88,7 @@ Target.AddGlobalPed = function(options)
     options = Target.FixOptions(options)
     qb_target:AddGlobalPed({
         options = options,
-        distance = options.distance or 1.5
+        distance = GetLargestDistance(options)
     })
 end
 
@@ -87,7 +104,7 @@ Target.AddGlobalVehicle = function(options)
     options = Target.FixOptions(options)
     qb_target:AddGlobalVehicle({
         options = options,
-        distance = options.distance or 1.5
+        distance = GetLargestDistance(options)
     })
 end
 
@@ -123,7 +140,7 @@ Target.AddLocalEntity = function(entities, options)
     options = Target.FixOptions(options)
     qb_target:AddTargetEntity(entities, {
         options = options,
-        distance = options.distance or 1.5
+        distance = GetLargestDistance(options)
     })
 end
 
@@ -137,11 +154,11 @@ end
 ---This will add target options to all specified models. This is useful for when you want to add target options to all models of a specific type.
 ---@param models number | table
 ---@param options table
-Target.AddModel = function(models, options)
+Target.AddModel = function(models, options, distance)
     options = Target.FixOptions(options)
     qb_target:AddTargetModel(models, {
         options = options,
-        distance = options.distance or 1.5,
+        distance = GetLargestDistance(options),
     })
 end
 
@@ -168,7 +185,7 @@ Target.AddBoxZone = function(name, coords, size, heading, options, debug)
         maxZ = coords.z + (size.z * 0.5),
     }, {
         options = options,
-        distance = options.distance or 1.5,
+        distance = GetLargestDistance(options),
     })
     table.insert(targetZones, { name = name, creator = GetInvokingResource() })
 end
@@ -185,7 +202,7 @@ Target.AddSphereZone = function(name, coords, radius, options, debug)
         debugPoly = targetDebug or debug,
     }, {
         options = options,
-        distance = options.distance or 1.5,
+        distance = GetLargestDistance(options),
     })
     table.insert(targetZones, { name = name, creator = GetInvokingResource() })
 end
@@ -212,5 +229,9 @@ AddEventHandler('onResourceStop', function(resource)
     end
     targetZones = {}
 end)
+
+Target.GetResourceName = function()
+    return "qb-target"
+end
 
 return Target

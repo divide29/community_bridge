@@ -3,7 +3,7 @@ if GetResourceState('core_inventory') ~= 'started' then return end
 
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 local core = exports.core_inventory
 
 ---This will add an item, and return true or false based on success
@@ -17,6 +17,14 @@ Inventory.AddItem = function(src, item, count, slot, metadata)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
     return core:addItem(src, item, count, metadata)
 end
+
+
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
+
 
 ---This will remove an item, and return true or false based on success
 ---@param src number

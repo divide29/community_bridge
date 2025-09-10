@@ -16,4 +16,10 @@ Dispatch.SendAlert = function(data)
     exports["bub-mdt"]:CustomAlert(alertData)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'bub-mdt'
+end
+
 return Dispatch

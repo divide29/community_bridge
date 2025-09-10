@@ -1,7 +1,7 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('core_inventory') ~= 'started' then return end
 local core = exports.core_inventory
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 Inventory = Inventory or {}
 
@@ -23,6 +23,13 @@ Inventory.GetItemInfo = function(item)
     end
     return {name = dataRepack.name, label = dataRepack.label, stack = dataRepack.stack, weight = dataRepack.weight, description = dataRepack.description, image = Inventory.GetImagePath(dataRepack.name) }
 end
+
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
+
 
 ---This will return the entire items table from the inventory.
 ---@return table 

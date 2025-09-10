@@ -8,4 +8,8 @@ Weather.ToggleSync = function(toggle)
 
 end
 
+Weather.GetResourceName = function()
+    return "default"
+end
+
 return Weather

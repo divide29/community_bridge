@@ -17,11 +17,15 @@
 local resourceName = "okokPhone"
 if GetResourceState(resourceName) == 'missing' then return end
 Phone = Phone or {}
-Callback = Callback or Require("lib/utility/shared/callbacks.lua")
+Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 ---This will get the name of the Phone system being being used.
 ---@return string
 Phone.GetPhoneName = function()
+    return resourceName
+end
+
+Phone.GetResourceName = function()
     return resourceName
 end
 

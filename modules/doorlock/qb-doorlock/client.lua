@@ -23,4 +23,10 @@ Doorlock.GetClosestDoor = function()
     return door
 end
 
+---This will get the name of the in use resource.
+---@return string
+Doorlock.GetResourceName = function()
+    return 'qb-doorlock'
+end
+
 return Doorlock

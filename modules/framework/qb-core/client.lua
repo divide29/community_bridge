@@ -14,6 +14,12 @@ Framework.GetFrameworkName = function()
     return 'qb-core'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'qb-core'
+end
+
 ---This will return true if the player is loaded, false otherwise.
 ---This could be useful in scripts that rely on player loaded events and offer a debug mode to hit this function.
 ---@return boolean
@@ -107,6 +113,20 @@ Framework.GetItemInfo = function(item)
         image = itemData.image
     }
     return repackedTable
+end
+
+---This will get the hunger of a player
+---@return number
+Framework.GetHunger = function()
+    local hunger = Framework.GetPlayerMetaData("hunger") or 0
+    return math.floor((hunger) + 0.5) or 0
+end
+
+---This will get the thirst of a player
+---@return number
+Framework.GetThirst = function()
+    local thirst = Framework.GetPlayerMetaData("thirst") or 0
+    return math.floor((thirst) + 0.5) or 0
 end
 
 ---This will get the players identifier (citizenid) etc.

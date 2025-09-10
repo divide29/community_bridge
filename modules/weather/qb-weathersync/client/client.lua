@@ -13,4 +13,8 @@ Weather.ToggleSync = function(toggle)
     end
 end
 
+Weather.GetResourceName = function()
+    return "qb-weathersync"
+end
+
 return Weather

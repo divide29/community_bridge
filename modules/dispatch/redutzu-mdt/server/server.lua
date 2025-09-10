@@ -11,4 +11,10 @@ RegisterNetEvent("community_bridge:server:dispatch:sendAlert", function(data)
     })
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'redutzu-mdt'
+end
+
 return Dispatch

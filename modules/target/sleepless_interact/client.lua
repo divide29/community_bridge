@@ -29,6 +29,13 @@ Target.FixOptions = function(options)
         end
         options[k].onSelect = select
         options[k].groups = v.job or v.groups
+        local optionsCanInteract = v.canInteract      
+        if optionsCanInteract then 
+            local id = Target.CreateCanInteract(optionsCanInteract)
+            v.canInteract = function(...)
+                return Target.CanInteract(id, ...)
+            end
+        end
     end
     return options
 end
@@ -180,5 +187,9 @@ AddEventHandler('onResourceStop', function(resource)
     end
     targetZones = {}
 end)
+
+Target.GetResourceName = function()
+    return "sleepless_interact"
+end
 
 return Target

@@ -9,4 +9,8 @@ Weather.ToggleSync = function(toggle)
     LocalPlayer.state.syncWeather = toggle
 end
 
+Weather.GetResourceName = function()
+    return "renewed-weathersync"
+end
+
 return Weather

@@ -241,7 +241,6 @@ end)
 
 RegisterNetEvent("community_bridge:client:UpdateEntity", function(id, data)
     for k, v in pairs(data) do
-        print(json.encode({k, v}))
         ClientEntity.Set(id, k, v)
     end
 end)

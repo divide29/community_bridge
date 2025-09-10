@@ -45,13 +45,13 @@ Shops.CompleteCheckout = function(src, shopName, item, amount, paymentType)
             break
         end
     end
-    if not itemData then return Prints.Error("Player ID "..src.." Is Possibly A Cheater And Has Attempted To Purchase A "..item) end
+    if not itemData then return print("Player ID "..src.." Is Possibly A Cheater And Has Attempted To Purchase A "..item) end
     if not itemData.price then return end
     local balance = Framework.GetAccountBalance(src, paymentType)
     local mathStuff = tonumber(itemData.price) * tonumber(amount)
     if balance < mathStuff then return Notify.SendNotify(src, ilocale('Shops.NotEnoughMoney'), "error", 5000) end
     if not Framework.RemoveAccountBalance(src, paymentType, mathStuff) then return end
-    Inventory.AddItem(src, itemData.name, tonumber(amount))
+    Inventory.AddItem(src, itemData.name, tonumber(amount), nil, nil)
     local itemLabel = Inventory.GetItemInfo(itemData.name).label
     Notify.SendNotify(src, ilocale('Shops.PurchasedItem')..itemLabel, "success", 5000)
 end

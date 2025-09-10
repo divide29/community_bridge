@@ -13,25 +13,26 @@ Shops.FinalizeCheckOut = function(shopName, item, itemLabel, price, amount)
     if not shopName and not item and not itemLabel and not price then return end
     local mathStuff = tonumber(price) * tonumber(amount)
     local generatedID = Ids.CreateUniqueId()
+    local ilocale = Language.Locale
     local buildMenu = {
         {
-            title = string.format(locale('Shops.PayByCash'), tostring(mathStuff)),
-            description = string.format(locale('Shops.AreYouSure'), itemLabel),
-            icon = locale('Shops.CashIcon'),
+            title = ilocale('Shops.PayByCash', tostring(mathStuff)),
+            description = ilocale('Shops.AreYouSure', itemLabel),
+            icon = ilocale('Shops.CashIcon'),
             onSelect = function(_, __, ___)
                 TriggerServerEvent('community_bridge:completeCheckout', shopName, item, amount, "money")
             end
         },
         {
-            title = string.format(locale('Shops.PayByCard'), tostring(mathStuff)),
-            description = string.format(locale('Shops.AreYouSure'), itemLabel),
-            icon = locale('Shops.CardIcon'),
+            title = ilocale('Shops.PayByCard', tostring(mathStuff)),
+            description = ilocale('Shops.AreYouSure', itemLabel),
+            icon = ilocale('Shops.CardIcon'),
             onSelect = function(_, __, ___)
                 TriggerServerEvent('community_bridge:completeCheckout', shopName, item, amount, "bank")
             end
         }
     }
-    Menu.Open({ id = generatedID, title = locale("Shops.Input"), options = buildMenu }, false)
+    Menu.Open({ id = generatedID, title = ilocale("Shops.Input"), options = buildMenu }, false)
 end
 
 ---This is an internal event that is used to open the amount select menu
@@ -42,11 +43,12 @@ end
 Shops.AmountSelect = function(shopName, item, itemLabel, price)
     if not shopName and not item and not itemLabel and not price then return end
     local numberOptions = {}
+    local ilocale = Language.Locale
     for i = 1, 100 do
         table.insert(numberOptions, {label = tostring(i), value = i})
     end
     local _input = Input.Open(shopName, {
-        {type = 'select', label = locale("Shops.PurchaseAmount"), options = numberOptions},
+        {type = 'select', label = ilocale("Shops.PurchaseAmount"), options = numberOptions},
     })
 
     if _input and _input[1] then
@@ -60,15 +62,16 @@ end
 ---@param shopData any
 ---@return nil
 Shops.OpenShop = function(title, shopData)
-    if not title and not shopData and not title then return Prints.Error("No Title Passed") end
+    if not title and not shopData and not title then return print("No Title Passed") end
     local generatedID = Ids.CreateUniqueId()
     local buildMenu = {}
+    local ilocale = Language.Locale
     for _, v in pairs(shopData) do
         local getItemName = Inventory.GetItemInfo(v.name).label
         table.insert(buildMenu, {
             title = getItemName,
-            description = string.format(locale('Shops.CurrencySymbol'), tostring(v.price)),
-            icon = locale('Shops.ShopIcon'),
+            description = ilocale('Shops.CurrencySymbol', tostring(v.price)),
+            icon = ilocale('Shops.ShopIcon'),
             onSelect = function(selected, secondary, args)
                 Shops.AmountSelect(title, v.name, getItemName, v.price)
                 --Shops.FinalizeCheckOut(title, v.name, getItemName, v.price)

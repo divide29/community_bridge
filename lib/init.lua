@@ -80,6 +80,7 @@ cLib.Anim = Anim or Require("lib/anim/client/client.lua")
 cLib.Cutscene = Cutscene or Require("lib/cutscenes/client/cutscene.lua")
 cLib.Particle = Particle or Require("lib/particles/client/particles.lua")
 cLib.Entity = ClientEntity or Require("lib/entities/client/client_entity.lua")
+cLib.Vehicles = Vehicles or Require("lib/vehicles/client.lua")
 
 -- Deprecated
 cLib.ClientEntity = cLib.Entity

@@ -20,4 +20,10 @@ Doorlock.ToggleDoorLock = function(doorID, toggle)
     return true
 end
 
+---This will get the name of the in use resource.
+---@return string
+Doorlock.GetResourceName = function()
+    return 'ox_doorlock'
+end
+
 return Doorlock

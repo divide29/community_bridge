@@ -12,6 +12,12 @@ HelpText.ShowHelpText = function(message, _position)
     return exports['okokTextUI']:Open(message, 'darkblue', _position, false)
 end
 
+---This will get the name of the in use resource.
+---@return string
+HelpText.GetResourceName = function()
+    return resourceName
+end
+
 ---This will hide the help text message on the screen
 ---@return nil
 HelpText.HideHelpText = function()

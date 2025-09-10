@@ -8,4 +8,11 @@ RegisterNetEvent('qb-apartments:server:SetInsideMeta', function(house, insideId,
     TriggerEvent('community_bridge:Server:_OnPlayerInside', src, insideId)
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Housing.GetResourceName = function()
+    return "qb-appartments"
+end
+
+
 return Housing

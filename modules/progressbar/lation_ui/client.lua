@@ -103,4 +103,9 @@ function ProgressBar.Open(options, cb, isQBInput)
     return success
 end
 
+
+ProgressBar.GetResourceName = function()
+    return "lation_ui"
+end
+
 return ProgressBar

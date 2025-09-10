@@ -34,4 +34,8 @@ VehicleKey.RemoveKeys = function(vehicle, plate)
     return exports.MrNewbVehicleKeys:RemoveKeysByPlate(plate)
 end
 
+VehicleKey.GetResourceName = function()
+    return resourceName
+end
+
 return VehicleKey

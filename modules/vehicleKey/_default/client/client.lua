@@ -6,7 +6,7 @@ VehicleKey = VehicleKey or {}
 ---@param plate? string The plate of the vehicle.
 ---@return nil
 VehicleKey.GiveKeys = function(vehicle, plate)
-    Prints.Info("There is no compatible vehicle key resource.")
+    print("There is no compatible vehicle key resource.")
 end
 
 ---Removes the keys of the specified vehicle from the player (self).
@@ -14,7 +14,11 @@ end
 ---@param plate? string The plate of the vehicle.
 ---@return nil
 VehicleKey.RemoveKeys = function(vehicle, plate)
-    Prints.Info("There is no compatible vehicle key resource.")
+    print("There is no compatible vehicle key resource.")
+end
+
+VehicleKey.GetResourceName = function()
+    return "default"
 end
 
 return VehicleKey

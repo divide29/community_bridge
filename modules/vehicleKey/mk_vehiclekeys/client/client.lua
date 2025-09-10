@@ -26,4 +26,8 @@ VehicleKey.RemoveKeys = function(vehicle, plate)
     exports["mk_vehiclekeys"]:RemoveKey(vehicle)
 end
 
+VehicleKey.GetResourceName = function()
+    return resourceName
+end
+
 return VehicleKey

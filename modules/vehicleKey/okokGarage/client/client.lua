@@ -35,4 +35,8 @@ VehicleKey.RemoveKeys = function(vehicle, plate)
     TriggerServerEvent("okokGarage:RemoveKeys", plate, source)
 end
 
+VehicleKey.GetResourceName = function()
+    return resourceName
+end
+
 return VehicleKey

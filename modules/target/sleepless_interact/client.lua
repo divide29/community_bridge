@@ -188,4 +188,8 @@ AddEventHandler('onResourceStop', function(resource)
     targetZones = {}
 end)
 
+Target.GetResourceName = function()
+    return "sleepless_interact"
+end
+
 return Target

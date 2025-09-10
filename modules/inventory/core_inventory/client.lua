@@ -24,6 +24,13 @@ Inventory.GetItemInfo = function(item)
     return {name = dataRepack.name, label = dataRepack.label, stack = dataRepack.stack, weight = dataRepack.weight, description = dataRepack.description, image = Inventory.GetImagePath(dataRepack.name) }
 end
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
+
+
 ---This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()

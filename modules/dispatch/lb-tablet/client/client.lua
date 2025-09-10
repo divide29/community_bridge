@@ -40,4 +40,10 @@ Dispatch.SendAlert = function(data)
     TriggerServerEvent("community_bridge:server:dispatch:sendAlert", alertData)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'lb-tablet'
+end
+
 return Dispatch

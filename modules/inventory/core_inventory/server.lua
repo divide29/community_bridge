@@ -18,6 +18,14 @@ Inventory.AddItem = function(src, item, count, slot, metadata)
     return core:addItem(src, item, count, metadata)
 end
 
+
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
+
+
 ---This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string

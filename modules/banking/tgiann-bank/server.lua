@@ -10,6 +10,12 @@ Banking.GetManagmentName = function()
     return 'tgiann-bank'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Banking.GetResourceName = function()
+    return 'tgiann-bank'
+end
+
 ---This will return a number
 ---@param account string
 ---@return number

@@ -36,4 +36,10 @@ RegisterNetEvent('community_bridge:Server:piotreq_gpt', function(data)
     Dispatch.SendAlert(src, data)
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'piotreq_gpt'
+end
+
 return Dispatch

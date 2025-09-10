@@ -16,6 +16,13 @@ function Clothing.IsMale()
     return false
 end
 
+
+---This will get the name of the in use resource.
+---@return string
+Clothing.GetResourceName = function()
+    return 'default'
+end
+
 ---Get the skin data of a ped
 ---@param entity number
 ---@return table

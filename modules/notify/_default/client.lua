@@ -2,7 +2,7 @@
 Notify = Notify or {}
 
 Notify.GetResourceName = function()
-    return "none"
+    return "default"
 end
 
 ---This will send a notify message of the type and time passed

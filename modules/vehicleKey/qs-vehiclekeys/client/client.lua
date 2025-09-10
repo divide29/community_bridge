@@ -36,4 +36,8 @@ VehicleKey.RemoveKeys = function(vehicle, plate)
     return exports['qs-vehiclekeys']:RemoveKeys(plate, model)
 end
 
+VehicleKey.GetResourceName = function()
+    return resourceName
+end
+
 return VehicleKey

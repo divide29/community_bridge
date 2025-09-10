@@ -7,4 +7,10 @@ Dispatch.SendAlert = function(data)
     TriggerServerEvent('community_bridge:Server:piotreq_gpt', data)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'piotreq_gpt'
+end
+
 return Dispatch

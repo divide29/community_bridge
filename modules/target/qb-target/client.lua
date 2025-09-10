@@ -230,4 +230,8 @@ AddEventHandler('onResourceStop', function(resource)
     targetZones = {}
 end)
 
+Target.GetResourceName = function()
+    return "qb-target"
+end
+
 return Target

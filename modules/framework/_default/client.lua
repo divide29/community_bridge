@@ -8,6 +8,12 @@ AddStateBagChangeHandler('jobcounts', 'global', function(bagName, key, value)
     currentJobCounts = value
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'default'
+end
+
 ---This is an internal function that will be used to retrieve job counts later.
 ---@param jobName string
 ---@return number

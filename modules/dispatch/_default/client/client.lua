@@ -30,4 +30,10 @@ RegisterNetEvent('community_bridge:Client:DispatchAlert', function(alert)
     Bridge.Utility.RemoveBlip(blip)
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'default'
+end
+
 return Dispatch

@@ -10,4 +10,10 @@ RegisterNetEvent("community_bridge:Server:DispatchAlert", function(data)
     end
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'default'
+end
+
 return Dispatch

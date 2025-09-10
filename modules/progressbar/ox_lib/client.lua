@@ -64,4 +64,8 @@ function ProgressBar.Open(options, cb, isQBInput)
     return success
 end
 
+ProgressBar.GetResourceName = function()
+    return "ox_lib"
+end
+
 return ProgressBar

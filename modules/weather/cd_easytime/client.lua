@@ -9,4 +9,8 @@ Weather.ToggleSync = function(toggle)
     TriggerEvent('cd_easytime:PauseSync', toggle)
 end
 
+Weather.GetResourceName = function()
+    return "cd_easytime"
+end
+
 return Weather

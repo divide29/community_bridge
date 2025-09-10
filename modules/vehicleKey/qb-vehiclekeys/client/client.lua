@@ -34,4 +34,8 @@ VehicleKey.RemoveKeys = function(vehicle, plate)
     TriggerEvent("qb-vehiclekeys:client:RemoveKeys", plate)
 end
 
+VehicleKey.GetResourceName = function()
+    return resourceName
+end
+
 return VehicleKey

@@ -11,4 +11,10 @@ RegisterNetEvent('community_bridge:Server:_OnPlayerInside', function(src, inside
     TriggerEvent('community_bridge:Client:OnPlayerInside', src, insideId, currentBucket, playerCoords)
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Housing.GetResourceName = function()
+    return "default"
+end
+
 return Housing

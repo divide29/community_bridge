@@ -21,6 +21,12 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "tgiann-inventory"
+end
+
 ---Will return boolean if the player has the item.
 ---@param item string
 ---@return boolean

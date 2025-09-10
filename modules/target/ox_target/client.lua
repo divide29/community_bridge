@@ -205,4 +205,8 @@ AddEventHandler('onResourceStop', function(resource)
     targetZones = {}
 end)
 
+Target.GetResourceName = function()
+    return "ox_target"
+end
+
 return Target

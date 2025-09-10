@@ -1,12 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
 Skills = Skills or {}
 
----This will get the name of the Skills system being being used.
----@return string
-Skills.GetResourceName = function()
-    return "community_bridge"
-end
-
 XP_CACHE = {}
 
 -- Calculate XP required for a level using RuneScape algorithm (with caching)
@@ -68,6 +62,9 @@ Skills.GetXP = function(skillName)
     return plyrSkills[skillName].currentXP or 1
 end
 
+Skills.GetResourceName = function()
+    return "default"
+end
 
 -- RegisterCommand("getfishingLevel", function(source, args)
 --     local level = Skills.GetSkillLevel("fishing")

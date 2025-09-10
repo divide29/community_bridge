@@ -14,6 +14,12 @@ Framework.GetFrameworkName = function()
     return 'qb-core'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'qb-core'
+end
+
 ---This will return true if the player is loaded, false otherwise.
 ---This could be useful in scripts that rely on player loaded events and offer a debug mode to hit this function.
 ---@return boolean

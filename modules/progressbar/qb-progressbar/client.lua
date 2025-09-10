@@ -63,4 +63,8 @@ function ProgressBar.Open(options, cb, qbFormat)
     return Citizen.Await(prom)
 end
 
+ProgressBar.GetResourceName = function()
+    return "progressbar"
+end
+
 return ProgressBar

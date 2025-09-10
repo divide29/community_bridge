@@ -14,6 +14,12 @@ Framework.GetFrameworkName = function()
     return 'qb-core'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'qb-core'
+end
+
 ---This will return if the player is an admin in the framework.
 ---@param src any
 ---@return boolean

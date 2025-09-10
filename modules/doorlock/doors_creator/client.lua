@@ -9,4 +9,10 @@ Doorlock.GetClosestDoor = function()
     return exports["doors_creator"]:getClosestActiveDoor()
 end
 
+---This will get the name of the in use resource.
+---@return string
+Doorlock.GetResourceName = function()
+    return 'doors_creator'
+end
+
 return Doorlock

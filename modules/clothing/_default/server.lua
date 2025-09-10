@@ -9,6 +9,12 @@ function Clothing.IsMale(src)
     return GetEntityModel(ped) == `mp_m_freemode_01`
 end
 
+---This will get the name of the in use resource.
+---@return string
+Clothing.GetResourceName = function()
+    return 'default'
+end
+
 function Clothing.GetAppearance(src)
     return Callback.Trigger('community_bridge:cb:GetAppearance', src)
 end

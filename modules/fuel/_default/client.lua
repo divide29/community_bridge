@@ -8,6 +8,7 @@ Fuel = Fuel or {}
 Fuel.GetResourceName = function()
     return 'default'
 end
+
 ---Returns the current fuel level of a vehicle.
 ---@param vehicle number The vehicle entity handle.
 ---@return number The vehicle fuel level.

@@ -16,6 +16,12 @@ Framework.GetFrameworkName = function()
     return 'es_extended'
 end
 
+---This will get the name of the in use resource.
+---@return string
+Framework.GetResourceName = function()
+    return 'es_extended'
+end
+
 --- @description This is an internal function, its here to attempt to emulate qbs shared items mainly
 Framework.ItemList = function()
     if cachedItemList then return cachedItemList end

@@ -175,4 +175,8 @@ Target.RemoveZone = function(name)
     warnUser()
 end
 
+Target.GetResourceName = function()
+    return "default"
+end
+
 return Target

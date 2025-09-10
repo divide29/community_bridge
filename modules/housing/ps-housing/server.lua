@@ -12,4 +12,10 @@ RegisterNetEvent('ps-housing:server:leaveProperty', function(insideId)
     TriggerEvent('community_bridge:Server:_OnPlayerInside', src, insideId)
 end)
 
+---This will get the name of the in use resource.
+---@return string
+Housing.GetResourceName = function()
+    return "ps-housing"
+end
+
 return Housing

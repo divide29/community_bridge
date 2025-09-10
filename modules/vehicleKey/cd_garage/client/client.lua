@@ -11,7 +11,7 @@ VehicleKey = VehicleKey or {}
 VehicleKey.GiveKeys = function(vehicle, plate)
     assert(vehicle, "vehicle is nil")
     assert(DoesEntityExist(vehicle), "vehicle does not exist")
-    
+
     if not plate then
         plate = GetVehicleNumberPlateText(vehicle)
     end
@@ -24,7 +24,11 @@ end
 ---@param plate? string The plate of the vehicle.
 ---@return nil
 VehicleKey.RemoveKeys = function(vehicle, plate)
-    Prints.Info("cd_garage doesnt support removing keys.")
+    print("cd_garage doesnt support removing keys.")
+end
+
+VehicleKey.GetResourceName = function()
+    return resourceName
 end
 
 return VehicleKey

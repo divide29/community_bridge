@@ -27,4 +27,10 @@ Dispatch.SendAlert = function(data)
     exports["ps-dispatch"]:CustomAlert(alertData)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'ps-dispatch'
+end
+
 return Dispatch

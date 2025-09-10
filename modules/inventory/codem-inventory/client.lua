@@ -21,6 +21,13 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "codem-inventory"
+end
+
+
 ---This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()

@@ -20,7 +20,11 @@ end
 ---@param plate? string The plate of the vehicle.
 ---@return nil
 VehicleKey.RemoveKeys = function(vehicle, plate)
-    Prints.Info("mVehicle doesnt support removing keys.")
+    print("mVehicle doesnt support removing keys.")
+end
+
+VehicleKey.GetResourceName = function()
+    return resourceName
 end
 
 return VehicleKey

@@ -10,6 +10,10 @@ Phone.GetPhoneName = function()
     return resourceName
 end
 
+Phone.GetResourceName = function()
+    return resourceName
+end
+
 ---This will send an email to the passed email address with the title and message.
 ---@param email string
 ---@param title string

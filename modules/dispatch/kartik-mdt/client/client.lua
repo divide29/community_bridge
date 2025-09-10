@@ -27,4 +27,10 @@ Dispatch.SendAlert = function(data)
     exports['kartik-mdt']:CustomAlert(alertOptions)
 end
 
+---This will get the name of the in use resource.
+---@return string
+Dispatch.GetResourceName = function()
+    return 'kartik-mdt'
+end
+
 return Dispatch

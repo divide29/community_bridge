@@ -34,4 +34,8 @@ VehicleKey.RemoveKeys = function(vehicle, plate)
     exports.wasabi_carlock:RemoveKey(plate)
 end
 
+VehicleKey.GetResourceName = function()
+    return resourceName
+end
+
 return VehicleKey

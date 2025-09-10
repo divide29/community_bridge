@@ -7,6 +7,10 @@ Phone.GetPhoneName = function()
     return 'default'
 end
 
+Phone.GetResourceName = function()
+    return "default"
+end
+
 ---This will get the phone number of the passed source.
 ---@param src number
 ---@return number|boolean

@@ -11,11 +11,8 @@ VehicleKey = VehicleKey or {}
 VehicleKey.GiveKeys = function(vehicle, plate)
     assert(vehicle, "vehicle is nil")
     assert(DoesEntityExist(vehicle), "vehicle does not exist")
-    
-    if not plate then
-        plate = GetVehicleNumberPlateText(vehicle)
-    end
-    
+    if not plate then plate = GetVehicleNumberPlateText(vehicle) end
+
     TriggerServerEvent('F_RealCarKeysSystem:generateVehicleKeys', plate)
 end
 
@@ -28,12 +25,14 @@ end
 VehicleKey.RemoveKeys = function(vehicle, plate)
     assert(vehicle, "vehicle is nil")
     assert(DoesEntityExist(vehicle), "vehicle does not exist")
-    
-    if not plate then
-        plate = GetVehicleNumberPlateText(vehicle)
-    end
-    
+
+    if not plate then plate = GetVehicleNumberPlateText(vehicle) end
+
     TriggerServerEvent('F_RealCarKeysSystem:removeVehicleKeysByPlate', plate)
+end
+
+VehicleKey.GetResourceName = function()
+    return resourceName
 end
 
 return VehicleKey

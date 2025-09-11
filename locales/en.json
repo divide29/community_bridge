@@ -35,7 +35,7 @@
 		"depth_modifier": "[%s] Depth Control Modifier  \n"
 	},
 	"target": {
-		"interact": "[E] Interact",
+		"interact": "[E] Interact  \n",
 		"title": "Options",
 		"description": "No Description"
 	}

@@ -122,14 +122,14 @@ Target.AddModel = function(models, options)
 end
 
 Target.AddBoxZone = function(name, coords, size, heading, options)
-    local fixedOptions = Target.FixOptions(_options)
+    local fixedOptions = Target.FixOptions(options)
     local id = Ids.RandomString()
-    local title =  Language.Locale("target.title")
+    local title =  Bridge.Language.Locale("target.title")
     local menuData = { id = id, title = title, options = {} }
     for k, v in pairs(fixedOptions) do
         table.insert(menuData.options, {
             title = title .. " " .. k,
-            description = Language.Locale("target.description"),
+            description = Bridge.Language.Locale("target.description"),
             onSelect = function(selected, secondary, args)
                 if v.onSelect then
                     v.onSelect(selected, secondary, args)
@@ -138,28 +138,26 @@ Target.AddBoxZone = function(name, coords, size, heading, options)
         })
     end
     local inZone = false
-    local test = Language.Locale("target.interact")
-    Point.Register(id, coords, 5, nil, function()
+    Point.Register(id, coords, 5, nil,
+    function()
         local sleep = 3000
-        CreateThread(function()
-            while inZone do
-                Wait(sleep)
-                local distance = #(coords - GetEntityCoords(PlayerPedId()))
-                if distance < 2 then
-                    sleep = 0
-                    Utility.Draw3DHelpText(coords, test, 0.35)
-                    if IsControlJustPressed(0, 38) then
-                        Menu.Open(menuData, false)
-                    end
-                else
-                    sleep = 1000
+        while inZone do
+            Wait(sleep)
+            local distance = #(coords - GetEntityCoords(PlayerPedId()))
+            if distance < 10 then
+                sleep = 0
+                Utility.Draw3DHelpText(coords, Bridge.Language.Locale("target.interact"), 0.35)
+                if IsControlJustPressed(0, 38) then
+                    Menu.Open(menuData, false)
                 end
             end
-        end)
+        end
     end,
     function()
+        inZone = false
         Point.Remove(id)
-    end, function()
+    end, 
+    function()
         --No need for this in this one
     end)
 end

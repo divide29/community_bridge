@@ -1,5 +1,5 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('core_inventory') ~= 'started' then return end
+if GetResourceState('core_inventory') == 'missing' then return end
 local core = exports.core_inventory
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 

@@ -1,5 +1,5 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('ps-inventory') ~= 'started' then return end
+if GetResourceState('ps-inventory') == 'missing' then return end
 local sloth = exports['ps-inventory']
 local registeredShops = {}
 

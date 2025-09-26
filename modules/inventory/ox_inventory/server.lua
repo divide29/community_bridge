@@ -1,5 +1,5 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('ox_inventory') ~= 'started' then return end
+if GetResourceState('ox_inventory') == 'missing' then return end
 if GetResourceState('qs-inventory') == 'started' then return end
 if GetResourceState('origen_inventory') == 'started' then return end
 
@@ -98,11 +98,9 @@ Inventory.GetPlayerInventory = function(src)
 end
 
 ---Returns the specified slot data as a table.
----
----format {weight, name, metadata, slot, label, count}
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
     return ox_inventory:GetSlot(src, slot)
 end
@@ -146,16 +144,16 @@ end
 ---This will open the specified stash for the src passed.
 ---@param src number
 ---@param _type string
----@param id number||string
+---@param id string
 ---@return nil
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
     ox_inventory:forceOpenInventory(src, _type, id)
 end
 
----This will add items to a trunk, and return true or false based on success
+---This will add items to a stash, and return true or false based on success
 ---@param id string
----@param items table
+---@param items table {item, count, metadata}
 ---@return boolean
 Inventory.AddStashItems = function(id, items)
     if type(items) ~= "table" then return false end
@@ -220,7 +218,6 @@ Inventory.OpenShop = function(src, shopTitle)
     TriggerClientEvent('ox_inventory:openInventory', src, 'shop', {type = shopTitle})
 end
 
--- restores shops to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 -- This will register a shop, if it already exists it will return true.
 ---@param shopTitle string
 ---@param shopInventory table

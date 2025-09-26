@@ -1,5 +1,5 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('ox_inventory') ~= 'started' then return end
+if GetResourceState('ox_inventory') == 'missing' then return end
 if GetResourceState('qs-inventory') == 'started' then return end
 if GetResourceState('origen_inventory') == 'started' then return end
 

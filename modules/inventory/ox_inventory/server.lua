@@ -154,15 +154,13 @@ Inventory.OpenStash = function(src, _type, id)
 end
 
 ---This will add items to a trunk, and return true or false based on success
----@param identifier string
+---@param id string
 ---@param items table
 ---@return boolean
-Inventory.AddStashItems = function(identifier, items)
+Inventory.AddStashItems = function(id, items)
     if type(items) ~= "table" then return false end
-    Inventory.RegisterStash(identifier, identifier, 20, 10000, nil, nil, nil)
-    Wait(100)
     for _, v in pairs(items) do
-        ox_inventory:AddItem(identifier, v.item, v.count, v.metadata)
+        ox_inventory:AddItem(id, v.item, v.count, v.metadata)
     end
     return true
 end

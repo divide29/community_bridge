@@ -100,7 +100,7 @@ Framework.GetItem = function(src, item, metadata)
         if v.name == item and (not metadata or v.info == metadata) then
             table.insert(repackedTable, {
                 name = v.name,
-                count = v.amount,
+                count = v.amount or v.count,
                 metadata = v.info,
                 slot = v.slot,
             })
@@ -141,7 +141,7 @@ Framework.GetItemCount = function(src, item, metadata)
     local count = 0
     for _, v in pairs(playerInventory) do
         if v.name == item and (not metadata or v.info == metadata) then
-            count = count + v.amount
+            count = count + (v.amount or v.count)
         end
     end
     return count
@@ -170,7 +170,7 @@ Framework.GetPlayerInventory = function(src)
     for _, v in pairs(playerInventory) do
         table.insert(repackedTable, {
             name = v.name,
-            count = v.amount,
+            count = v.amount or v.count,
             metadata = v.info,
             slot = v.slot,
         })
@@ -206,7 +206,7 @@ Framework.GetItemBySlot = function(src, slot)
                 name = v.name,
                 label = v.label,
                 weight = v.weight,
-                count = v.amount,
+                count = v.amount or v.count,
                 metadata = v.info,
                 slot = v.slot,
                 stack = v.unique or false,

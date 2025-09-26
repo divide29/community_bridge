@@ -184,7 +184,7 @@ Framework.GetItemCount = function(item)
     local count = 0
     for _, v in pairs(frameworkInv) do
         if v.name == item then
-            count = count + v.amount
+            count = count + (v.amount or v.count)
         end
     end
     return count
@@ -199,7 +199,7 @@ Framework.GetPlayerInventory = function()
         table.insert(items, {
             name = v.name,
             label = v.label,
-            count = v.amount,
+            count = v.amount or v.count,
             slot = v.slot,
             metadata = v.info,
             stack = v.unique,

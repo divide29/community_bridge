@@ -19,8 +19,9 @@ Inventory.Stashes = Inventory.Stashes or {}
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not ox_inventory:CanCarryItem(src, item, count, metadata) then return false end
     local success = ox_inventory:AddItem(src, item, count, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return success or false
+    return success
 end
 
 ---This will get the name of the in use resource.
@@ -38,8 +39,9 @@ end
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     local success = ox_inventory:RemoveItem(src, item, count, metadata, slot)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return success or false
+    return success
 end
 
 ---This will add items to a trunk, and return true or false based on success

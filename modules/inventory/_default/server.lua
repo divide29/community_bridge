@@ -9,8 +9,10 @@ Inventory = Inventory or {}
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    local success = Framework.AddItem(src, item, count, slot, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return Framework.AddItem(src, item, count, slot, metadata)
+    return success
 end
 
 ---This will get the name of the in use resource.
@@ -29,8 +31,10 @@ end
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     item = type(item) == "table" and item.name or item
+    local success = Framework.RemoveItem(src, item, count, slot, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return Framework.RemoveItem(src, item, count, slot, metadata)
+    return success
 end
 
 ---This will add items to a trunk, and return true or false based on success
@@ -38,7 +42,7 @@ end
 ---@param items table
 ---@return boolean
 Inventory.AddTrunkItems = function(identifier, items)
-    return false, Prints.Error("This Inventory Has Not Been Bridged For A Trunk Feature.")
+    return false, print("This Inventory Has Not Been Bridged For A Trunk Feature.")
 end
 
 ---This will clear the specified inventory, will return success or failure.
@@ -47,7 +51,7 @@ end
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
     if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
-    return false, Prints.Error("This Inventory Has Not Been Bridged For A ClearStash Feature.")
+    return false, print("This Inventory Has Not Been Bridged For A ClearStash Feature.")
 end
 
 ---This will return a table with the item info, 
@@ -114,7 +118,7 @@ end
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
     local tbl = Inventory.Stashes[id]
-    return false, Prints.Error("This Inventory Has Not Been Bridged For A Stash Feature.")
+    return false, print("This Inventory Has Not Been Bridged For A Stash Feature.")
 end
 
 ---This will register a stash
@@ -155,7 +159,7 @@ end
 ---@param count number
 ---@return boolean
 Inventory.CanCarryItem = function(src, item, count)
-    return false, Prints.Error("This Inventory Has Not Been Bridged For A CanCarryItem Feature.")
+    return false, print("This Inventory Has Not Been Bridged For A CanCarryItem Feature.")
 end
 
 ---This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
@@ -163,7 +167,7 @@ end
 ---@param newplate string
 ---@return boolean
 Inventory.UpdatePlate = function(oldplate, newplate)
-    return false, Prints.Error("This Inventory Has Not Been Bridged For A UpdatePlate Feature.")
+    return false, print("This Inventory Has Not Been Bridged For A UpdatePlate Feature.")
 end
 
 -- This will open the specified shop for the src passed.
@@ -212,7 +216,7 @@ Inventory.StripWebp = function(item)
 end
 
 Inventory.OpenPlayerInventory = function(src, targetSrc)
-    return false, Prints.Error("OpenPlayerInventory is not implemented in this inventory, because of this we dont have a way to open a players inventory.")
+    return false, print("OpenPlayerInventory is not implemented in this inventory, because of this we dont have a way to open a players inventory.")
 end
 
 return Inventory

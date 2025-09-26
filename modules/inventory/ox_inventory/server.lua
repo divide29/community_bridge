@@ -18,8 +18,9 @@ Inventory.Stashes = Inventory.Stashes or {}
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not ox_inventory:CanCarryItem(src, item, count, metadata) then return false end
+    local success = ox_inventory:AddItem(src, item, count, metadata)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return ox_inventory:AddItem(src, item, count, metadata)
+    return success or false
 end
 
 ---This will get the name of the in use resource.
@@ -36,8 +37,9 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = ox_inventory:RemoveItem(src, item, count, metadata, slot)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return ox_inventory:RemoveItem(src, item, count, metadata, slot)
+    return success or false
 end
 
 ---This will add items to a trunk, and return true or false based on success
@@ -52,16 +54,6 @@ Inventory.AddTrunkItems = function(identifier, items)
     for _, v in pairs(items) do
         ox_inventory:AddItem(id, v.item, v.count, v.metadata)
     end
-    return true
-end
-
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
----@param id string
----@return boolean
-Inventory.ClearStash = function(id, _type)
-    if type(id) ~= "string" then return false end
-    ox_inventory:ClearInventory(_type..id, nil)
-    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
     return true
 end
 
@@ -125,17 +117,6 @@ Inventory.SetMetadata = function(src, item, slot, metadata)
     ox_inventory:SetMetadata(src, slot, metadata)
 end
 
----This will open the specified stash for the src passed.
----@param src number
----@param _type string
----@param id number||string
----@return nil
-Inventory.OpenStash = function(src, _type, id)
-    _type = _type or "stash"
-    --local tbl = Inventory.Stashes[id]
-    ox_inventory:forceOpenInventory(src, _type, id)
-end
-
 -- restores stashes to before commit #e06e04a (no depreication path followed, breaking change and not present on all inventories so undoing it. (also breaking multiple resources))
 ---This will register a stash
 ---@param id number|string
@@ -160,6 +141,45 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
     }
     ox_inventory:RegisterStash(id, label, slots, weight, owner, groups, coords)
     return true, id
+end
+
+---This will open the specified stash for the src passed.
+---@param src number
+---@param _type string
+---@param id number||string
+---@return nil
+Inventory.OpenStash = function(src, _type, id)
+    _type = _type or "stash"
+    --local tbl = Inventory.Stashes[id]
+    ox_inventory:forceOpenInventory(src, _type, id)
+end
+
+---This will add items to a trunk, and return true or false based on success
+---@param identifier string
+---@param items table
+---@return boolean
+Inventory.AddStashItems = function(identifier, items)
+    print("Origin Stash Add", identifier)
+    --local id = "stash_"..identifier
+    print("Updated ID", identifier)
+    if type(items) ~= "table" then return false end
+    Inventory.RegisterStash(identifier, identifier, 20, 10000, nil, nil, nil)
+    Wait(100) -- Wait for the stash to be registered just in case
+    for _, v in pairs(items) do
+        print("Adding to stash", identifier, v.item, v.count)
+        ox_inventory:AddItem(identifier, v.item, v.count, v.metadata)
+    end
+    return true
+end
+
+---This will clear the specified inventory, will always return true unless a value isnt passed correctly.
+---@param id string
+---@return boolean
+Inventory.ClearStash = function(id, _type)
+    if type(id) ~= "string" then return false end
+    ox_inventory:ClearInventory(id, nil)
+    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
+    return true
 end
 
 ---This will return a boolean if the player has the item.

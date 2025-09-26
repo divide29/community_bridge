@@ -150,7 +150,6 @@ end
 ---@return nil
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
-    --local tbl = Inventory.Stashes[id]
     ox_inventory:forceOpenInventory(src, _type, id)
 end
 
@@ -159,14 +158,10 @@ end
 ---@param items table
 ---@return boolean
 Inventory.AddStashItems = function(identifier, items)
-    print("Origin Stash Add", identifier)
-    --local id = "stash_"..identifier
-    print("Updated ID", identifier)
     if type(items) ~= "table" then return false end
     Inventory.RegisterStash(identifier, identifier, 20, 10000, nil, nil, nil)
-    Wait(100) -- Wait for the stash to be registered just in case
+    Wait(100)
     for _, v in pairs(items) do
-        print("Adding to stash", identifier, v.item, v.count)
         ox_inventory:AddItem(identifier, v.item, v.count, v.metadata)
     end
     return true
@@ -205,7 +200,7 @@ end
 ---@return boolean
 Inventory.UpdatePlate = function(oldplate, newplate)
     ox_inventory:UpdateVehicle(oldplate, newplate)
-    if GetResourceState('jg-mechanic') ~= 'started' then return true end
+    if GetResourceState('jg-mechanic') ~= 'missing' then return true end
     return true, exports["jg-mechanic"]:vehiclePlateUpdated(oldplate, newplate)
 end
 

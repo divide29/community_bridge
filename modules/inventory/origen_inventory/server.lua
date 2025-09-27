@@ -6,6 +6,12 @@ Inventory.Stashes = Inventory.Stashes or {}
 
 local origin = exports.origen_inventory
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "origen_inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -14,14 +20,12 @@ local origin = exports.origen_inventory
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    local canCarry = Inventory.CanCarryItem(src, item, count)
+    if not canCarry then return false end
+    local success = origin:addItem(src, item, count, metadata, slot, false)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return origin:AddItem(src, item, count, metadata, slot, true)
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "origen_inventory"
+    return success or false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -32,8 +36,10 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = origin:removeItem(src, item, count, metadata, slot, false)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return origin:removeItem(src, item, count, metadata, slot, true)
+    return success or false
 end
 
 ---This will add items to a trunk, and return true or false based on success

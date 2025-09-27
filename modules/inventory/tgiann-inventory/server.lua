@@ -6,6 +6,12 @@ local tgiann = exports["tgiann-inventory"]
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "tgiann-inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -15,14 +21,10 @@ Inventory.Stashes = Inventory.Stashes or {}
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not tgiann:CanCarryItem(src, item, count) then return false end
+    local success = tgiann:AddItem(src, item, count, slot, metadata, false)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return tgiann:AddItem(src, item, count, slot, metadata, false)
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "tgiann-inventory"
+    return success or false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -33,8 +35,10 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = tgiann:RemoveItem(src, item, count, slot, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return tgiann:RemoveItem(src, item, count, slot, metadata)
+    return success or false
 end
 
 ---This will return a table with the item info, {name, label, stack, weight, description, image}

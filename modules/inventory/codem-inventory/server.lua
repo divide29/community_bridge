@@ -6,6 +6,12 @@ Inventory.Stashes = Inventory.Stashes or {}
 
 local codem = exports['codem-inventory']
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "codem-inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -14,14 +20,10 @@ local codem = exports['codem-inventory']
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    -- documentation doesnt specify if there is any retun value for AddItem, so we will assume no. 
+    --https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#additem
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
     return codem:AddItem(src, item, count, slot, metadata)
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "codem-inventory"
 end
 
 ---This will remove an item, and return true or false based on success
@@ -32,6 +34,8 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    -- documentation doesnt specify if there is any retun value for RemoveItem, so we will assume no. 
+    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#removeitem
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
     return codem:RemoveItem(src, item, count, slot)
 end
@@ -77,10 +81,9 @@ Inventory.GetPlayerInventory = function(src)
 end
 
 ---Returns the specified slot data as a table.
----format {weight, name, metadata, slot, label, count}
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count, stack, description}
 Inventory.GetItemBySlot = function(src, slot)
     local slotData = codem:GetItemBySlot(src, slot)
     if not slotData then return {} end
@@ -156,6 +159,8 @@ end
 ---@param count number
 ---@return boolean
 Inventory.CanCarryItem = function(src, item, count)
+    -- Documentation does not specify a way to check if a player can carry an item.
+    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#removeitem
     return true
 end
 
@@ -166,6 +171,8 @@ end
 ---@return boolean
 Inventory.AddTrunkItems = function(identifier, items)
     if type(items) ~= "table" then return false end
+    -- Documentation does not specify a way to add items to a trunk.
+    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#additem
     return false, print("AddItemsToTrunk is not implemented in codem-inventory, because of this we dont have a way to add items to a trunk.")
 end
 
@@ -175,6 +182,8 @@ end
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
     if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
+    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#clearinventory
+    -- This is documented as only the player id, not a stash id.
     return false, print("ClearInventory is not implemented in codem-inventory, because of this we dont have a way to clear a stash.")
 end
 
@@ -183,6 +192,7 @@ end
 ---@param newplate string
 ---@return boolean
 Inventory.UpdatePlate = function(oldplate, newplate)
+    -- Unsure if there is a cached table server side internal to the inventory to attempt to update this. Risk of dupes isnt worth it.
     return false, print("Unable to update plate for codem-inventory, I do not have access to a copy of this inventory to bridge the feature.")
 end
 

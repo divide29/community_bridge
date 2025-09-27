@@ -6,6 +6,12 @@ local quasar = exports['qs-inventory']
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "qs-inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -16,13 +22,9 @@ Inventory.Stashes = Inventory.Stashes or {}
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not quasar:CanCarryItem(src, item, count) then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
+    -- No return value specified in docs, so we assume none.
+    -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/additem
     return quasar:AddItem(src, item, count, slot, metadata)
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "qs-inventory"
 end
 
 ---This will remove an item, and return true or false based on success
@@ -34,6 +36,8 @@ end
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
+    -- No return value specified in docs, so we assume none.
+    -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/removeitem
     return quasar:RemoveItem(src, item, count, slot, metadata)
 end
 
@@ -53,6 +57,8 @@ Inventory.AddTrunkItems = function(identifier, items)
         kinda not sure on this one atm...
         Also there is no GetInventory(identifier) only by player source
         --quasar:AddToTrunk(identifier, v.count, v.metadata, v.item, v.metadata)
+        -- No param documentation at all on this one
+        -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/addtotrunk
     end
     return true
     --]]
@@ -64,6 +70,9 @@ end
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
     if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
+    -- No return value specified in docs, so we assume none.
+    -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/clearotherinventory
+    quasar:ClearOtherInventory(_type, id)
     return false
     --[[
     quasar:ClearOtherInventory(_type, id)
@@ -97,13 +106,14 @@ Inventory.Items = function()
 end
 
 ---This will return the count of the item in the players inventory, if not found will return 0.
----
----if metadata is passed it will find the matching items count.
 ---@param src number
 ---@param item string
 ---@param metadata table
 ---@return number
 Inventory.GetItemCount = function(src, item, metadata)
+    if metadata then
+        print("qs-inventory does not support metadata searching for item counts, you will need to get the inventory and parse it manually.")
+    end
     return quasar:GetItemTotalAmount(src, item)
 end
 
@@ -125,11 +135,9 @@ Inventory.GetPlayerInventory = function(src)
 end
 
 ---Returns the specified slot data as a table.
----
----format {weight, name, metadata, slot, label, count}
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
     local playerItems = quasar:GetInventory(src)
     for _, item in pairs(playerItems) do

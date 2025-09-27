@@ -6,6 +6,12 @@ Inventory.Stashes = Inventory.Stashes or {}
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 local core = exports.core_inventory
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -14,15 +20,12 @@ local core = exports.core_inventory
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    -- docs specify a table returned on success, on failure it returns false.
+    -- https://docs.c8re.store/core-inventory/api/server#additem
+    local success = core:addItem(src, item, count, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return core:addItem(src, item, count, metadata)
-end
-
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "core_inventory"
+    return success or false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -52,11 +55,12 @@ Inventory.RemoveItem = function(src, item, count, slot, metadata)
             identifier = string.gsub(identifier, ":", "")
         end
         local weirdInventoryName = 'content-' .. identifier
+        -- No return value specified in docs, so we assume none.
+        -- https://docs.c8re.store/core-inventory/api/server#removeitemexact
         return core:removeItemExact(weirdInventoryName, slot, count)
     end
     core:removeItem(src, item, count)
     return true
-    -- I hate this inventory so much, I am so sorry for this.
 end
 
 ---This will return the count of the item in the players inventory, if not found will return 0.

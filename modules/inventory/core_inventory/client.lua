@@ -1,20 +1,27 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('core_inventory') == 'missing' then return end
 local core = exports.core_inventory
+-- Core inventory docs available at https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#additem
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 Inventory = Inventory or {}
 
----Return the item info in oxs format, {name, label, stack, weight, description, image}
----@param item string
----@return table
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
+
+--- Return the item info in oxs format, {name, label, stack, weight, description, image}
+--- https://docs.c8re.store/core-inventory/api/server#getitemslist
+--- @param item string
+--- @return table
 Inventory.GetItemInfo = function(item)
     local frameworkName = Framework.GetFrameworkName()
     if not frameworkName then return {} end
     local dataRepack = {}
     if frameworkName == 'es_extended' then
         local callbackData = Callback.Trigger('community_bridge:Callback:core_inventory', false)
-        -- really really wish this inventory allowed me to pull the item list client side....
         dataRepack = callbackData[item]
         if not dataRepack then return {} end
     elseif frameworkName == 'qb-core' then
@@ -23,13 +30,6 @@ Inventory.GetItemInfo = function(item)
     end
     return {name = dataRepack.name, label = dataRepack.label, stack = dataRepack.stack, weight = dataRepack.weight, description = dataRepack.description, image = Inventory.GetImagePath(dataRepack.name) }
 end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "core_inventory"
-end
-
 
 ---This will return the entire items table from the inventory.
 ---@return table 

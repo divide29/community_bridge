@@ -7,6 +7,12 @@ local registeredShops = {}
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "jpr-inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -15,14 +21,12 @@ Inventory.Stashes = Inventory.Stashes or {}
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    local canCarry = Inventory.CanCarryItem(src, item, count)
+    if not canCarry then return false end
+    local success = exports['jpr-inventory']:AddItem(src, item, count, slot, metadata, 'community_bridge Item added')
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return exports['jpr-inventory']:AddItem(src, item, count, slot, metadata, 'community_bridge Item added')
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "jpr-inventory"
+    return success or false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -33,8 +37,10 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = exports['jpr-inventory']:RemoveItem(src, item, count, slot, 'community_bridge Item removed')
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return exports['jpr-inventory']:RemoveItem(src, item, count, slot, 'community_bridge Item removed')
+    return success or false
 end
 
 ---This will return a table with the item info, {name, label, stack, weight, description, image}
@@ -140,7 +146,7 @@ end
 ---@param count number
 ---@return boolean
 Inventory.CanCarryItem = function(src, item, count)
-    return true
+    return jpr:CanAddItem(src, item, count)
 end
 
 ---This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)

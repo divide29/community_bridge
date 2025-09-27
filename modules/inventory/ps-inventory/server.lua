@@ -6,6 +6,12 @@ local registeredShops = {}
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "ps-inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -14,15 +20,11 @@ Inventory.Stashes = Inventory.Stashes or {}
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    local success = sloth:AddItem(src, item, count, slot, metadata, 'community_bridge')
+    if not success then return false end
     TriggerClientEvent('ps-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'add', count)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return sloth:AddItem(src, item, count, slot, metadata, 'community_bridge')
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "ps-inventory"
+    return success or false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -33,9 +35,11 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = sloth:RemoveItem(src, item, count, slot, 'community_bridge')
+    if not success then return false end
     TriggerClientEvent('ps-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'remove', count)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return sloth:RemoveItem(src, item, count, slot, 'community_bridge')
+    return success or false
 end
 
 ---This will add items to a trunk, and return true or false based on success

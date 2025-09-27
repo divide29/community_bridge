@@ -4,6 +4,12 @@ local quasar = exports["qs-inventory"]
 
 Inventory = Inventory or {}
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "qs-inventory"
+end
+
 ---Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
@@ -20,12 +26,6 @@ Inventory.GetItemInfo = function(item)
         description = itemData.description or "none",
         image = Inventory.GetImagePath(item),
     }
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "qs-inventory"
 end
 
 ---This will return the entire items table from the inventory.

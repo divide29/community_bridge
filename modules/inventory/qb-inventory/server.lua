@@ -15,6 +15,12 @@ local function getInventoryNewVersion()
     return false
 end
 
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "qb-inventory"
+end
+
 ---This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -24,15 +30,11 @@ end
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if getInventoryNewVersion() then if not qbInventory:CanAddItem(src, item, count) then return false end end
+    local success = qbInventory:AddItem(src, item, count, slot, metadata, 'community_bridge')
+    if not success then return false end
     TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'add', count)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return qbInventory:AddItem(src, item, count, slot, metadata, 'community_bridge')
-end
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "qb-inventory"
+    return success or false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -43,9 +45,11 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = qbInventory:RemoveItem(src, item, count, slot, 'community_bridge')
+    if not success then return false end
     TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'remove', count)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return qbInventory:RemoveItem(src, item, count, slot, 'community_bridge')
+    return success or false
 end
 
 ---This will add items to a trunk, and return true or false based on success

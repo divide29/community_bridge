@@ -25,7 +25,6 @@ Inventory.GetResourceName = function()
     return "core_inventory"
 end
 
-
 ---This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string
@@ -39,7 +38,7 @@ Inventory.RemoveItem = function(src, item, count, slot, metadata)
         if not inv then return false end
         for _, v in pairs(inv) do
             if v.name == item and v.metadata == metadata then
-                slot = v.slot
+                slot = v.id or v.slot
                 break
             end
         end
@@ -93,24 +92,24 @@ Inventory.GetPlayerInventory = function(src)
     local playerItems = core:getInventory(src)
     local repackedTable = {}
     for _, v in pairs(playerItems) do
-        if v.metadata and v.count > 1 then
+        if (v.metadata or v.info) and (v.count or v.amount) > 1 then
             local plaseFixThisExportCuzThisIsPainful = core:getItems(src, v.name)
             if plaseFixThisExportCuzThisIsPainful then
                 for _, item in pairs(plaseFixThisExportCuzThisIsPainful) do
                     table.insert(repackedTable, {
                         name = v.name,
-                        count = item.count,
-                        metadata = item.metadata,
-                        slot = item.id,
+                        count = item.count or item.amount,
+                        metadata = item.metadata or item.info,
+                        slot = item.id or item.slot,
                     })
                 end
             end
         else
             table.insert(repackedTable, {
                 name = v.name,
-                count = v.count,
-                metadata = v.metadata,
-                slot = v.id,
+                count = v.count or v.amount,
+                metadata = v.metadata or v.info,
+                slot = v.id or v.slot,
             })
         end
     end
@@ -126,12 +125,12 @@ Inventory.GetItemBySlot = function(src, slot)
     local inv = Inventory.GetPlayerInventory(src)
     if not inv then return {} end
     for _, v in pairs(inv) do
-        if v.slot == slot then
+        if (v.slot == slot) or (v.id == slot) then
             return {
                 name = v.name,
                 count = v.count,
                 metadata = v.metadata,
-                slot = v.slot,
+                slot = v.id or v.slot,
             }
         end
     end
@@ -156,7 +155,7 @@ end
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
     local tbl = Inventory.Stashes[id]
-    core:openInventory(src, id, _type, tbl.slots, tbl.weight, true, nil, false)
+    core:openInventory(src, id, _type, tbl.slots or 30, tbl.weight or 50000, true, nil, false)
 end
 
 ---This will register a stash

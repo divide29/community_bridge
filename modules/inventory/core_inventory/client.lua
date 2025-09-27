@@ -81,9 +81,9 @@ Inventory.GetPlayerInventory = function()
     for _, v in pairs(playerItems) do
         table.insert(repackedTable, {
             name = v.name,
-            count = v.count,
-            metadata = v.metadata,
-            slot = v.id,
+            count = v.count or v.amount,
+            metadata = v.metadata or v.info,
+            slot = v.id or v.slot,
         })
     end
     return repackedTable

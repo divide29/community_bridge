@@ -8,7 +8,8 @@ Framework = Framework or {}
 ---This will get the name of the framework being used (if a supported framework).
 ---@return string
 Framework.GetFrameworkName = function()
-    return 'qbx_core'
+    print("This is depricated, please use Framework.GetResourceName() instead.")
+    return Framework.GetResourceName()
 end
 
 ---@description This will get the name of the in use resource.
@@ -108,8 +109,9 @@ end
 ---@return string
 ---@return string
 Framework.GetPlayerJob = function()
-    local playerData = Framework.GetPlayerData()
-    return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
+    print("This is depricated, please use Framework.GetPlayerJobData() instead.")
+    local jobData = Framework.GetPlayerJobData()
+    return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeRank
 end
 
 ---@description This will return the players job name, job label, job grade label job grade level, boss status,
@@ -182,8 +184,21 @@ end
 ---@param item string
 ---@return number
 Framework.GetItemCount = function(item)
-    -- This seems to be exclusively for ox_inventory, if other inventories are used, they need to be bridged in the inventory module. Until then we will return 0 and a print.
-    return 0, print("Community_bridge:WARN: GetItemCount is not implemented for this framework, please use the inventory module to get the item count. If you are using a diffrent inventory please let us know so we can bridge it and have less nonsense.")
+    return 0, print("Qbox has not implemented GetItemCount for this framework. Please ensure the inventory you are using is supported and start order is correct.")
+end
+
+--- This will return the item data for the specified item.
+--- @param item string
+--- @return table {name, label, stack, weight, description, image}
+Framework.GetItemInfo = function(item)
+    return {}, print("Qbox has not implemented GetItemInfo for this framework. Please ensure the inventory you are using is supported and start order is correct.")
+end
+
+--- This is an internal function used as a fallback, please use the Inventory.HasItem instead.
+--- @param item string
+--- @return boolean
+Framework.HasItem = function(item)
+	return false, print("Qbox has not implemented HasItem for this framework, Please ensure the inventory you are using is supported and start order is correct.")
 end
 
 ---@description This will get a players dead status.

@@ -8,7 +8,7 @@ Framework = Framework or {}
 
 local cachedItemList = nil
 
---- @description This is an internal function, its here to attempt to emulate qbs shared items mainly
+--- This is an internal function, its here to attempt to emulate qbs shared items mainly. This should not be used outside of bridge.
 Framework.ItemList = function()
     if cachedItemList then return cachedItemList end
     local items = Callback.Trigger('community_bridge:Callback:GetFrameworkItems', false)
@@ -16,10 +16,11 @@ Framework.ItemList = function()
     return cachedItemList
 end
 
---- @description This will get the name of the framework being used (if a supported framework).
---- @return string
+---This will get the name of the framework being used (if a supported framework).
+---@return string
 Framework.GetFrameworkName = function()
-    return 'es_extended'
+    print("This is depricated, please use Framework.GetResourceName() instead.")
+    return Framework.GetResourceName()
 end
 
 ---This will get the name of the in use resource.
@@ -28,88 +29,88 @@ Framework.GetResourceName = function()
     return 'es_extended'
 end
 
---- @description This will return true if the player is loaded, false otherwise.
---- This could be useful in scripts that rely on player loaded events and offer a debug mode to hit this function
---- @return boolean
+---This will return true if the player is loaded, false otherwise.
+---This could be useful in scripts that rely on player loaded events and offer a debug mode to hit this function.
+---@return boolean
 Framework.GetIsPlayerLoaded = function()
     return ESX.IsPlayerLoaded()
 end
 
---- @description This will return a table of the player data, this will be in the framework format
---- This is mainly for internal bridge use and should be avoided.
+--- This is an internal function, do not use this outside of bridge as there is no standard format between the frameworks.
 --- @return table
 Framework.GetPlayerData = function()
     return ESX.GetPlayerData()
 end
 
---- @description This will return a table of all the jobs in the framework.
---- @return table
+---This will return a table of all the jobs in the framework.
+---@return table
 Framework.GetFrameworkJobs = function()
     local jobs = Callback.Trigger('community_bridge:Callback:GetFrameworkJobs', false)
     return jobs
 end
 
---- @description This will return the players birth date
---- @return string
+---This will get the players birth date
+---@return string
 Framework.GetPlayerDob = function()
     local playerData = Framework.GetPlayerData()
     local dob = playerData.dateofbirth
     return dob
 end
 
---- @description This will return the players metadata for the specified metadata key.
---- @param metadata table | string
+---This will return the players metadata for the specified metadata key.
+---@param metadata table | string
 ---@return table | string | number | boolean
 Framework.GetPlayerMetaData = function(metadata)
     return Framework.GetPlayerData().metadata[metadata]
 end
 
---- @description This will send a notification to the player.
---- @param message string
---- @param type string
---- @param time number
---- @return nil
+---This will send a notification to the player.
+---@param message string
+---@param type string
+---@param time number
+---@return nil
 Framework.Notify = function(message, type, time)
     return ESX.ShowNotification(message, type, time)
 end
 
---- @description This will display the help text message on the screen
---- @param message string
---- @param _ unknown
---- @return nil
-Framework.ShowHelpText = function(message, _)
+---Will Display the help text message on the screen
+---@param message string
+---@param _position unknown
+---@return nil
+Framework.ShowHelpText = function(message, _position)
     return exports.esx_textui:TextUI(message, "info")
 end
 
---- @description This will hide the help text message on the screen
---- @return nil
+---This will hide the help text message on the screen
+---@return nil
 Framework.HideHelpText = function()
     return exports.esx_textui:HideUI()
 end
 
---- @description This will get the players identifier (citizenid) etc.
+---This will get the players identifier (citizenid) etc.
 ---@return string
 Framework.GetPlayerIdentifier = function()
     local playerData = Framework.GetPlayerData()
     return playerData.identifier
 end
 
---- @description This will get the players name (first and last).
---- @return string
---- @return string
+---This will get the players name (first and last).
+---@return string
+---@return string
 Framework.GetPlayerName = function()
     local playerData = Framework.GetPlayerData()
     return playerData.firstName, playerData.lastName
 end
 
---- @deprecated This will return the players job name, job label, job grade label and job grade level
---- @return string returns job name
---- @return string returns job label
---- @return string returns job grade label
---- @return string returns job grade level
+---Depricated : This will return the players job name, job label, job grade label and job grade level
+---@return string
+---@return string
+---@return string
+---@return string
 Framework.GetPlayerJob = function()
-    local playerData = Framework.GetPlayerData()
-    return playerData.job.name, playerData.job.label, playerData.job.grade_label, playerData.job.grade
+    print("This is depricated, please use Framework.GetPlayerJobData() instead.")
+    local jobData = Framework.GetPlayerJobData()
+    return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeRank
 end
 
 --- @description This will return the players job name, job label, job grade label job grade level,
@@ -158,7 +159,7 @@ Framework.GetThirst = function()
     return math.floor((status) + 0.5) or 0
 end
 
---- @description This will return if the player has the specified item in their inventory
+--- This is an internal function used as a fallback, please use the Inventory.HasItem instead.
 --- @param item string
 --- @return boolean
 Framework.HasItem = function(item)
@@ -166,7 +167,7 @@ Framework.HasItem = function(item)
 	return hasItem > 0 and true or false
 end
 
---- @description This will return the item count for the specified item in the players inventory
+--- This is an internal function used as a fallback, please use the Inventory.GetItemCount instead.
 --- @param item string
 --- @return number
 Framework.GetItemCount = function(item)
@@ -175,16 +176,38 @@ Framework.GetItemCount = function(item)
     return inventory[item].count or 0
 end
 
---- @description This will return a table of the players inventory
---- @return table
-Framework.GetPlayerInventory = function()
-    local playerData = Framework.GetPlayerData()
-    return playerData.inventory
+--- This will return the item data for the specified item.
+--- @param item string
+--- @return table {name, label, stack, weight, description, image}
+Framework.GetItemInfo = function(item)
+    return {}, print("ESX has not implemented GetItemInfo for this framework. Please ensure the inventory you are using is supported and start order is correct.")
 end
 
---- @description This will return the players money by type, I recommend not using this as its the client and not secure or to be trusted
---- @param _type string
---- @return number
+--- This is an internal function used as a fallback, please use the Inventory.GetPlayerInventory instead.
+--- @return table {name, label, count, slot, metadata, stack, close, weight}
+Framework.GetPlayerInventory = function()
+    local playerData = Framework.GetPlayerData()
+    if not playerData then return {} end
+    local repack = {}
+    for k, v in pairs(playerData.inventory) do
+        repack[k] = {
+            name = v.name,
+            label = v.label,
+            count = v.count,
+            slot = 0,
+            metadata = {},
+            stack = false,
+            close = v.usable or false,
+            weight = v.weight or 0,
+        }
+    end
+    return repack
+end
+
+---This will return the players money by type, I recommend not useing this as its the client and not secure or to be trusted.
+---Use case is for a ui or a menu I guess.
+---@param _type string
+---@return number
 Framework.GetAccountBalance = function(_type)
     local player = Framework.GetPlayerData()
     if not player then return 0 end

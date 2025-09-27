@@ -268,7 +268,6 @@ Framework.AddHunger = function(src, value)
     local newHunger = (playerData.metadata.hunger or 0) + value
     player.Functions.SetMetaData('hunger', Math.Clamp(newHunger, 0, 100))
     TriggerClientEvent('hud:client:UpdateNeeds', src, newHunger, playerData.metadata.thirst)
-    --TriggerClientEvent('hud:client:UpdateStress', src, newStress)
     return newHunger
 end
 
@@ -283,7 +282,6 @@ Framework.AddThirst = function(src, value)
     local newThirst = (playerData.metadata.thirst or 0) + value
     player.Functions.SetMetaData('thirst', Math.Clamp(newThirst, 0, 100))
     TriggerClientEvent('hud:client:UpdateNeeds', src, playerData.metadata.hunger, newThirst)
-    --TriggerClientEvent('hud:client:UpdateStress', src, newStress)
     return newThirst
 end
 
@@ -303,7 +301,7 @@ end
 ---@return boolean|nil
 Framework.GetIsPlayerDead = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     local playerData = player.PlayerData
     return playerData.metadata.isdead or playerData.metadata.inlaststand or false
 end
@@ -318,13 +316,23 @@ Framework.RevivePlayer = function(src)
     return true
 end
 
+--- This will get the hunger of a player
+--- @param src number
+--- @return number
+Framework.GetHunger = function(src)
+    local player = Framework.GetPlayer(src)
+    if not player then return 0 end
+    local playerData = player.PlayerData
+    local newHunger = (playerData.metadata.hunger or 0)
+    return math.floor((newHunger) + 0.5) or 0
+end
 
 ---@description This will get the thirst of a player
 ---@param src any
 ---@return number | nil
 Framework.GetThirst = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerData = player.PlayerData
     local newThirst = (playerData.metadata.thirst or 0)
     return math.floor((newThirst) + 0.5) or 0
@@ -376,7 +384,7 @@ end
 ---@return table | nil
 Framework.GetPlayerJobData = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return { } end
     local playerData = player.PlayerData
     local jobData = playerData.job
     return {
@@ -395,7 +403,7 @@ end
 ---@return boolean | nil
 Framework.GetPlayerDuty = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     local playerData = player.PlayerData
     if not playerData.job.onduty then return false end
     return true
@@ -420,7 +428,7 @@ end
 ---@return nil
 Framework.SetPlayerJob = function(src, name, grade)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     return player.Functions.SetJob(name, grade)
 end
 
@@ -431,7 +439,7 @@ end
 ---@return boolean | nil
 Framework.AddAccountBalance = function(src, _type, amount)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     if _type == 'money' then _type = 'cash' end
     return player.Functions.AddMoney(_type, amount)
 end
@@ -443,7 +451,7 @@ end
 ---@return boolean | nil
 Framework.RemoveAccountBalance = function(src, _type, amount)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     if _type == 'money' then _type = 'cash' end
     return player.Functions.RemoveMoney(_type, amount)
 end
@@ -454,7 +462,7 @@ end
 ---@return string | nil
 Framework.GetAccountBalance = function(src, _type)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerData = player.PlayerData
     if _type == 'money' then _type = 'cash' end
     return playerData.money[_type]
@@ -469,7 +477,7 @@ end
 ---@return boolean | nil
 Framework.AddItem = function(src, item, amount, slot, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "add", item = item, count = amount, slot = slot, metadata = metadata })
     return player.Functions.AddItem(item, amount, slot, metadata)
 end
@@ -483,9 +491,9 @@ end
 ---@return boolean | nil
 Framework.RemoveItem = function(src, item, amount, slot, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "remove", item = item, count = amount, slot = slot, metadata = metadata })
-    return player.Functions.RemoveItem(item, amount, slot or nil)
+    return player.Functions.RemoveItem(item, amount, slot)
 end
 
 ---@description Sets the metadata for the specified item in the player's inventory.
@@ -497,20 +505,131 @@ end
 ---@return boolean | nil
 Framework.SetMetadata = function(src, item, slot, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
-    local slotFinder = Framework.GetPlayerInventory(src)
-    local freeSlot = Table.FindFirstUnoccupiedSlot(slotFinder)
-    local itemSlot = slot or nil
-    if itemSlot == nil then
-        for _, v in pairs(slotFinder) do
-            if v.name == item then
-                slot = v.slot
-                break
-            end
+    if not player then return false end
+    if not Framework.RemoveItem(src, item, 1, slot, nil) then return false end
+    return Framework.AddItem(src, item, 1, slot, metadata)
+end
+
+--- Returns a table of items matching the specified name and if passed metadata from the player's inventory.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+--- @param src number
+--- @param item string
+--- @param metadata table
+--- @return table {name, count, metadata, slot}
+Framework.GetItem = function(src, item, metadata)
+    local player = Framework.GetPlayer(src)
+    if not player then return { } end
+    local playerData = player.PlayerData
+    local playerInventory = playerData.items
+    local repackedTable = {}
+    for _, v in pairs(playerInventory) do
+        if v.name == item and (not metadata or v.info == metadata) then
+            table.insert(repackedTable, {
+                name = v.name,
+                count = v.amount or v.count,
+                metadata = v.info,
+                slot = v.slot,
+            })
         end
     end
-    if not player.Functions.RemoveItem(item, 1, itemSlot) then return false end
-    return player.Functions.AddItem(item, 1, slot, metadata)
+    return repackedTable
+end
+
+--- This will return a table with the item info, {name, label, stack, weight, description, image}
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+--- @param item string
+--- @return table {name, label, stack, weight, description, image}
+Framework.GetItemInfo = function(item)
+    local itemData = QBCore.Shared.Items[item]
+    if not itemData then return {} end
+    local repackedTable = {
+        name = itemData.name,
+        label = itemData.label,
+        stack = itemData.unique,
+        weight = itemData.weight,
+        description = itemData.description,
+        image = itemData.image
+    }
+    return repackedTable
+end
+
+--- This will return the count of the item in the players inventory, if not found will return 0.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@param item string
+---@param metadata table (optional)
+---@return number
+Framework.GetItemCount = function(src, item, metadata)
+    local player = Framework.GetPlayer(src)
+    if not player then return 0 end
+    local playerData = player.PlayerData
+    local playerInventory = playerData.items
+    local count = 0
+    for _, v in pairs(playerInventory) do
+        if v.name == item and (not metadata or v.info == metadata) then
+            count = count + (v.amount or v.count)
+        end
+    end
+    return count
+end
+
+--- This will return a boolean if the player has the item.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+--- @param src number
+--- @param item string
+--- @return boolean
+Framework.HasItem = function(src, item)
+    local getCount = Framework.GetItemCount(src, item, nil)
+    return getCount > 0
+end
+
+--- Returns the entire inventory of the player as a table.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@return table {name, count, metadata, slot}
+Framework.GetPlayerInventory = function(src)
+    local player = Framework.GetPlayer(src)
+    if not player then return {} end
+    local playerData = player.PlayerData
+    local playerInventory = playerData.items
+    local repackedTable = {}
+    for _, v in pairs(playerInventory) do
+        table.insert(repackedTable, {
+            name = v.name,
+            count = v.amount or v.count,
+            metadata = v.info,
+            slot = v.slot,
+        })
+    end
+    return repackedTable
+end
+
+--- This will return the item data for the specified slot.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+--- @param src number
+--- @param slot number
+--- @return table {name, label, weight, count, metadata, slot, stack, description}
+Framework.GetItemBySlot = function(src, slot)
+    local player = Framework.GetPlayer(src)
+    if not player then return {} end
+    local playerData = player.PlayerData
+    local playerInventory = playerData.items
+    local repack = {}
+    for _, v in pairs(playerInventory) do
+        if v.slot == slot then
+            return {
+                name = v.name,
+                label = v.label,
+                weight = v.weight,
+                count = v.amount or v.count,
+                metadata = v.info or v.metadata or {},
+                slot = v.slot,
+                stack = v.unique or false,
+                description = v.description or "none",
+            }
+        end
+    end
+    return repack
 end
 
 ---@description This will get all owned vehicles for the player

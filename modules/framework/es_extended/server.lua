@@ -13,16 +13,17 @@ local cachedItemList = nil
 --- @description This will return the name of the framework in use
 --- @return string
 Framework.GetFrameworkName = function()
-    return 'es_extended'
+    print("This is deprecated, please use Framework.GetResourceName() instead.")
+    return Framework.GetResourceName()
 end
 
----This will get the name of the in use resource.
----@return string
+--- This will get the name of the in use resource.
+--- @return string
 Framework.GetResourceName = function()
     return 'es_extended'
 end
 
---- @description This is an internal function, its here to attempt to emulate qbs shared items mainly
+--- This is an internal function, its here to attempt to emulate qbs shared items mainly, do not use this outside of bridge.
 Framework.ItemList = function()
     if cachedItemList then return cachedItemList end
     local items = ESX.Items
@@ -46,7 +47,7 @@ Framework.ItemList = function()
     return cachedItemList
 end
 
---- @description This will return if the player is an admin in the framework
+--- This will return if the player is an admin in the framework.
 --- @param src any
 --- @return boolean
 Framework.GetIsFrameworkAdmin = function(src)
@@ -58,7 +59,8 @@ Framework.GetIsFrameworkAdmin = function(src)
     return false
 end
 
---- @description This will get the players birth date
+--- Returns the player date of birth.
+--- @param src number
 --- @return string|nil
 Framework.GetPlayerDob = function(src)
     local xPlayer = Framework.GetPlayer(src)
@@ -99,7 +101,7 @@ Framework.GetPlayerName = function(src)
     return xPlayer.variables.firstName, xPlayer.variables.lastName
 end
 
---- @description This will return a table of all logged in players
+--- This will return a table of all logged in players
 --- @return table
 Framework.GetPlayers = function()
     local players = ESX.GetExtendedPlayers()
@@ -110,14 +112,16 @@ Framework.GetPlayers = function()
     return playerList
 end
 
---- @description This will return a table of items matching the specified name and if passed metadata from the player's inventory
+--- Returns a table of items matching the specified name and if passed metadata from the player's inventory.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
---- @param _ table
---- @return table|nil returns {name = v.name, count = v.amount, metadata = v.info, slot = v.slot}
-Framework.GetItem = function(src, item, _)
+--- @param metadata table
+--- @return table {name, count, metadata, slot}
+Framework.GetItem = function(src, item, metadata)
+    print("ESX does not support item metadata searches, please ensure you are using a supported inventory system or that you have the correct start order.")
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return {} end
     local playerItems = xPlayer.getInventory()
     local repackedTable = {}
     for _, v in pairs(playerItems) do
@@ -125,40 +129,57 @@ Framework.GetItem = function(src, item, _)
             table.insert(repackedTable, {
                 name = v.name,
                 count = v.count,
-                --metadata = v.metadata,
-                --slot = v.slot,
+                metadata = {}, -- ESX does not support item metadata
+                slot = 0, -- ESX does not support item slots
             })
         end
     end
     return repackedTable
 end
 
---- @param src number
+--- This will return a table with the item info, {name, label, stack, weight, description, image}
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param item string
---- @param _ table
---- @return number returns the count of the item in the players inventory, if not found will return 0.
---- If metadata is passed it will find the matching items count (esx_core does not feature metadata items)
-Framework.GetItemCount = function(src, item, _)
+--- @return table {name, label, stack, weight, description, image}
+Framework.GetItemInfo = function(item)
+    local items = Framework.ItemList()
+    if not items[item] then return {} end
+    return {name = item, label = items[item].label, stack = false, weight = items[item].weight, description = items[item].description, image = items[item].image}
+end
+
+--- This will return the count of the item in the players inventory, if not found will return 0.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@param item string
+---@param metadata table (optional)
+---@return number
+Framework.GetItemCount = function(src, item, metadata)
+    if metadata then
+        print("ESX does not support item metadata searches, please ensure you are using a supported inventory system or that you have the correct start order.")
+    end
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return 0 end
     return xPlayer.getInventoryItem(item).count
 end
 
---- @description This will return true if the player has the item, false otherwise
+--- This will return a boolean if the player has the item.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
---- @return boolean returns true if the player has the item, false otherwise.
+--- @return boolean
 Framework.HasItem = function(src, item)
     local getCount = Framework.GetItemCount(src, item, nil)
     return getCount > 0
 end
 
---- @description This will return the player's inventory as a table
---- @param src number
---- @return table | nil returns the player's inventory as a table in format: {name = v.name, count = v.amount, metadata = v.info, slot = v.slot}
+--- Returns the entire inventory of the player as a table.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@return table {name, count, metadata, slot}
 Framework.GetPlayerInventory = function(src)
+    print("ESX does not support item metadata or slots, please ensure you are using a supported inventory system or that you have the correct start order.")
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return {} end
     local playerItems = xPlayer.getInventory()
     local repackedTable = {}
     for _, v in pairs(playerItems) do
@@ -166,15 +187,25 @@ Framework.GetPlayerInventory = function(src)
             table.insert(repackedTable, {
                 name = v.name,
                 count = v.count,
-                --metadata = v.metadata,
-                --slot = v.slot,
+                metadata = {}, -- ESX does not support item metadata
+                slot = 0, -- ESX does not support item slots
             })
         end
     end
     return repackedTable
 end
 
---- @description Adds the specified metadata key and number value to the player's data.
+--- This will return the item data for the specified slot.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+--- @param src number
+--- @param slot number
+--- @return table {name, label, weight, count, metadata, slot, stack, description}
+Framework.GetItemBySlot = function(src, slot)
+    print("ESX does not support item slots, please ensure you are using a supported inventory system or that you have the correct start order.")
+    return {} -- ESX does not support item slots
+end
+
+--- Adds the specified metadata key and number value to the player's data.
 --- @param src number
 --- @param metadata string
 --- @param value any
@@ -186,8 +217,7 @@ Framework.SetPlayerMetadata = function(src, metadata, value)
     return true
 end
 
--- Framework.GetMetadata(src, metadata)
---- @description Gets the specified metadata key to the player's data.
+--- Gets the specified metadata key to the player's data.
 --- @param src number
 --- @param metadata string
 --- @return any|nil
@@ -197,7 +227,7 @@ Framework.GetPlayerMetadata = function(src, metadata)
     return xPlayer.getMeta(metadata) or false
 end
 
---- @description This will return the specified status column of the player.
+--- This is an internal function and should not be used outside of bridge, this is only present in the esx portion.
 --- @param src number
 --- @param column string
 --- @return string|nil
@@ -213,16 +243,16 @@ Framework.GetStatus = function(src, column)
     return xPlayer.get(column) or nil
 end
 
---- @description This will return a boolean if the player is dead or in last stand
+--- This will return a boolean if the player is dead or in last stand.
 --- @param src number
---- @return boolean|nil
+--- @return boolean
 Framework.GetIsPlayerDead = function(src)
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return false end
     return xPlayer.get("is_dead") or false
 end
 
---- @description This will revive a player, if the player is dead or in last stand
+--- This will revive a player, if the player is dead or in last stand.
 --- @param src number
 --- @return boolean
 Framework.RevivePlayer = function(src)
@@ -254,13 +284,13 @@ Framework.AddHunger = function(src, value)
     return levelForEsx
 end
 
---- @description This will get the hunger of a player (ESX we get the percent of the status)
+--- This will get the hunger of a player
 --- @param src number
---- @return number | nil
+--- @return number
 Framework.GetHunger = function(src)
     local status = Framework.GetStatus(src, "status")
-    if not status then return end
-    if type(status) ~= "table" then return end
+    if not status then return 0 end
+    if type(status) ~= "table" then return 0 end
     for _, entry in ipairs(status) do
         if entry.name == "hunger" then
             return math.floor((entry.percent) + 0.5) or 0
@@ -268,9 +298,9 @@ Framework.GetHunger = function(src)
     end
 end
 
---- @description This will get the thirst of a player (ESX we get the percent of the status)
+--- This will get the thirst of a player
 --- @param src any
---- @return number | nil
+--- @return number
 Framework.GetThirst = function(src)
     local status = Framework.GetStatus(src, "status")
     if not status then return nil end
@@ -282,9 +312,9 @@ Framework.GetThirst = function(src)
     end
 end
 
---- @description This will get the phone number of a player
+--- Returns the phone number of the player.
 --- @param src number
---- @return string | nil return the phone number of the player
+--- @return string | nil
 Framework.GetPlayerPhone = function(src)
     local xPlayer = Framework.GetPlayer(src)
     if not xPlayer then return end
@@ -304,13 +334,12 @@ Framework.GetPlayerJob = function(src)
     return job.name, job.label, job.grade_label, job.grade
 end
 
---- @description This will return the players job name, job label, job grade label job grade level,
---- boss status, and duty status in a table
+--- This will return the players job name, job label, job grade label job grade level, boss status, and duty status in a table
 --- @param src number
---- @return table | nil
+--- @return table {jobName, jobLabel, gradeName, gradeLabel, gradeRank, boss, onDuty}
 Framework.GetPlayerJobData = function(src)
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return {} end
     local job = xPlayer.getJob()
     local isBoss = (job.grade_name == "boss")
     return {
@@ -324,9 +353,9 @@ Framework.GetPlayerJobData = function(src)
     }
 end
 
---- @description This will return the players duty status, true if on duty false otherwise
+--- Returns the players duty status.
 --- @param src number
---- @return boolean return the players duty status
+--- @return boolean
 Framework.GetPlayerDuty = function(src)
     local xPlayer = Framework.GetPlayer(src)
     if not xPlayer then return false end
@@ -335,7 +364,7 @@ Framework.GetPlayerDuty = function(src)
     return true
 end
 
---- @description This will toggle a players duty status
+--- This will toggle a players duty status
 --- @param src number
 --- @param status boolean
 --- @return boolean
@@ -348,18 +377,25 @@ Framework.SetPlayerDuty = function(src, status)
     return true
 end
 
---- @description This will get a table of player sources that have the specified job name
+-- Returns the gang name of the player.
+---@param src number
+---@return string | nil
+Framework.GetPlayerGang = function(src)
+    print("ESX does not support gangs, please ensure you are using a supported gang system or that you have the correct start order.")
+    return
+end
+
+--- This will get a table of player sources that have the specified job name.
 --- @param job string
 --- @return table
 Framework.GetPlayersByJob = function(job)
     return Framework.GetPlayerSourcesByJob(job) or {}
 end
 
---- @description This will set the player's job to the specified name and grade
+--- Sets the player's job to the specified name and grade.
 --- @param src number
 --- @param name string
 --- @param grade string
---- @return nil
 Framework.SetPlayerJob = function(src, name, grade)
     local xPlayer = Framework.GetPlayer(src)
     if not xPlayer then return end
@@ -371,72 +407,98 @@ Framework.SetPlayerJob = function(src, name, grade)
     return true
 end
 
---- @description This will add money based on the type of account (money/bank)
+--- This will add money based on the type of account (money/bank)
 --- @param src number
 --- @param _type string
 --- @param amount number
---- @return boolean | nil
+--- @return boolean
 Framework.AddAccountBalance = function(src, _type, amount)
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return false end
     if _type == 'cash' then _type = 'money' end
     xPlayer.addAccountMoney(_type, amount)
     return true
 end
 
---- @description This will remove money based on the type of account (money/bank)
+--- This will remove money based on the type of account (money/bank)
 --- @param src number
 --- @param _type string
 --- @param amount number
---- @return boolean | nil
+--- @return boolean
 Framework.RemoveAccountBalance = function(src, _type, amount)
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return false end
     if _type == 'cash' then _type = 'money' end
     xPlayer.removeAccountMoney(_type, amount)
     return true
 end
 
---- @description This will get the account balance based on the type of account (money/bank)
+--- This will remove money based on the type of account (money/bank)
 --- @param src number
 --- @param _type string
---- @return string | nil
+--- @return number
 Framework.GetAccountBalance = function(src, _type)
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return 0 end
     if _type == 'cash' then _type = 'money' end
     return xPlayer.getAccount(_type).money
 end
 
---- @description Adds the specified item to the player's inventory
+--- Adds the specified item to the player's inventory.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
 --- @param amount number
---- @param slot number
---- @param metadata table
---- @return boolean | nil
+--- @param slot number (optional)
+--- @param metadata table (optional)
+--- @return boolean
 Framework.AddItem = function(src, item, amount, slot, metadata)
+    if slot then
+        print("ESX does not support item slots, please ensure you are using a supported inventory system or that you have the correct start order.")
+    end
+    if metadata then
+        print("ESX does not support item metadata, please ensure you are using a supported inventory system or that you have the correct start order.")
+    end
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return false end
     xPlayer.addInventoryItem(item, amount)
     return true
 end
 
---- @description Removes the specified item from the player's inventory
+--- Removes the specified item from the player's inventory.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
 --- @param amount number
---- @param slot number
---- @param metadata table
----@return boolean | nil
+--- @param slot number (optional)
+--- @param metadata table (optional)
+--- @return boolean
 Framework.RemoveItem = function(src, item, amount, slot, metadata)
+    if slot then
+        print("ESX does not support item slots, please ensure you are using a supported inventory system or that you have the correct start order.")
+    end
+    if metadata then
+        print("ESX does not support item metadata, please ensure you are using a supported inventory system or that you have the correct start order.")
+    end
     local xPlayer = Framework.GetPlayer(src)
-    if not xPlayer then return end
+    if not xPlayer then return false end
     xPlayer.removeInventoryItem(item, amount)
     return true
 end
 
---- @description This will get all owned vehicles for the player
+--- Sets the metadata for the specified item in the player's inventory.
+--- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+--- @param src number
+--- @param item string
+--- @param slot number
+--- @param metadata table
+--- @return boolean
+Framework.SetMetadata = function(src, item, slot, metadata)
+    print("ESX does not support item metadata, please ensure you are using a supported inventory system or that you have the correct start order.")
+    return false
+end
+
+--- This will get all owned vehicles for the player
 --- @param src number
 --- @return table
 Framework.GetOwnedVehicles = function(src)
@@ -452,7 +514,7 @@ Framework.GetOwnedVehicles = function(src)
     return vehicles
 end
 
---- @description Registers a usable item with a callback function
+--- Registers a usable item with a callback function.
 --- @param itemName string
 --- @param cb function
 Framework.RegisterUsableItem = function(itemName, cb)

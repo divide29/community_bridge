@@ -90,17 +90,16 @@ end
 ---@return table|nil {name = v.name, count = v.amount, metadata = v.info, slot = v.slot}
 Framework.GetItem = function(src, item, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
-    local playerInventory = player.PlayerData.items
+    if not player then return { } end
     local repackedTable = {}
-    for _, v in pairs(playerInventory) do
+    for _, v in pairs(player.PlayerData.items) do
         if v.name == item and (not metadata or v.info == metadata) then
-            table.insert(repackedTable, {
+            repackedTable[#repackedTable + 1] = {
                 name = v.name,
-                count = v.amount,
-                metadata = v.info,
+                count = v.amount or v.count,
+                metadata = v.info or v.metadata,
                 slot = v.slot,
-            })
+            }
         end
     end
     return repackedTable
@@ -113,12 +112,12 @@ end
 ---@return number | nil
 Framework.GetItemCount = function(src, item, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerInventory = player.PlayerData.items
     local count = 0
     for _, v in pairs(playerInventory) do
         if v.name == item and (not metadata or v.info == metadata) then
-            count = count + v.amount
+            count = count + (v.amount or v.count)
         end
     end
     return count
@@ -129,7 +128,7 @@ end
 ---@param item string
 ---@return boolean
 Framework.HasItem = function(src, item)
-    local getCount = Framework.GetItemCount(src, item, nil)
+    local getCount = Framework.GetItemCount(src, item)
     return getCount > 0
 end
 
@@ -138,7 +137,7 @@ end
 ---@return table | nil
 Framework.GetPlayerInventory = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return { } end
     local playerItems = player.PlayerData.items
     local repackedTable = {}
     for _, v in pairs(playerItems) do
@@ -236,7 +235,7 @@ end
 ---@return number | nil
 Framework.GetHunger = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerData = player.PlayerData
     local newHunger = (playerData.metadata.hunger or 0)
     return math.floor((newHunger) + 0.5) or 0
@@ -247,7 +246,7 @@ end
 ---@return boolean|nil
 Framework.GetIsPlayerDead = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     local playerData = player.PlayerData
     return playerData.metadata.isdead or false
 end
@@ -267,7 +266,7 @@ end
 ---@return number| nil
 Framework.GetThirst = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerData = player.PlayerData
     local newThirst = (playerData.metadata.thirst or 0)
     return math.floor((newThirst) + 0.5) or 0
@@ -308,6 +307,7 @@ Framework.GetPlayerJob = function(src)
     local player = Framework.GetPlayer(src)
     if not player then return end
     local playerData = player.PlayerData
+    print("This function is depricated, please use GetPlayerJobData instead.")
     return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
 end
 

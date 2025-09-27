@@ -11,7 +11,8 @@ Framework.Shared = QBCore.Shared
 ---@description This will get the name of the framework being used (if a supported framework).
 ---@return string
 Framework.GetFrameworkName = function()
-    return 'qb-core'
+    print("This is depricated, please use Framework.GetResourceName() instead.")
+    return Framework.GetResourceName()
 end
 
 ---@description This will get the name of the in use resource.
@@ -149,8 +150,9 @@ end
 ---@return string
 ---@return string
 Framework.GetPlayerJob = function()
-    local playerData = Framework.GetPlayerData()
-    return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
+    print("This is depricated, please use Framework.GetPlayerJobData() instead.")
+    local jobData = Framework.GetPlayerJobData()
+    return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeRank
 end
 
 ---@description This will return the players job name, job label, job grade label job grade level, boss status, and duty status in a table

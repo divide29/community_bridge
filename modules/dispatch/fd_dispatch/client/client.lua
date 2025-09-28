@@ -13,11 +13,12 @@ Dispatch.SendAlert = function(data)
             color = data.colorHex or nil
         })
     end
+    local coords = data.coords or GetEntityCoords(PlayerPedId())
     local alertData = {
         title = data.message or "No message provided",
         description = data.message or "",
         groups = data.jobs or data.job or "police",
-        location = {coords = data.coords, street = GetStreetNameAtCoord(table.unpack(data.coords))} or {coords = GetEntityCoords(PlayerPedId()), street = GetStreetNameAtCoord(table.unpack(GetEntityCoords(PlayerPedId())))},
+        location = {coords = coords, street = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))},
         code = data.code or '10-80',
         priority = data.priority or 2,
         metadata = metadata,

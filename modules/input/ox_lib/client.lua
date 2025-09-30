@@ -5,6 +5,10 @@ if (configValue == "auto" and GetResourceState(resourceName) == "missing") or (c
 
 Input = {}
 
+function Input.GetResourceName()
+    return resourceName
+end
+
 function Input.Open(title, data, isQBFormat, submitText)
     local inputs = data.inputs
     if isQBFormat then
@@ -21,10 +25,6 @@ function Input.Open(title, data, isQBFormat, submitText)
     else
         return lib.inputDialog(title, data)
     end
-end
-
-function Input.GetResourceName()
-    return resourceName
 end
 
 return Input

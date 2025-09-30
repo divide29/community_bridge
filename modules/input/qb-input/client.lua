@@ -5,6 +5,12 @@ if (configValue == "auto" and GetResourceState(resourceName) == "missing") or (c
 
 Input = {}
 
+Language = Language or Require('modules/locales/shared.lua')
+
+function Input.GetResourceName()
+    return resourceName
+end
+
 -- this probably needs improvement
 function Input.Open(title, data, isQBFormat, submitText)
     local input = data.inputs
@@ -13,7 +19,7 @@ function Input.Open(title, data, isQBFormat, submitText)
     end
     local returnData = exports['qb-input']:ShowInput({
         header = title,
-        submitText = submitText or "Submit",
+        submitText = submitText or Language.Locale("input.submit_text"),
         inputs = input
     })
     if not returnData then return end
@@ -40,10 +46,6 @@ function Input.Open(title, data, isQBFormat, submitText)
         end
     end
     return convertedData
-end
-
-function Input.GetResourceName()
-    return resourceName
 end
 
 return Input

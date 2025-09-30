@@ -5,6 +5,10 @@ if (configValue == "auto" and GetResourceState(resourceName) == "missing") or (c
 
 Input = {}
 
+function Input.GetResourceName()
+    return resourceName
+end
+
 function Input.Open(title, data, isQBFormat, submitText)
     local inputs = data.inputs
     if isQBFormat then
@@ -12,10 +16,6 @@ function Input.Open(title, data, isQBFormat, submitText)
     else
         return exports.lation_ui:input({title = title, options = data})
     end
-end
-
-function Input.GetResourceName()
-    return resourceName
 end
 
 return Input

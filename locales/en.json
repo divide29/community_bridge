@@ -21,6 +21,9 @@
 	"clipboard": {
 		"copy": "Copied to clipboard"
 	},
+	"input": {
+		"submit_text": "Submit"
+	},
 	"placeable_object": {
 		"no_prop_defined": "You didn't define any object to place",
 		"cant_place_here": "You can't place this object here",

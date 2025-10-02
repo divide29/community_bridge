@@ -1,5 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('origen_inventory') == 'missing' then return end
+if GetResourceState('ox_inventory') ~= 'missing' then return end
 Inventory = Inventory or {}
 local origin = exports.origen_inventory
 

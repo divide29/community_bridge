@@ -1,5 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('qs-inventory') == 'missing' then return end
+if GetResourceState('ox_inventory') ~= 'missing' then return end
 
 local quasar = exports['qs-inventory']
 

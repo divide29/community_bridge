@@ -1,5 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('tgiann-inventory') == 'missing' then return end
+if GetResourceState('ox_inventory') ~= 'missing' then return end
 
 local tgiann = exports["tgiann-inventory"]
 

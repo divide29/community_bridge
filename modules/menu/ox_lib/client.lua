@@ -3,7 +3,7 @@ local configValue = BridgeClientConfig.MenuSystem
 if (configValue == "auto" and GetResourceState(resourceName) ~= "started") or (configValue ~= "auto" and configValue ~= resourceName) then return end
 Menus = Menus or {}
 
-lib = lib or Require("init.lua", "ox_lib")
+if not lib then Require('init.lua', 'ox_lib') end
 
 ---Converts a QB menu to an Ox menu.
 ---@param id string The menu ID.

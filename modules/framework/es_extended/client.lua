@@ -198,46 +198,6 @@ Framework.GetAccountBalance = function(_type)
     return 0
 end
 
---- @description This will return the vehicle properties for the specified vehicle
---- @param vehicle number
---- @return table
-Framework.GetVehicleProperties = function(vehicle)
-    if not vehicle or not DoesEntityExist(vehicle) then return {} end
-    local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
-    return vehicleProps or {}
-end
-
---- @description This will set the vehicle properties for the specified vehicle
---- @param vehicle number
---- @param properties table
---- @return boolean
-Framework.SetVehicleProperties = function(vehicle, properties)
-    if not vehicle or not DoesEntityExist(vehicle) then return false end
-    if not properties then return false end
-    if NetworkGetEntityIsNetworked(vehicle) then
-        local vehNetID = NetworkGetNetworkIdFromEntity(vehicle)
-        local entOwner = GetPlayerServerId(NetworkGetEntityOwner(vehNetID))
-        if entOwner ~= GetPlayerServerId(PlayerId()) then
-            NetworkRequestControlOfEntity(vehicle)
-            local count = 0
-            while not NetworkHasControlOfEntity(vehicle) and count < 3000 do
-                Wait(1)
-                count = count + 1
-            end
-        end
-    end
-    -- Every framework version does this just a diffrent key I guess?
-    if properties.color1 and type(properties.color1) == 'table' then
-        properties.customPrimaryColor = {properties.color1[1], properties.color1[2], properties.color1[3]}
-        properties.color1 = nil
-    end
-    if properties.color2 and type(properties.color2) == 'table' then
-        properties.customSecondaryColor = {properties.color2[1], properties.color2[2], properties.color2[3]}
-        properties.color2 = nil
-    end
-    return true, ESX.Game.SetVehicleProperties(vehicle, properties)
-end
-
 --- @description This will get a players dead status
 --- @return boolean
 Framework.GetIsPlayerDead = function()

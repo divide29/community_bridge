@@ -11,7 +11,6 @@ local ParticlesBehaviors = {
         color = vector3(255, 255, 255),
         loopLength = 5000,
     }
-
 }
 
 function ParticlesBehaviors.Start(entityData)
@@ -73,6 +72,21 @@ function ParticlesBehaviors.OnMove(entityData)
                 particleData.loopLength or ParticlesBehaviors.default.loopLength
             )
         end
+    end
+end
+
+function ParticlesBehaviors.OnSet(entityData, key, value, oldValue)
+    if key ~= "particles" then return end
+    if oldValue then
+        ParticlesBehaviors.OnRemove(entityData)
+    end
+    if value then
+        if value.dict then -- single particle
+            entityData.particles = {value}
+        else
+            entityData.particles = value
+        end
+        ParticlesBehaviors.Start(entityData)
     end
 end
 

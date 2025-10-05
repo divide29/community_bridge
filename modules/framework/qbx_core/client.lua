@@ -146,37 +146,6 @@ Framework.GetAccountBalance = function(_type)
     return account[_type] or 0
 end
 
----This will return the vehicle properties for the specified vehicle.
----@param vehicle number
----@return table
-Framework.GetVehicleProperties = function(vehicle)
-    if not vehicle or not DoesEntityExist(vehicle) then return {} end
-    local vehicleProps = lib.getVehicleProperties(vehicle)
-    return vehicleProps or {}
-end
-
----This will set the vehicle properties for the specified vehicle.
----@param vehicle number
----@param properties table
----@return boolean
-Framework.SetVehicleProperties = function(vehicle, properties)
-    if not vehicle or not DoesEntityExist(vehicle) then return false end
-    if not properties then return false end
-    if NetworkGetEntityIsNetworked(vehicle) then
-        local vehNetID = NetworkGetNetworkIdFromEntity(vehicle)
-        local entOwner = GetPlayerServerId(NetworkGetEntityOwner(vehNetID))
-        if entOwner ~= GetPlayerServerId(PlayerId()) then
-            NetworkRequestControlOfEntity(vehicle)
-            local count = 0
-            while not NetworkHasControlOfEntity(vehicle) and count < 3000 do
-                Wait(1)
-                count = count + 1
-            end
-        end
-    end
-    return true, lib.setVehicleProperties(vehicle, properties)
-end
-
 ---This will return the item count for the specified item in the players inventory.
 ---@param item string
 ---@return number

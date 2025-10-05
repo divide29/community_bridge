@@ -48,23 +48,10 @@ function Point.StartLoop()
                 local coords = GetEntityCoords(playerPed)
                 local cell = Grid.GetCellByCoords(coords)
                 for _, point in pairs(cell or {}) do
-                    if point.isEntity then
-                        local entity = point.target
-                        if DoesEntityExist(entity) then
-                            local entityCoords = GetEntityCoords(entity)
-                            local distance = #(coords - entityCoords)
-                            if distance < point.distance then
-                                if not point.inside then
-                                    point.inside = true
-                                    point.args = point?.onEnter(point, point.args) or point.args
-                                end
-                            elseif point.inside then
-                                point.inside = false
-                                point.args = point?.onExit(point, point.args) or point.args
-                            end
-                        end
-                    else
-                        local distance = #(vector3(coords.x, coords.y, coords.z) - vector3(point.coords.x, point.coords.y, point.coords.z))
+                    local entity = point.target
+                    local targetCoords = point.isEntity and DoesEntityExist(entity) and GetEntityCoords(entity) or point.coords
+                    if not point.disable and targetCoords then
+                        local distance = #(coords - targetCoords)
                         if distance < point.distance then
                             if not point.inside then
                                 point.inside = true

@@ -167,7 +167,20 @@ end
 function ClientEntity.Set(id, key, value)
     local entityData = ClientEntity.Get(id)
     if not entityData then return print(string.format("[ClientEntity] SetKey: Entity %s does not exist", id)) end
-    entityData[key] = value
+    local oldData = entityData[key]
+    if oldData == value then return end
+    if entityData.OnSet then 
+        pcall(function (...)
+            return entityData.OnSet(entityData, key, value, oldData)
+        end)
+    end
+    if value then 
+        entityData[key] = value
+        Behaviors.Trigger("OnSet", entityData, key, value, oldData)  
+        return 
+    end        
+    Behaviors.Trigger("OnSet", entityData, key, value, oldData)
+    entityData[key] = nil      
 end
 
 function ClientEntity.Get(id)

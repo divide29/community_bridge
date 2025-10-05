@@ -1,9 +1,10 @@
 Placeable = Placeable or {}
 Utility = Utility or Require("lib/utility/client/utility.lua")
+if not lib then Require('init.lua', 'ox_lib') end
 
 local activePlacementProp = nil
-lib.locale()
-
+Language = Language or Require("modules/locales/shared.lua")
+locale = Language.Locale
 -- Object placer --
 local placementText = {
     locale('placeable_object.place_object_place'),

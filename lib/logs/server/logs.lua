@@ -74,6 +74,7 @@ local logHandlers = {
     end,
 
     ox_lib = function(message)
+        if not lib then Require('init.lua', 'ox_lib') end
         lib.logger(GetInvokingResource(), GetCurrentResourceName(), message)
     end,
 

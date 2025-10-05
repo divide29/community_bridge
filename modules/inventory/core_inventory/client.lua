@@ -1,7 +1,7 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('core_inventory') == 'missing' then return end
 local core = exports.core_inventory
--- Core inventory docs available at https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#additem
+-- Core inventory docs available at https://docs.c8re.store/core-inventory/api/server#getitemslist
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 Inventory = Inventory or {}
@@ -18,22 +18,9 @@ local cachedItemList = nil
 --- @param item string
 --- @return table
 Inventory.GetItemInfo = function(item)
-    local frameworkName = Framework.GetFrameworkName()
-    if not frameworkName then return {} end
-    local dataRepack = {}
-    if frameworkName == 'es_extended' then
-        if not cachedItemList then cachedItemList =  Callback.Trigger('community_bridge:Callback:core_inventory', false) end
-        dataRepack = cachedItemList[item] or {}
-    elseif frameworkName == 'qb-core' then
-        dataRepack = Framework.Shared.Items[item] or {}
-        dataRepack.stack = dataRepack.unique or false
-    end
-    dataRepack.image = dataRepack.name and Inventory.GetImagePath(dataRepack.name)
-    return dataRepack
+    local itemList = Inventory.Items()
+    return itemList[item] or {}
 end
-
-
-
 
 ---This will return the entire items table from the inventory.
 ---@return table 
@@ -42,13 +29,15 @@ Inventory.Items = function()
     if not frameworkName then return {} end
     local dataRepack = {}
     if frameworkName == 'es_extended' then
-        local callbackData = Callback.Trigger('community_bridge:Callback:core_inventory', false)
-        -- really really wish this inventory allowed me to pull the item list client side....
-        dataRepack = callbackData
-        if not dataRepack then return {} end
+        if not cachedItemList then cachedItemList = Callback.Trigger('community_bridge:Callback:core_inventory', false) end
+        dataRepack = cachedItemList or {}
     elseif frameworkName == 'qb-core' then
-        dataRepack = Framework.Shared.Items
-        if not dataRepack then return {} end
+        dataRepack = Framework.Shared.Items or {}
+    end
+    for itemName, itemData in pairs(dataRepack) do
+        if itemData and itemData.name then
+            dataRepack[itemName].image = Inventory.GetImagePath(itemData.name)
+        end
     end
     return dataRepack
 end

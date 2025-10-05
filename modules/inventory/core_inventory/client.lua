@@ -12,6 +12,7 @@ Inventory.GetResourceName = function()
     return "core_inventory"
 end
 
+local cachedItemList = nil
 --- Return the item info in oxs format, {name, label, stack, weight, description, image}
 --- https://docs.c8re.store/core-inventory/api/server#getitemslist
 --- @param item string
@@ -21,15 +22,18 @@ Inventory.GetItemInfo = function(item)
     if not frameworkName then return {} end
     local dataRepack = {}
     if frameworkName == 'es_extended' then
-        local callbackData = Callback.Trigger('community_bridge:Callback:core_inventory', false)
-        dataRepack = callbackData[item]
-        if not dataRepack then return {} end
+        if not cachedItemList then cachedItemList =  Callback.Trigger('community_bridge:Callback:core_inventory', false) end
+        dataRepack = cachedItemList[item] or {}
     elseif frameworkName == 'qb-core' then
-        dataRepack = Framework.Shared.Items[item]
-        if not dataRepack then return {} end
+        dataRepack = Framework.Shared.Items[item] or {}
+        dataRepack.stack = dataRepack.unique or false
     end
-    return {name = dataRepack.name, label = dataRepack.label, stack = dataRepack.stack, weight = dataRepack.weight, description = dataRepack.description, image = Inventory.GetImagePath(dataRepack.name) }
+    dataRepack.image = dataRepack.name and Inventory.GetImagePath(dataRepack.name)
+    return dataRepack
 end
+
+
+
 
 ---This will return the entire items table from the inventory.
 ---@return table 

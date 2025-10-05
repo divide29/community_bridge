@@ -37,6 +37,7 @@ Inventory.Items = function()
     for itemName, itemData in pairs(dataRepack) do
         if itemData and itemData.name then
             dataRepack[itemName].image = Inventory.GetImagePath(itemData.name)
+            dataRepack[itemName].stack = dataRepack[itemName].unique or false
         end
     end
     return dataRepack

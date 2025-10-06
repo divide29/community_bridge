@@ -164,7 +164,7 @@ end
 ---@param item string
 ---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(item, requiredCount)
+Framework.HasItem = function(item, requiredCount)
 	return false, print("Qbox has not implemented HasItem for this framework, Please ensure the inventory you are using is supported and start order is correct.")
 end
 

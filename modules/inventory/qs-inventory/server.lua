@@ -23,8 +23,6 @@ end
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not quasar:CanCarryItem(src, item, count) then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    -- No return value specified in docs, so we assume none.
-    -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/additem
     return quasar:AddItem(src, item, count, slot, metadata)
 end
 
@@ -37,32 +35,7 @@ end
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    -- No return value specified in docs, so we assume none.
-    -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/removeitem
     return quasar:RemoveItem(src, item, count, slot, metadata)
-end
-
----This will add items to a trunk, and return true or false based on success
----@param identifier string
----@param items table
----@return boolean
-Inventory.AddTrunkItems = function(identifier, items)
-    if type(items) ~= "table" then return false end
-    return false
-    --[[
-    for k, v in pairs(items) do
-        -- 
-        In testing this inventory allowed it on owned vehicle but not unowned vehicles, 
-        also attempted registering it as a stash with no luck.
-        was thinking about just forcing it in sql but there is data attached that I assume is a timestamp
-        kinda not sure on this one atm...
-        Also there is no GetInventory(identifier) only by player source
-        --quasar:AddToTrunk(identifier, v.count, v.metadata, v.item, v.metadata)
-        -- No param documentation at all on this one
-        -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/addtotrunk
-    end
-    return true
-    --]]
 end
 
 ---This will clear the specified inventory, will always return true unless a value isnt passed correctly.
@@ -71,15 +44,8 @@ end
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
     if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
-    -- No return value specified in docs, so we assume none.
-    -- https://docs.quasar-store.com/player-systems/inventory/exports-and-commands/server-side-exports/clearotherinventory
     quasar:ClearOtherInventory(_type, id)
     return false
-    --[[
-    quasar:ClearOtherInventory(_type, id)
-
-    return true
-    --]]
 end
 
 ---This will return a table with the item info, {name, label, stack, weight, description, image}
@@ -180,30 +146,6 @@ Inventory.OpenStash = function(src, _type, id)
     TriggerClientEvent("inventory:client:SetCurrentStash",src, id)
 end
 
----This will register a stash
----@param id number|string
----@param label string
----@param slots number
----@param weight number
----@param owner string
----@param groups table
----@param coords table
----@return boolean
----@return string|number
-Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
-    if Inventory.Stashes[id] then return true, id end
-    Inventory.Stashes[id] = {
-        id = id,
-        label = label,
-        slots = slots,
-        weight = weight,
-        owner = owner,
-        groups = groups,
-        coords = coords
-    }
-    return true, id
-end
-
 ---This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
@@ -250,10 +192,8 @@ end
 
 Inventory.OpenPlayerInventory = function(src, target)
     assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
-    exports['qs-inventory']:OpenInventory(src, target)
+    assert(target, "OpenPlayerInventory: target is required")
+    quasar:OpenInventory(src, target)
 end
 
 return Inventory

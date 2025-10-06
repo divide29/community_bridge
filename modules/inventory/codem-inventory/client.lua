@@ -4,19 +4,13 @@ Inventory = Inventory or {}
 
 local codem = exports['codem-inventory']
 
----This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 ---@return string
 Inventory.GetResourceName = function()
     return "codem-inventory"
 end
 
----This will return the entire items table from the inventory.
----@return table 
-Inventory.Items = function()
-    return codem:GetItemList() or {}
-end
-
----Return the item info in oxs format, {name, label, stack, weight, description, image}
+---@description Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -33,17 +27,23 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will get the image path for this item, if not found will return placeholder.
+---@description This will return the entire items table from the inventory.
+---@return table 
+Inventory.Items = function()
+    return codem:GetItemList() or {}
+end
+
+---@description This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
     item = Inventory.StripPNG(item)
-    local file = LoadResourceFile("codem-inventory", string.format("html/images/%s.png", item))
-    local imagePath = file and string.format("nui://codem-inventory/html/images/%s.png", item)
+    local file = LoadResourceFile("codem-inventory", string.format("html/itemimages/%s.png", item))
+    local imagePath = file and string.format("nui://codem-inventory/html/itemimages/%s.png", item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
----This will return the players inventory in the format of {name, label, count, slot, metadata}
+---@description This will return the players inventory in the format of {name, label, count, slot, metadata}
 ---@return table
 Inventory.GetPlayerInventory = function()
     local items = {}
@@ -52,9 +52,9 @@ Inventory.GetPlayerInventory = function()
         table.insert(items, {
             name = v.name,
             label = v.label,
-            count = v.amount,
+            count = v.amount or v.count,
             slot = v.slot,
-            metadata = v.info,
+            metadata = v.info or v.metadata or {},
             stack = v.unique,
             close = v.useable,
             weight = v.weight

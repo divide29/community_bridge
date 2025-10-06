@@ -11,7 +11,8 @@ Framework.Shared = QBCore.Shared
 ---@description This will return the name of the framework in use.
 ---@return string
 Framework.GetFrameworkName = function()
-    return 'qb-core'
+    print("[Community Bridge] Warning: Framework.GetFrameworkName is deprecated, use Framework.GetResourceName instead.")
+    return Framework.GetResourceName()
 end
 
 ---@description This will get the name of the in use resource.
@@ -228,7 +229,6 @@ Framework.GetPlayerMetadata = function(src, metadata)
     return playerData.metadata[metadata] or false
 end
 
-
 ---@description Adds the specified value to the player's stress level and updates the client HUD.
 ---@param src number
 ---@param value number
@@ -316,7 +316,7 @@ Framework.RevivePlayer = function(src)
     return true
 end
 
---- This will get the hunger of a player
+--- @description This will get the hunger of a player
 --- @param src number
 --- @return number
 Framework.GetHunger = function(src)
@@ -372,10 +372,10 @@ end
 ---@return string | string | string | number | nil
 ---@return string | string | string | number | nil
 Framework.GetPlayerJob = function(src)
-    local player = Framework.GetPlayer(src)
-    if not player then return end
-    local playerData = player.PlayerData
-    return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
+    print("[Community Bridge] Warning: Framework.GetPlayerJob is deprecated, use Framework.GetPlayerJobData instead.")
+    local jobData = Framework.GetPlayerJobData(src)
+    if not jobData then return end
+    return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeLevel
 end
 
 ---@description This will return the players job name, job label, job grade label job grade level, boss status,
@@ -409,10 +409,10 @@ Framework.GetPlayerDuty = function(src)
     return true
 end
 
----@description This will toggle a players duty status
----@param src number
----@param status boolean
----@return boolean
+--- @description This will toggle a players duty status
+--- @param src number
+--- @param status boolean
+--- @return boolean
 Framework.SetPlayerDuty = function(src, status)
     local player = Framework.GetPlayer(src)
     if not player then return false end
@@ -468,36 +468,59 @@ Framework.GetAccountBalance = function(src, _type)
     return playerData.money[_type]
 end
 
----@description Adds the specified item to the player's inventory.
+---@description This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
----@param amount number
----@param slot number
----@param metadata table
----@return boolean | nil
-Framework.AddItem = function(src, item, amount, slot, metadata)
+---@param count number
+---@param slot number (optional)
+---@param metadata table (optional)
+---@return boolean
+Framework.AddItem = function(src, item, count, slot, metadata)
     local player = Framework.GetPlayer(src)
     if not player then return false end
-    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "add", item = item, count = amount, slot = slot, metadata = metadata })
-    return player.Functions.AddItem(item, amount, slot, metadata)
+    local success = player.Functions.AddItem(item, count, slot, metadata)
+    if not success then return false end
+    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "add", item = item, count = count, slot = slot, metadata = metadata })
+    return success
 end
 
----@description Removes the specified item from the player's inventory.
+---@description Internal function to search for items with specific metadata in player inventory
+---@param src number
+---@param metadata table
+---@return boolean, number|nil
+local function runMetadataSearch(src, metadata)
+    local inv = Framework.GetPlayerInventory(src) or {}
+    for k, v in pairs(inv) do
+        if v.metadata and v.metadata == metadata then
+            return true, v.slot
+        end
+    end
+    return false
+end
+
+---@description This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string
----@param amount number
----@param slot number
----@param metadata table
----@return boolean | nil
-Framework.RemoveItem = function(src, item, amount, slot, metadata)
+---@param count number
+---@param slot number (optional)
+---@param metadata table (optional)
+---@return boolean
+Framework.RemoveItem = function(src, item, count, slot, metadata)
     local player = Framework.GetPlayer(src)
     if not player then return false end
-    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "remove", item = item, count = amount, slot = slot, metadata = metadata })
-    return player.Functions.RemoveItem(item, amount, slot)
+    if metadata then
+        local found, itemSlot = runMetadataSearch(src, metadata)
+        if found then
+            slot = itemSlot
+        end
+    end
+    local success = player.Functions.RemoveItem(item, count, slot)
+    if not success then return false end
+    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "remove", item = item, count = count, slot = slot, metadata = metadata })
+    return success
 end
 
----@description Sets the metadata for the specified item in the player's inventory.
----Notes, this is kinda a jank workaround. with the framework aside from updating the entire table theres not really a better way
+---@description This will set the metadata of an item in the inventory.
 ---@param src number
 ---@param item string
 ---@param slot number
@@ -506,54 +529,28 @@ end
 Framework.SetMetadata = function(src, item, slot, metadata)
     local player = Framework.GetPlayer(src)
     if not player then return false end
-    if not Framework.RemoveItem(src, item, 1, slot, nil) then return false end
-    return Framework.AddItem(src, item, 1, slot, metadata)
+    local success = Framework.RemoveItem(src, item, 1, slot, nil)
+    if not success then return false end
+    Framework.AddItem(src, item, 1, slot, metadata)
 end
 
---- Returns a table of items matching the specified name and if passed metadata from the player's inventory.
---- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
---- @param src number
---- @param item string
---- @param metadata table
---- @return table {name, count, metadata, slot}
-Framework.GetItem = function(src, item, metadata)
-    local player = Framework.GetPlayer(src)
-    if not player then return { } end
-    local playerData = player.PlayerData
-    local playerInventory = playerData.items
-    local repackedTable = {}
-    for _, v in pairs(playerInventory) do
-        if v.name == item and (not metadata or v.info == metadata) then
-            table.insert(repackedTable, {
-                name = v.name,
-                count = v.amount or v.count,
-                metadata = v.info,
-                slot = v.slot,
-            })
-        end
-    end
-    return repackedTable
-end
-
---- This will return a table with the item info, {name, label, stack, weight, description, image}
---- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
---- @param item string
---- @return table {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
+---@param item string
+---@return table
 Framework.GetItemInfo = function(item)
     local itemData = QBCore.Shared.Items[item]
     if not itemData then return {} end
-    local repackedTable = {
+    return {
         name = itemData.name,
-        label = itemData.label,
+        label = itemData.label or itemData.name,
         stack = itemData.unique,
         weight = itemData.weight,
         description = itemData.description,
         image = itemData.image
     }
-    return repackedTable
 end
 
---- This will return the count of the item in the players inventory, if not found will return 0.
+---@description This will return the count of the item in the players inventory, if not found will return 0.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 ---@param src number
 ---@param item string
@@ -573,20 +570,19 @@ Framework.GetItemCount = function(src, item, metadata)
     return count
 end
 
---- This will return a boolean if the player has the item.
---- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
---- @param src number
---- @param item string
---- @return boolean
-Framework.HasItem = function(src, item)
+---@description This will return a boolean if the player has the item.
+---@param src number
+---@param item string
+---@param requiredCount number (optional)
+---@return boolean
+Framework.HasItem = function(src, item, requiredCount)
     local getCount = Framework.GetItemCount(src, item, nil)
-    return getCount > 0
+    return getCount >= (requiredCount or 1)
 end
 
---- Returns the entire inventory of the player as a table.
---- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@description This wil return the players inventory.
 ---@param src number
----@return table {name, count, metadata, slot}
+---@return table
 Framework.GetPlayerInventory = function(src)
     local player = Framework.GetPlayer(src)
     if not player then return {} end
@@ -604,32 +600,20 @@ Framework.GetPlayerInventory = function(src)
     return repackedTable
 end
 
---- This will return the item data for the specified slot.
---- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
---- @param src number
---- @param slot number
---- @return table {name, label, weight, count, metadata, slot, stack, description}
+---@description Returns the specified slot data as a table.
+---@param src number
+---@param slot number
+---@return table {name, label, weight, count, metadata, slot, stack, description, image}
 Framework.GetItemBySlot = function(src, slot)
-    local player = Framework.GetPlayer(src)
-    if not player then return {} end
-    local playerData = player.PlayerData
-    local playerInventory = playerData.items
-    local repack = {}
-    for _, v in pairs(playerInventory) do
+    local inventory = Framework.GetPlayerInventory(src)
+    if not inventory or #inventory == 0 then return {} end
+    for _, v in pairs(inventory) do
         if v.slot == slot then
-            return {
-                name = v.name,
-                label = v.label,
-                weight = v.weight,
-                count = v.amount or v.count,
-                metadata = v.info or v.metadata or {},
-                slot = v.slot,
-                stack = v.unique or false,
-                description = v.description or "none",
-            }
+            local itemInfo = Framework.GetItemInfo(v.name)
+            return {v.name, itemInfo.label or v.name, itemInfo.weight or 0, v.count or 0, v.metadata or {}, v.slot, itemInfo.stack or false, itemInfo.description or "No description available", itemInfo.image or nil}
         end
     end
-    return repack
+    return {}
 end
 
 ---@description This will get all owned vehicles for the player
@@ -660,6 +644,8 @@ Framework.RegisterUsableItem = function(itemName, cb)
     QBCore.Functions.CreateUseableItem(itemName, func)
 end
 
+---@description Event handler for when a player is loaded in QB-Core framework
+---@param src number
 RegisterNetEvent("QBCore:Server:OnPlayerLoaded", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerLoaded", src)
@@ -668,23 +654,37 @@ RegisterNetEvent("QBCore:Server:OnPlayerLoaded", function(src)
     Framework.AddJobCount(src, jobData.jobName)
 end)
 
+---@description Event handler for when a player is unloaded in QB-Core framework
+---@param src number
 RegisterNetEvent("QBCore:Server:OnPlayerUnload", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerUnload", src)
 end)
 
+---@description Event handler for when a player's job is updated in QB-Core framework
+---@param src number
+---@param job table
 RegisterNetEvent("QBCore:Server:OnJobUpdate", function(src, job)
     src = src or source
     if not job then return end
     TriggerEvent("community_bridge:Server:OnPlayerJobChange", src, job.name)
 end)
 
+---@description Event handler for when a player disconnects from the server
 AddEventHandler("playerDropped", function()
     local src = source
     TriggerEvent("community_bridge:Server:OnPlayerUnload", src)
 end)
 
 Framework.Commands = {}
+---@description Adds a command to the QB-Core framework
+---@param name string
+---@param help string
+---@param arguments table
+---@param argsrequired boolean
+---@param callback function
+---@param permission string
+---@param ... any
 Framework.Commands.Add = function(name, help, arguments, argsrequired, callback, permission, ...)
     QBCore.Commands.Add(name, help, arguments, argsrequired, callback, permission, ...)
 end

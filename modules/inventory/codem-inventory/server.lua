@@ -2,28 +2,41 @@
 if GetResourceState('codem-inventory') == 'missing' then return end
 
 Inventory = Inventory or {}
-Inventory.Stashes = Inventory.Stashes or {}
 
 local codem = exports['codem-inventory']
 
----This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 ---@return string
 Inventory.GetResourceName = function()
     return "codem-inventory"
 end
 
----This will add an item, and return true or false based on success
+---@description This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
----@param slot number
----@param metadata table
+---@param slot number (optional)
+---@param metadata table (optional)
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
-    -- documentation doesnt specify if there is any retun value for AddItem, so we will assume no. 
-    --https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#additem
+    local success = codem:AddItem(src, item, count, slot, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return codem:AddItem(src, item, count, slot, metadata)
+    return success
+end
+
+---@description Internal function to search for items with specific metadata in player inventory
+---@param src number
+---@param metadata table
+---@return boolean, number|nil
+local function runMetadataSearch(src, metadata)
+    local inv = Framework.GetPlayerInventory(src) or {}
+    for _, v in pairs(inv) do
+        if v.metadata and v.metadata == metadata then
+            return true, v.slot
+        end
+    end
+    return false
 end
 
 ---This will remove an item, and return true or false based on success
@@ -34,19 +47,19 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
-    -- documentation doesnt specify if there is any retun value for RemoveItem, so we will assume no. 
-    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#removeitem
+    if metadata then
+        local found, foundSlot = runMetadataSearch(src, metadata)
+        if found then
+            slot = foundSlot
+        end
+    end
+    local success = codem:RemoveItem(src, item, count, slot)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return codem:RemoveItem(src, item, count, slot)
+    return success
 end
 
----This will return the entire items table from the inventory.
----@return table 
-Inventory.Items = function()
-    return codem:GetItemList() or {}
-end
-
----This will return a table with the item info, {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -62,7 +75,22 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This wil return the players inventory.
+---@description This will return the entire items table from the inventory.
+---@return table 
+Inventory.Items = function()
+    return codem:GetItemList() or {}
+end
+
+---@description This will return the count of the item in the players inventory, if not found will return 0.
+---@param src number
+---@param item string
+---@param metadata table (optional)
+---@return number
+Inventory.GetItemCount = function(src, item, metadata)
+    return codem:GetItemsTotalAmount(src, item)
+end
+
+---@description This wil return the players inventory.
 ---@param src number
 ---@return table
 Inventory.GetPlayerInventory = function(src)
@@ -72,18 +100,18 @@ Inventory.GetPlayerInventory = function(src)
     for _, v in pairs(playerItems) do
         table.insert(repackedTable, {
             name = v.name,
-            count = v.amount,
-            metadata = v.info,
+            count = v.amount or v.count,
+            metadata = v.info or v.metadata or {},
             slot = v.slot,
         })
     end
     return repackedTable
 end
 
----Returns the specified slot data as a table.
+---@description Returns the specified slot data as a table.
 ---@param src number
 ---@param slot number
----@return table {weight, name, metadata, slot, label, count, stack, description}
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
     local slotData = codem:GetItemBySlot(src, slot)
     if not slotData then return {} end
@@ -93,13 +121,13 @@ Inventory.GetItemBySlot = function(src, slot)
         weight = slotData.weight,
         slot = slotData.slot,
         count = slotData.amount or slotData.count,
-        metadata = slotData.info or slotData.metadata,
-        stack = slotData.unique,
+        metadata = slotData.info or slotData.metadata or {},
+        stack = slotData.unique or false,
         description = slotData.description
     }
 end
 
----This will set the metadata of an item in the inventory.
+---@description This will set the metadata of an item in the inventory.
 ---@param src number
 ---@param item string
 ---@param slot number
@@ -109,110 +137,56 @@ Inventory.SetMetadata = function(src, item, slot, metadata)
     return codem:SetItemMetadata(src, slot, metadata)
 end
 
----This will open the specified stash for the src passed.
----@param src number
----@param _type string
----@param id number||string
----@return nil
-Inventory.OpenStash = function(src, _type, id)
-    _type = _type or "stash"
-    local tbl = Inventory.Stashes[id]
-    TriggerClientEvent('community_bridge:client:codem-inventory:openStash', src, id, { label = tbl.label, slots = tbl.slots, weight = tbl.weight })
-end
-
-
----This will register a stash
----@param id number|string
----@param label string
----@param slots number
----@param weight number
----@param owner string
----@param groups table
----@param coords table
----@return boolean
----@return string|number
-Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
-    if Inventory.Stashes[id] then return true, id end
-    Inventory.Stashes[id] = {
-        id = id,
-        label = label,
-        slots = slots,
-        weight = weight,
-        owner = owner,
-        groups = groups,
-        coords = coords
-    }
-    return true, id
-end
-
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(src, item)
-    return codem:HasItem(src, item, 1)
+Inventory.HasItem = function(src, item, requiredCount)
+    return codem:HasItem(src, item, requiredCount or 1)
 end
 
----This is to get if there is available space in the inventory, will return boolean.
----@param src number
----@param item string
----@param count number
----@return boolean
-Inventory.CanCarryItem = function(src, item, count)
-    -- Documentation does not specify a way to check if a player can carry an item.
-    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#removeitem
-    return true
-end
-
----This will add items to a trunk, and return true or false based on success
----If a trunk with the identifier does not exist, it will create one with default values.
----@param identifier string
----@param items table
----@return boolean
-Inventory.AddTrunkItems = function(identifier, items)
-    if type(items) ~= "table" then return false end
-    -- Documentation does not specify a way to add items to a trunk.
-    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#additem
-    return false, print("AddItemsToTrunk is not implemented in codem-inventory, because of this we dont have a way to add items to a trunk.")
-end
-
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
+---@description This will clear the specified inventory, will always return true unless a value isnt passed correctly.
 ---@param id string
+---@param _type string unused with ox_inventory
 ---@return boolean
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
-    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
-    -- https://codem.gitbook.io/codem-documentation/m-series/essentials/minventory-remake/exports-and-commands/server-exports#clearinventory
-    -- This is documented as only the player id, not a stash id.
-    return false, print("ClearInventory is not implemented in codem-inventory, because of this we dont have a way to clear a stash.")
+    codem:UpdateStash(id, {})
+    return true
 end
 
----This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
----@param oldplate string
----@param newplate string
+---@description This will add items to a stash, and return true or false based on success
+---@param id string
+---@param items table {item, count, metadata}
 ---@return boolean
-Inventory.UpdatePlate = function(oldplate, newplate)
-    -- Unsure if there is a cached table server side internal to the inventory to attempt to update this. Risk of dupes isnt worth it.
-    return false, print("Unable to update plate for codem-inventory, I do not have access to a copy of this inventory to bridge the feature.")
+Inventory.AddStashItems = function(id, items)
+    if type(items) ~= "table" then return false end
+    local repack = {}
+    for _, v in pairs(items) do
+        table.insert(repack, {
+            item = v.item,
+            amount = v.count or v.amount,
+            info = v.metadata or v.info or {},
+            unique = v.unique or v.stack or false,
+            description = v.description or "none",
+            weight = Inventory.GetItemInfo(v.item).weight or 0,
+            type = 'item',
+            slot = #repack + 1,
+        })
+    end
+    codem:UpdateStash(id, repack)
+    return true
 end
 
----This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
+---@description This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
     item = Inventory.StripPNG(item)
-    local file = LoadResourceFile("codem-inventory", string.format("html/images/%s.png", item))
-    local imagePath = file and string.format("nui://codem-inventory/html/images/%s.png", item)
+    local file = LoadResourceFile("codem-inventory", string.format("html/itemimages/%s.png", item))
+    local imagePath = file and string.format("nui://codem-inventory/html/itemimages/%s.png", item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
-
-Inventory.OpenPlayerInventory = function(src, target)
-    assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
-    exports['codem-inventory']:OpenInventory(src, target)
-end
-
 
 return Inventory

@@ -203,7 +203,7 @@ Framework.GetPlayerInventory = function()
             label = v.label,
             count = v.amount or v.count,
             slot = v.slot,
-            metadata = v.info,
+            metadata = v.info or v.metadata or {},
             stack = v.unique,
             close = v.useable,
             weight = v.weight
@@ -250,28 +250,21 @@ Framework.GetIsPlayerDead = function()
     return playerData.metadata["isdead"] or playerData.metadata["inlaststand"]
 end
 
+---@description Event handler for when player is loaded in QB-Core framework
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     Wait(1500)
     TriggerEvent('community_bridge:Client:OnPlayerLoaded')
 end)
 
+---@description Event handler for when player is unloaded in QB-Core framework
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     TriggerEvent('community_bridge:Client:OnPlayerUnload')
 end)
 
+---@description Event handler for when player job is updated in QB-Core framework
+---@param data table Job data containing name, label, grade_label, and grade
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(data)
     TriggerEvent('community_bridge:Client:OnPlayerJobUpdate', data.name, data.label, data.grade_label, data.grade)
-end)
-
-RegisterNetEvent('QBCore:Client:OnGangUpdate', function(data)
-    -- Unsure what data is passed in this, but considering the gang data isnt updating I doubt this was tested.
-    --[[
-    PlayerJobName = data.name
-    PlayerJobLabel = data.label
-    PlayerJobGradeName = data.grade.name
-    PlayerJobGradeLevel = data.grade.level
-    TriggerEvent('community_bridge:Client:OnPlayerGangUpdate', PlayerGangName, PlayerGangLabel, PlayerGangGradeName, PlayerGangGradeLevel)
-    --]]
 end)
 
 return Framework

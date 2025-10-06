@@ -1,12 +1,18 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('qb-inventory') ~= 'started' then return end
+if GetResourceState('qb-inventory') == 'missing' then return end
 if GetResourceState('codem-inventory') ~= 'missing' then return end
 if GetResourceState('origen_inventory') ~= 'missing' then return end
 local qb = exports['qb-inventory']
 
 Inventory = Inventory or {}
 
----Return the item info in oxs format, {name, label, stack, weight, description, image}
+---@description This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "qb-inventory"
+end
+
+---@description Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -22,26 +28,21 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "qb-inventory"
-end
-
----This will return the entire items table from the inventory.
+---@description This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()
     return Framework.Shared.Items
 end
 
----Will return boolean if the player has the item.
+---@description Will return boolean if the player has the item.
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(item)
-    return qb:HasItem(item)
+Inventory.HasItem = function(item, requiredCount)
+    return qb:HasItem(item, requiredCount or 1)
 end
 
----This will get the image path for this item, if not found will return placeholder.
+---@description This will get the image path for this item, if not found will return placeholder.
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)

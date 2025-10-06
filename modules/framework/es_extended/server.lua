@@ -17,13 +17,13 @@ Framework.GetFrameworkName = function()
     return Framework.GetResourceName()
 end
 
---- This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 --- @return string
 Framework.GetResourceName = function()
     return 'es_extended'
 end
 
---- This is an internal function, its here to attempt to emulate qbs shared items mainly, do not use this outside of bridge.
+---@description This is an internal function, its here to attempt to emulate qbs shared items mainly, do not use this outside of bridge.
 Framework.ItemList = function()
     if cachedItemList then return cachedItemList end
     local items = ESX.Items
@@ -47,9 +47,9 @@ Framework.ItemList = function()
     return cachedItemList
 end
 
---- This will return if the player is an admin in the framework.
---- @param src any
---- @return boolean
+---@description This will return if the player is an admin in the framework.
+---@param src number
+---@return boolean
 Framework.GetIsFrameworkAdmin = function(src)
     if not src then return false end
     local xPlayer = Framework.GetPlayer(src)
@@ -59,7 +59,7 @@ Framework.GetIsFrameworkAdmin = function(src)
     return false
 end
 
---- Returns the player date of birth.
+---@description Returns the player date of birth.
 --- @param src number
 --- @return string|nil
 Framework.GetPlayerDob = function(src)
@@ -101,7 +101,7 @@ Framework.GetPlayerName = function(src)
     return xPlayer.variables.firstName, xPlayer.variables.lastName
 end
 
---- This will return a table of all logged in players
+---@description This will return a table of all logged in players
 --- @return table
 Framework.GetPlayers = function()
     local players = ESX.GetExtendedPlayers()
@@ -112,7 +112,7 @@ Framework.GetPlayers = function()
     return playerList
 end
 
---- Returns a table of items matching the specified name and if passed metadata from the player's inventory.
+---@description Returns a table of items matching the specified name and if passed metadata from the player's inventory.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
@@ -137,7 +137,7 @@ Framework.GetItem = function(src, item, metadata)
     return repackedTable
 end
 
---- This will return a table with the item info, {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param item string
 --- @return table {name, label, stack, weight, description, image}
@@ -147,7 +147,7 @@ Framework.GetItemInfo = function(item)
     return {name = item, label = items[item].label, stack = false, weight = items[item].weight, description = items[item].description, image = items[item].image}
 end
 
---- This will return the count of the item in the players inventory, if not found will return 0.
+---@description This will return the count of the item in the players inventory, if not found will return 0.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 ---@param src number
 ---@param item string
@@ -162,7 +162,7 @@ Framework.GetItemCount = function(src, item, metadata)
     return xPlayer.getInventoryItem(item).count
 end
 
---- This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
@@ -172,7 +172,7 @@ Framework.HasItem = function(src, item)
     return getCount > 0
 end
 
---- Returns the entire inventory of the player as a table.
+---@description Returns the entire inventory of the player as a table.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 ---@param src number
 ---@return table {name, count, metadata, slot}
@@ -195,7 +195,7 @@ Framework.GetPlayerInventory = function(src)
     return repackedTable
 end
 
---- This will return the item data for the specified slot.
+---@description This will return the item data for the specified slot.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param slot number
@@ -205,7 +205,7 @@ Framework.GetItemBySlot = function(src, slot)
     return {} -- ESX does not support item slots
 end
 
---- Adds the specified metadata key and number value to the player's data.
+---@description Adds the specified metadata key and number value to the player's data.
 --- @param src number
 --- @param metadata string
 --- @param value any
@@ -217,7 +217,7 @@ Framework.SetPlayerMetadata = function(src, metadata, value)
     return true
 end
 
---- Gets the specified metadata key to the player's data.
+---@description Gets the specified metadata key to the player's data.
 --- @param src number
 --- @param metadata string
 --- @return any|nil
@@ -227,7 +227,7 @@ Framework.GetPlayerMetadata = function(src, metadata)
     return xPlayer.getMeta(metadata) or false
 end
 
---- This is an internal function and should not be used outside of bridge, this is only present in the esx portion.
+---@description This is an internal function and should not be used outside of bridge, this is only present in the esx portion.
 --- @param src number
 --- @param column string
 --- @return string|nil
@@ -243,7 +243,7 @@ Framework.GetStatus = function(src, column)
     return xPlayer.get(column) or nil
 end
 
---- This will return a boolean if the player is dead or in last stand.
+---@description This will return a boolean if the player is dead or in last stand.
 --- @param src number
 --- @return boolean
 Framework.GetIsPlayerDead = function(src)
@@ -252,7 +252,7 @@ Framework.GetIsPlayerDead = function(src)
     return xPlayer.get("is_dead") or false
 end
 
---- This will revive a player, if the player is dead or in last stand.
+---@description This will revive a player, if the player is dead or in last stand.
 --- @param src number
 --- @return boolean
 Framework.RevivePlayer = function(src)
@@ -284,7 +284,7 @@ Framework.AddHunger = function(src, value)
     return levelForEsx
 end
 
---- This will get the hunger of a player
+---@description This will get the hunger of a player
 --- @param src number
 --- @return number
 Framework.GetHunger = function(src)
@@ -298,7 +298,7 @@ Framework.GetHunger = function(src)
     end
 end
 
---- This will get the thirst of a player
+---@description This will get the thirst of a player
 --- @param src any
 --- @return number
 Framework.GetThirst = function(src)
@@ -312,7 +312,7 @@ Framework.GetThirst = function(src)
     end
 end
 
---- Returns the phone number of the player.
+---@description Returns the phone number of the player.
 --- @param src number
 --- @return string | nil
 Framework.GetPlayerPhone = function(src)
@@ -321,7 +321,8 @@ Framework.GetPlayerPhone = function(src)
     return xPlayer.get("phone_number")
 end
 
----@deprecated This will return the job name, label, grade name, and grade level of the player.
+---@description This will return the job name, label, grade name, and grade level of the player.
+---@deprecated
 ---@param src number
 ---@return string | nil
 ---@return string | nil
@@ -334,7 +335,7 @@ Framework.GetPlayerJob = function(src)
     return job.name, job.label, job.grade_label, job.grade
 end
 
---- This will return the players job name, job label, job grade label job grade level, boss status, and duty status in a table
+---@description This will return the players job name, job label, job grade label job grade level, boss status, and duty status in a table
 --- @param src number
 --- @return table {jobName, jobLabel, gradeName, gradeLabel, gradeRank, boss, onDuty}
 Framework.GetPlayerJobData = function(src)
@@ -353,7 +354,7 @@ Framework.GetPlayerJobData = function(src)
     }
 end
 
---- Returns the players duty status.
+---@description Returns the players duty status.
 --- @param src number
 --- @return boolean
 Framework.GetPlayerDuty = function(src)
@@ -364,7 +365,7 @@ Framework.GetPlayerDuty = function(src)
     return true
 end
 
---- This will toggle a players duty status
+---@description This will toggle a players duty status
 --- @param src number
 --- @param status boolean
 --- @return boolean
@@ -377,7 +378,7 @@ Framework.SetPlayerDuty = function(src, status)
     return true
 end
 
--- Returns the gang name of the player.
+---@description Returns the gang name of the player.
 ---@param src number
 ---@return string | nil
 Framework.GetPlayerGang = function(src)
@@ -385,14 +386,14 @@ Framework.GetPlayerGang = function(src)
     return
 end
 
---- This will get a table of player sources that have the specified job name.
+---@description This will get a table of player sources that have the specified job name.
 --- @param job string
 --- @return table
 Framework.GetPlayersByJob = function(job)
     return Framework.GetPlayerSourcesByJob(job) or {}
 end
 
---- Sets the player's job to the specified name and grade.
+---@description Sets the player's job to the specified name and grade.
 --- @param src number
 --- @param name string
 --- @param grade string
@@ -407,7 +408,7 @@ Framework.SetPlayerJob = function(src, name, grade)
     return true
 end
 
---- This will add money based on the type of account (money/bank)
+---@description This will add money based on the type of account (money/bank)
 --- @param src number
 --- @param _type string
 --- @param amount number
@@ -420,7 +421,7 @@ Framework.AddAccountBalance = function(src, _type, amount)
     return true
 end
 
---- This will remove money based on the type of account (money/bank)
+---@description This will remove money based on the type of account (money/bank)
 --- @param src number
 --- @param _type string
 --- @param amount number
@@ -433,7 +434,7 @@ Framework.RemoveAccountBalance = function(src, _type, amount)
     return true
 end
 
---- This will remove money based on the type of account (money/bank)
+---@description This will get money based on the type of account (money/bank)
 --- @param src number
 --- @param _type string
 --- @return number
@@ -444,7 +445,7 @@ Framework.GetAccountBalance = function(src, _type)
     return xPlayer.getAccount(_type).money
 end
 
---- Adds the specified item to the player's inventory.
+---@description Adds the specified item to the player's inventory.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
@@ -465,7 +466,7 @@ Framework.AddItem = function(src, item, amount, slot, metadata)
     return true
 end
 
---- Removes the specified item from the player's inventory.
+---@description Removes the specified item from the player's inventory.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
@@ -486,7 +487,7 @@ Framework.RemoveItem = function(src, item, amount, slot, metadata)
     return true
 end
 
---- Sets the metadata for the specified item in the player's inventory.
+---@description Sets the metadata for the specified item in the player's inventory.
 --- This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 --- @param src number
 --- @param item string
@@ -498,7 +499,7 @@ Framework.SetMetadata = function(src, item, slot, metadata)
     return false
 end
 
---- This will get all owned vehicles for the player
+---@description This will get all owned vehicles for the player
 --- @param src number
 --- @return table
 Framework.GetOwnedVehicles = function(src)
@@ -514,7 +515,7 @@ Framework.GetOwnedVehicles = function(src)
     return vehicles
 end
 
---- Registers a usable item with a callback function.
+---@description Registers a usable item with a callback function.
 --- @param itemName string
 --- @param cb function
 Framework.RegisterUsableItem = function(itemName, cb)
@@ -527,6 +528,8 @@ Framework.RegisterUsableItem = function(itemName, cb)
     ESX.RegisterUsableItem(itemName, func)
 end
 
+---@description Event handler for when a player is loaded in ESX framework
+---@param src number
 RegisterNetEvent("esx:playerLoaded", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerLoaded", src)
@@ -535,32 +538,50 @@ RegisterNetEvent("esx:playerLoaded", function(src)
     Framework.AddJobCount(src, jobData.jobName)
 end)
 
+---@description Event handler for when a player logs out in ESX framework
+---@param src number
 RegisterNetEvent("esx:playerLogout", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerUnload", src)
 end)
 
+---@description Event handler for when a player's job is updated in ESX framework
+---@param src number
+---@param job table
+---@param lastJob table
 RegisterNetEvent("esx:setJob", function(src, job, lastJob)
     src = src or source
     if not job or not lastJob then return end
     TriggerEvent("community_bridge:Server:OnPlayerJobChange", src, job.name)
 end)
 
+---@description Event handler for when a player disconnects from the server
 AddEventHandler("playerDropped", function()
     local src = source
     TriggerEvent("community_bridge:Server:OnPlayerUnload", src)
 end)
 
+---@description Callback to get framework jobs list
+---@param source number
 Callback.Register('community_bridge:Callback:GetFrameworkJobs', function(source)
     return Framework.GetFrameworkJobs() or {}
 end)
 
--- This is linked to an internal function, its an attempt to standardize the item list across frameworks.
+---@description This is linked to an internal function, its an attempt to standardize the item list across frameworks.
+---@param source number
 Callback.Register('community_bridge:Callback:GetFrameworkItems', function(source)
     return Framework.ItemList() or {}
 end)
 
 Framework.Commands = {}
+---@description Adds a command to the ESX framework
+---@param name string
+---@param help string
+---@param arguments table
+---@param argsrequired boolean
+---@param callback function
+---@param permission string
+---@param ... any
 Framework.Commands.Add = function(name, help, arguments, argsrequired, callback, permission, ...)
     ESX.RegisterCommand(name, permission, function(xPlayer, args, showError)
         callback(xPlayer, args)

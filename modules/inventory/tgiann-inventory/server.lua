@@ -7,18 +7,18 @@ local tgiann = exports["tgiann-inventory"]
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 
----This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 ---@return string
 Inventory.GetResourceName = function()
     return "tgiann-inventory"
 end
 
----This will add an item, and return true or false based on success
+---@description This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
----@param slot number
----@param metadata table
+---@param slot number (optional)
+---@param metadata table (optional)
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not tgiann:CanCarryItem(src, item, count) then return false end
@@ -28,12 +28,12 @@ Inventory.AddItem = function(src, item, count, slot, metadata)
     return success or false
 end
 
----This will remove an item, and return true or false based on success
+---@description This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
----@param slot number
----@param metadata table
+---@param slot number (optional)
+---@param metadata table (optional)
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     local success = tgiann:RemoveItem(src, item, count, slot, metadata)
@@ -64,12 +64,10 @@ Inventory.Items = function()
     return tgiann:GetItemList()
 end
 
----This will return the count of the item in the players inventory, if not found will return 0.
----
----if metadata is passed it will find the matching items count.
+---@description This will return the count of the item in the players inventory, if not found will return 0.
 ---@param src number
 ---@param item string
----@param metadata table
+---@param metadata table (optional)
 ---@return number
 Inventory.GetItemCount = function(src, item, metadata)
     local _item = tgiann:GetItemByName(src, item, metadata)

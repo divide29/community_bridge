@@ -270,9 +270,7 @@ end
 
 Inventory.OpenPlayerInventory = function(src, target)
     assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
+    assert(target, "OpenPlayerInventory: target is required")
     local identifier = Framework.GetPlayerIdentifier(target)
     if not identifier then return false end
     exports.core_inventory:openInventory(src, 'stash-'.. identifier:gsub(':',''), 'stash', nil, nil, true, nil, false)

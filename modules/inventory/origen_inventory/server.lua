@@ -7,18 +7,18 @@ Inventory.Stashes = Inventory.Stashes or {}
 
 local origin = exports.origen_inventory
 
----This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 ---@return string
 Inventory.GetResourceName = function()
     return "origen_inventory"
 end
 
----This will add an item, and return true or false based on success
+---@description This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
----@param slot number
----@param metadata table
+---@param slot number (optional)
+---@param metadata table (optional)
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
     local canCarry = Inventory.CanCarryItem(src, item, count)
@@ -29,12 +29,12 @@ Inventory.AddItem = function(src, item, count, slot, metadata)
     return success or false
 end
 
----This will remove an item, and return true or false based on success
+---@description This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
----@param slot number
----@param metadata table
+---@param slot number (optional)
+---@param metadata table (optional)
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     local success = origin:removeItem(src, item, count, metadata, slot, false)
@@ -43,7 +43,7 @@ Inventory.RemoveItem = function(src, item, count, slot, metadata)
     return success or false
 end
 
----This will add items to a trunk, and return true or false based on success
+---@description This will add items to a trunk, and return true or false based on success
 ---@param identifier string
 ---@param items table
 ---@return boolean
@@ -55,8 +55,8 @@ Inventory.AddTrunkItems = function(identifier, items)
     for _, v in pairs(items) do
         table.insert(repack_items, {
             name = v.item,
-            amount = v.count,
-            metadata = v.metadata or {}
+            amount = v.count or v.amount,
+            metadata = v.metadata or v.info or {}
         })
     end
     if #repack_items == 0 then return false end
@@ -64,13 +64,14 @@ Inventory.AddTrunkItems = function(identifier, items)
     return true
 end
 
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
----@param identifier string
+---@description This will clear the specified inventory, will always return true unless a value isnt passed correctly.
+---@param id string
+---@param _type string unused with ox_inventory
 ---@return boolean
-Inventory.ClearStash = function(identifier, _type)
-    if type(identifier) ~= "string" then return false end
-    if Inventory.Stashes[identifier] then Inventory.Stashes[identifier] = nil end
-    local id = identifier
+Inventory.ClearStash = function(id, _type)
+    if type(id) ~= "string" then return false end
+    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
+    local id = id
     if _type == "trunk" then
         id = "trunk_"..id
     elseif _type == "glovebox" then
@@ -78,7 +79,7 @@ Inventory.ClearStash = function(identifier, _type)
     elseif _type == "stash" then
         id = "stash_"..id
     end
-    local inv = origin:getInventory(identifier, _type)
+    local inv = origin:getInventory(id, _type)
     if not inv then return false end
     local indexed = inv.inventory
     for _, v in pairs(indexed) do
@@ -89,7 +90,7 @@ Inventory.ClearStash = function(identifier, _type)
     return true
 end
 
----This will return a table with the item info, {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -105,23 +106,22 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will return the entire items table from the inventory.
+---@description This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()
     return origin:Items()
 end
 
----This will return the count of the item in the players inventory, if not found will return 0.
----if metadata is passed it will find the matching items count.
+---@description This will return the count of the item in the players inventory, if not found will return 0.
 ---@param src number
 ---@param item string
----@param metadata table
+---@param metadata table (optional)
 ---@return number
 Inventory.GetItemCount = function(src, item, metadata)
     return origin:getItemCount(src, item, metadata, false) or 0
 end
 
----This wil return the players inventory.
+---@description This will return the players inventory.
 ---@param src number
 ---@return table
 Inventory.GetPlayerInventory = function(src)
@@ -132,8 +132,8 @@ Inventory.GetPlayerInventory = function(src)
         if v.slot then
             table.insert(repack, {
                 name = v.name,
-                count = v.amount,
-                metadata = v.metadata or {},
+                count = v.amount or v.count,
+                metadata = v.metadata or v.info or {},
                 slot = v.slot,
                 label = v.label or "Unknown"
             })
@@ -142,20 +142,19 @@ Inventory.GetPlayerInventory = function(src)
     return repack
 end
 
----Returns the specified slot data as a table.
----format {weight, name, metadata, slot, label, count}
+---@description Returns the specified slot data as a table.
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
     local playerInv = Inventory.GetPlayerInventory(src)
     for _, v in pairs(playerInv) do
         if v.slot == slot then
             return {
                 name = v.name,
-                count = v.count,
+                count = v.count or v.amount,
                 weight = v.weight or 0,
-                metadata = v.metadata,
+                metadata = v.metadata or v.info or {},
                 slot = v.slot,
                 label = v.label
             }
@@ -164,7 +163,7 @@ Inventory.GetItemBySlot = function(src, slot)
     return {}
 end
 
----This will set the metadata of an item in the inventory.
+---@description This will set the metadata of an item in the inventory.
 ---@param src number
 ---@param item string
 ---@param slot number
@@ -174,10 +173,10 @@ Inventory.SetMetadata = function(src, item, slot, metadata)
     origin:setMetadata(src, slot, metadata)
 end
 
----This will open the specified stash for the src passed.
+---@description This will open the specified stash for the src passed.
 ---@param src number
----@param _type string
----@param id number|string
+---@param _type string "stash", "trunk", "glovebox"
+---@param id string
 ---@return nil
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
@@ -185,14 +184,14 @@ Inventory.OpenStash = function(src, _type, id)
     return origin:OpenInventory(src, _type, id)
 end
 
----This will register a stash
+---@description This will register a stash
 ---@param id number|string
 ---@param label string
 ---@param slots number
 ---@param weight number
----@param owner string
----@param groups table
----@param coords table
+---@param owner string (optional)
+---@param groups table (optional)
+---@param coords table (optional)
 ---@return boolean
 ---@return string|number
 Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
@@ -210,15 +209,16 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
     return true, id
 end
 
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(src, item)
-    return origin:getItemCount(src , item) > 0
+Inventory.HasItem = function(src, item, requiredCount)
+    return origin:getItemCount(src , item) > (requiredCount or 0)
 end
 
----This is to get if there is available space in the inventory, will return boolean.
+---@description This is to get if there is available space in the inventory, will return boolean.
 ---@param src number
 ---@param item string
 ---@param count number
@@ -227,7 +227,7 @@ Inventory.CanCarryItem = function(src, item, count)
     return origin:canCarryItem(src, item, count)
 end
 
----This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
+---@description This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
 ---@param oldplate string
 ---@param newplate string
 ---@return boolean
@@ -242,7 +242,7 @@ Inventory.UpdatePlate = function(oldplate, newplate)
     return true, exports["jg-mechanic"]:vehiclePlateUpdated(oldplate, newplate)
 end
 
----This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
+---@description This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -252,11 +252,12 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
+---@description This will open a players inventory, used for admin purposes and stuff.
+---@param src number
+---@param target number
 Inventory.OpenPlayerInventory = function(src, target)
     assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
+    assert(target, "OpenPlayerInventory: target is required")
     exports.origen_inventory:OpenInventory(src, "otherplayer", target)
 end
 

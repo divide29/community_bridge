@@ -5,37 +5,37 @@ local quasar = exports["qs-inventory"]
 
 Inventory = Inventory or {}
 
----This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 ---@return string
 Inventory.GetResourceName = function()
     return "qs-inventory"
 end
 
----Return the item info in oxs format, {name, label, stack, weight, description, image}
+---@description Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
     local itemsData = quasar:GetItemList()
     if not itemsData then return {} end
-    local itemData = itemsData[item]
-    if not itemData then return {} end
+    itemsData = itemsData[item]
+    if not itemsData then return {} end
     return {
-        name = itemData.name or "Missing Name",
-        label = itemData.label or "Missing Label",
-        stack = itemData.unique or "false",
-        weight = itemData.weight or "0",
-        description = itemData.description or "none",
+        name = itemsData.name or "Missing Name",
+        label = itemsData.label or "Missing Label",
+        stack = itemsData.unique or "false",
+        weight = itemsData.weight or "0",
+        description = itemsData.description or "none",
         image = Inventory.GetImagePath(item),
     }
 end
 
----This will return the entire items table from the inventory.
+---@description This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()
     return quasar:GetItemList()
 end
 
----Will return boolean if the player has the item.
+---@description Will return boolean if the player has the item.
 ---@param item string
 ---@return boolean
 Inventory.HasItem = function(item)
@@ -43,7 +43,7 @@ Inventory.HasItem = function(item)
     return check and true or false
 end
 
----This will return th count of the item in the players inventory, if not found will return 0.
+---@description This will return th count of the item in the players inventory, if not found will return 0.
 ---@param item string
 ---@return number
 Inventory.GetItemCount = function(item)
@@ -51,7 +51,7 @@ Inventory.GetItemCount = function(item)
     return searchItem or 0
 end
 
----This will get the image path for this item, if not found will return placeholder.
+---@description This will get the image path for this item, if not found will return placeholder.
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -61,7 +61,7 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
----This will return the players inventory in the format of {name, label, count, slot, metadata}
+---@description This will return the players inventory in the format of {name, label, count, slot, metadata}
 ---@return table
 Inventory.GetPlayerInventory = function()
     local items = {}
@@ -70,22 +70,15 @@ Inventory.GetPlayerInventory = function()
         table.insert(items, {
             name = v.name,
             label = v.label,
-            count = v.amount,
+            count = v.amount or v.count,
             slot = v.slot,
-            metadata = v.info,
-            stack = v.unique,
+            metadata = v.info or v.metadata or {},
+            stack = v.unique or v.stack or false,
             close = v.useable,
             weight = v.weight
         })
     end
     return items
-end
-
----comment
----@param id any
----@return nil
-Inventory.OpenStash = function(id)
-    quasar:RegisterStash(id, 50, 50000)
 end
 
 return Inventory

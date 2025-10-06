@@ -5,7 +5,6 @@ if GetResourceState('ox_inventory') ~= 'missing' then return end
 local tgiann = exports["tgiann-inventory"]
 
 Inventory = Inventory or {}
-Inventory.Stashes = Inventory.Stashes or {}
 
 ---@description This will get the name of the in use resource.
 ---@return string
@@ -42,7 +41,7 @@ Inventory.RemoveItem = function(src, item, count, slot, metadata)
     return success or false
 end
 
----This will return a table with the item info, {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -58,7 +57,7 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will return the entire items table from the inventory.
+---@description This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()
     return tgiann:GetItemList()
@@ -74,7 +73,7 @@ Inventory.GetItemCount = function(src, item, metadata)
     return _item.amount or 0
 end
 
----This wil return the players inventory.
+---@description This will return the players inventory.
 ---@param src number
 ---@return table
 Inventory.GetPlayerInventory = function(src)
@@ -88,12 +87,10 @@ Inventory.GetPlayerInventory = function(src)
     return items
 end
 
----Returns the specified slot data as a table.
----
----format {weight, name, metadata, slot, label, count}
+---@description Returns the specified slot data as a table.
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
     local item = tgiann:GetItemBySlot(src, slot)
     if not item then return {} end
@@ -102,14 +99,14 @@ Inventory.GetItemBySlot = function(src, slot)
         label = item.label,
         weight = item.weight,
         slot = slot,
-        count = item.amount,
-        metadata = item.info,
-        stack = item.unique or false,
+        count = item.amount or item.count,
+        metadata = item.info or item.metadata or {},
+        stack = item.unique or item.stack or false,
         description = item.description
     }
 end
 
----This will set the metadata of an item in the inventory.
+---@description This will set the metadata of an item in the inventory.
 ---@param src number
 ---@param item string
 ---@param slot number
@@ -119,18 +116,18 @@ Inventory.SetMetadata = function(src, item, slot, metadata)
     tgiann:UpdateItemMetadata(src, item, slot, metadata)
 end
 
----This will open the specified stash for the src passed.
+---@description This will open the specified stash for the src passed.
 ---@param src number
 ---@param _type string
 ---@param id number||string
 ---@return nil
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
-    local tbl = Inventory.Stashes[id]
+    local tbl = Inventory.Stashes[id] or {weight = 1000000, slot = 50, label = "Stash"}
     return tgiann:ForceOpenInventory(src, _type, id, tbl and { maxWeight = tbl.weight , slots = tbl.slot, label = tbl.label})
 end
 
----This will register a stash
+---@description This will register a stash
 ---@param id number|string
 ---@param label string
 ---@param slots number
@@ -154,7 +151,7 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
     return true, id
 end
 
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
 ---@return boolean
@@ -162,7 +159,7 @@ Inventory.HasItem = function(src, item)
     return tgiann:HasItem(src, item, 1)
 end
 
----This is to get if there is available space in the inventory, will return boolean.
+---@description This is to get if there is available space in the inventory, will return boolean.
 ---@param src number
 ---@param item string
 ---@param count number
@@ -171,7 +168,7 @@ Inventory.CanCarryItem = function(src, item, count)
     return tgiann:CanCarryItem(src, item, count)
 end
 
----This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
+---@description This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
 ---@param oldplate string
 ---@param newplate string
 ---@return boolean
@@ -187,7 +184,7 @@ Inventory.UpdatePlate = function(oldplate, newplate)
     return true, exports["jg-mechanic"]:vehiclePlateUpdated(oldplate, newplate)
 end
 
----This will add items to a trunk, and return true or false based on success
+---@description This will add items to a trunk, and return true or false based on success
 ---@param identifier string
 ---@param items table
 ---@return boolean
@@ -200,7 +197,7 @@ Inventory.AddTrunkItems = function(identifier, items)
     return true
 end
 
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
+---@description This will clear the specified inventory, will always return true unless a value isnt passed correctly.
 ---@param id string
 ---@return boolean
 Inventory.ClearStash = function(id, _type)
@@ -210,7 +207,7 @@ Inventory.ClearStash = function(id, _type)
     return true
 end
 
----This will get the image path for this item, if not found will return placeholder.
+---@description This will get the image path for this item, if not found will return placeholder.
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -222,30 +219,13 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
----UNUSED:
----This will return generic item data from the specified inventory, with the items total count.
----
----format without metadata { count, stack, name, weight, label }
----
----fortmat with metadata { count, stack, name, weight, label, metadata }
+---@description This will open a players inventory, used for admin purposes and stuff.
 ---@param src number
----@param item string
----@param metadata table
----@return table
-Inventory.GetItem = function(src, item, metadata)
-    local item = tgiann:GetItemByName(src, item, metadata)
-    item.count = item.amount
-    item.metadata = item.info
-    return item
-end
-
+---@param target number
 Inventory.OpenPlayerInventory = function(src, target)
     assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
-    exports['tgiann-inventory']:OpenInventoryById(src, target)
+    assert(target, "OpenPlayerInventory: target is required")
+    tgiann:OpenInventoryById(src, target)
 end
-
 
 return Inventory

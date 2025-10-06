@@ -47,7 +47,7 @@ end
 ---@return table
 Inventory.GetPlayerInventory = function()
     local items = {}
-    local inventory = codem:getUserInventory()
+    local inventory = codem:GetClientPlayerInventory()
     for _, v in pairs(inventory) do
         table.insert(items, {
             name = v.name,

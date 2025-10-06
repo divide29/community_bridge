@@ -5,7 +5,6 @@ if GetResourceState('ox_inventory') ~= 'missing' then return end
 local quasar = exports['qs-inventory']
 
 Inventory = Inventory or {}
-Inventory.Stashes = Inventory.Stashes or {}
 
 ---This will get the name of the in use resource.
 ---@return string
@@ -43,7 +42,6 @@ end
 ---@return boolean
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
-    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
     quasar:ClearOtherInventory(_type, id)
     return false
 end

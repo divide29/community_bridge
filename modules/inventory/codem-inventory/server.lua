@@ -49,9 +49,7 @@ end
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
     if metadata then
         local found, foundSlot = runMetadataSearch(src, metadata)
-        if found then
-            slot = foundSlot
-        end
+        if found then slot = foundSlot end
     end
     local success = codem:RemoveItem(src, item, count, slot)
     if not success then return false end
@@ -87,7 +85,7 @@ end
 ---@param metadata table (optional)
 ---@return number
 Inventory.GetItemCount = function(src, item, metadata)
-    return codem:GetItemsTotalAmount(src, item)
+    return codem:GetItemsTotalAmount(src, item) or 0
 end
 
 ---@description This wil return the players inventory.

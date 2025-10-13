@@ -171,11 +171,12 @@ Framework.GetPlayerJobData = function()
     }
 end
 
----@description This will return if the player has the specified item in their inventory
+---@description Will return boolean if the player has the item.
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Framework.HasItem = function(item)
-	return QBCore.Functions.HasItem(item)
+Inventory.HasItem = function(item, requiredCount)
+	return QBCore.Functions.HasItem(item, requiredCount or 1)
 end
 
 ---@description This will return the item count for the specified item in the players inventory

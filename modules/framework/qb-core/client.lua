@@ -175,7 +175,7 @@ end
 ---@param item string
 ---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(item, requiredCount)
+Framework.HasItem = function(item, requiredCount)
 	return QBCore.Functions.HasItem(item, requiredCount or 1)
 end
 

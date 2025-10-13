@@ -188,12 +188,14 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
     return true, id
 end
 
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(src, item)
-    return core:getItemCount(src, item) > 0
+Inventory.HasItem = function(src, item, requiredCount)
+    local count = Inventory.GetItemCount(src, item, nil)
+    return count >= (requiredCount or 1)
 end
 
 ---This is to get if there is available space in the inventory, will return boolean.

@@ -50,11 +50,12 @@ Inventory.HasItem = function(item)
     return core:hasItem(item, 1)
 end
 
----This will return th count of the item in the players inventory, if not found will return 0.
+---@description Will return boolean if the player has the item.
 ---@param item string
----@return number
-Inventory.GetItemCount = function(item)
-    return core:getItemCount(item)
+---@param requiredCount number (optional)
+---@return boolean
+Inventory.HasItem = function(item, requiredCount)
+    return core:getItemCount(item) >= (requiredCount or 1)
 end
 
 ---This will get the image path for this item, if not found will return placeholder.

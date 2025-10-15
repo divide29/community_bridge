@@ -2,33 +2,23 @@
 local resourceName = "ox_target"
 if GetResourceState(resourceName) == 'missing' then return end
 
-local targetDebug = false
-local function detectDebugEnabled()
-    if BridgeSharedConfig.DebugLevel == 2 then
-        targetDebug = true
-    end
-end
-
-detectDebugEnabled()
-
-local ox_target = exports.ox_target
-local targetZones = {}
-
 Target = Target or {}
+local targetDebug = BridgeSharedConfig and BridgeSharedConfig.DebugLevel == 2 or false
+local targetZones = {}
+local ox_target = exports.ox_target
 
 ---This is an internal function that is used to fix the options passed to fit alternative target systems, for example qb-ox or ox-qb etc.
 ---@param options table
 ---@return table
 Target.FixOptions = function(options)
-    for k, v in pairs(options) do
+    for _, v in pairs(options) do
         local action = v.onSelect or v.action
-        if not action then 
+        if not action then
             local _type = v.type
             if _type and _type == "server" then
                 v.serverEvent = v.event
                 v.event = nil
             end
-
         else
             local select = function(entityOrData)
                 if type(entityOrData) == 'table' then
@@ -37,17 +27,15 @@ Target.FixOptions = function(options)
                 return action(entityOrData)
             end
             v.onSelect = select
-           
         end
         v.groups = v.job or v.groups
-        local optionsCanInteract = v.canInteract      
-        if optionsCanInteract then 
+        local optionsCanInteract = v.canInteract
+        if optionsCanInteract then
             local id = Target.CreateCanInteract(optionsCanInteract)
             v.canInteract = function(...)
                 return Target.CanInteract(id, ...)
             end
         end
-        -- print(json.encode(v))
     end
     return options
 end

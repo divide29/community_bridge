@@ -4,8 +4,15 @@ if GetResourceState(resourceName) == 'missing' then return end
 
 Target = Target or {}
 local targetDebug = BridgeSharedConfig and BridgeSharedConfig.DebugLevel == 2 or false
-local targetZones = {}
+
 local ox_target = exports.ox_target
+local targetZones = {}
+
+Target = Target or {}
+
+Target.GetResourceName = function()
+    return "ox_target"
+end
 
 ---This is an internal function that is used to fix the options passed to fit alternative target systems, for example qb-ox or ox-qb etc.
 ---@param options table
@@ -13,12 +20,13 @@ local ox_target = exports.ox_target
 Target.FixOptions = function(options)
     for _, v in pairs(options) do
         local action = v.onSelect or v.action
-        if not action then
+        if not action then 
             local _type = v.type
             if _type and _type == "server" then
                 v.serverEvent = v.event
                 v.event = nil
             end
+
         else
             local select = function(entityOrData)
                 if type(entityOrData) == 'table' then
@@ -192,9 +200,5 @@ AddEventHandler('onResourceStop', function(resource)
     end
     targetZones = {}
 end)
-
-Target.GetResourceName = function()
-    return "ox_target"
-end
 
 return Target

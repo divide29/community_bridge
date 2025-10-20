@@ -5,8 +5,16 @@ if GetResourceState("ox_target") ~= 'missing' then return end
 
 Target = Target or {}
 local targetDebug = BridgeSharedConfig and BridgeSharedConfig.DebugLevel == 2 or false
+
 local targetZones = {}
+
+Target = Target or {}
+
 local qb_target = exports['qb-target']
+
+Target.GetResourceName = function()
+    return "qb-target"
+end
 
 function GetLargestDistance(data)
     local largestDistance = -1
@@ -17,6 +25,7 @@ function GetLargestDistance(data)
     end
     return largestDistance ~= -1 and largestDistance or 2.0
 end
+
 
 ---This is an internal function that is used to fix the options passed to fit alternative target systems, for example qb-ox or ox-qb etc.
 ---@param options table
@@ -221,9 +230,5 @@ AddEventHandler('onResourceStop', function(resource)
     end
     targetZones = {}
 end)
-
-Target.GetResourceName = function()
-    return "qb-target"
-end
 
 return Target

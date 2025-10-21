@@ -8,7 +8,7 @@ Dispatch = Dispatch or {}
 Dispatch.SendAlert = function(data)
     local ped = PlayerPedId()
 
-    local job = data.job or data.jobs[0] or 'police'
+    local job = data.job or data.jobs[1] or 'police'
     local message = data.message or "An Alert Has Been Made"
     local coords = data.coords or GetEntityCoords(ped)
 

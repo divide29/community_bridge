@@ -47,7 +47,7 @@ end
 ---@return number
 Skills.GetSkillLevel = function(skillName)
     if not skillName then return 0 end
-    local plyrSkills = Framework.GetPlayerMetaData("community_bridge_skills")
+    local plyrSkills = Bridge.Framework.GetPlayerMetaData("community_bridge_skills")
     if not plyrSkills or not plyrSkills[skillName] then return 1 end
     return plyrSkills[skillName].level or 1
 end
@@ -57,7 +57,7 @@ end
 ---@return number
 Skills.GetXP = function(skillName)
     if not skillName then return 0 end
-    local plyrSkills = Framework.GetPlayerMetaData("community_bridge_skills")
+    local plyrSkills = Bridge.Framework.GetPlayerMetaData("community_bridge_skills")
     if not plyrSkills or not plyrSkills[skillName] then return 1 end
     return plyrSkills[skillName].currentXP or 1
 end

@@ -23,7 +23,7 @@
 ---@diagnostic disable: duplicate-set-field
 local resourceName = "ox_lib"
 if GetResourceState(resourceName) == 'missing' then return end
-lib = lib or Require("init.lua", "ox_lib")
+if not lib then Require('init.lua', 'ox_lib') end
 Ids = Ids or Require('lib/utility/shared/ids.lua')
 
 cZones = {} --conflict with ox

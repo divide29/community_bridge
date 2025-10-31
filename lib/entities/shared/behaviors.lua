@@ -51,7 +51,7 @@ function Behaviors.Trigger(actionName, clientEntityData, ...)
     for property, behavior in pairs(Behaviors.All[invoking] or {}) do
         local hasBehaviorArgs = Behaviors.Has(property, clientEntityData) -- this is everything that's contained inside the object's individual property
         if hasBehaviorArgs and behavior[actionName] then
-            local success, result = pcall(behavior[actionName], clientEntityData, hasBehaviorArgs, ...)
+            local success, result = pcall(behavior[actionName], clientEntityData, ...)
             if not success then
                 print(string.format("[ClientEntity] Behavior %s failed: %s", property, result))
             end
@@ -60,7 +60,7 @@ function Behaviors.Trigger(actionName, clientEntityData, ...)
     for property, behavior in pairs(Behaviors.All['community_bridge'] or {}) do
         local hasBehaviorArgs = Behaviors.Has(property, clientEntityData) -- this is everything that's contained inside the object's individual property
         if hasBehaviorArgs and behavior[actionName] and not Behaviors.All[invoking]?[actionName] then
-            local success, result = pcall(behavior[actionName], clientEntityData, hasBehaviorArgs, ...)
+            local success, result = pcall(behavior[actionName], clientEntityData, ...)
             if not success then
                 print(string.format("[ClientEntity] Behavior %s failed: %s", property, result))
             end

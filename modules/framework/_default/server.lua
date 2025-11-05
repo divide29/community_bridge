@@ -2,10 +2,13 @@
 Framework = Framework or {}
 
 local jobsRegisteredTable = {}
+local gangsRegisteredTable = {}
 local invertedJobsRegisteredTable = {}
+local invertedGangsRegisteredTable = {}
 local globalState = GlobalState
 
 globalState.jobcounts = {}
+globalState.gangcounts = {}
 
 ---This will get the name of the in use resource.
 ---@return string
@@ -25,6 +28,18 @@ Framework.GetJobCount = function(jobName)
     return count
 end
 
+---This is an internal function that will be used to retrieve gang counts later.
+---@param gangName string
+---@return number
+Framework.GetGangCount = function(gangName)
+    if not gangsRegisteredTable[gangName] then return 0 end
+    local count = 0
+    for _ in pairs(gangsRegisteredTable[gangName]) do
+        count = count + 1
+    end
+    return count
+end
+
 ---This will allow passing a table of job names and returning a sum of the total count.
 ---@param tbl any
 ---@return number
@@ -36,11 +51,34 @@ Framework.GetJobCountTotal = function(tbl)
     return total
 end
 
+---This will allow passing a table of gang names and returning a sum of the total count.
+---@param tbl any
+---@return number
+Framework.GetGangCountTotal = function(tbl)
+    local total = 0
+    for _, gangName in pairs(tbl) do
+        total = total + Framework.GetGangCount(gangName)
+    end
+    return total
+end
+
 ---This will return a list of player sources for a given job.
 ---@param jobName string
 ---@return table
 Framework.GetPlayerSourcesByJob = function(jobName)
     if not jobsRegisteredTable[jobName] then return {} end
+    local sources = {}
+    for src in pairs(jobsRegisteredTable[jobName]) do
+        table.insert(sources, src)
+    end
+    return sources
+end
+
+---This will return a list of player sources for a given gang.
+---@param gangName string
+---@return table
+Framework.GetPlayerSourcesByGang = function(gangName)
+    if not gangsRegisteredTable[gangName] then return {} end
     local sources = {}
     for src in pairs(jobsRegisteredTable[jobName]) do
         table.insert(sources, src)
@@ -69,10 +107,37 @@ Framework.AddJobCount = function(src, jobName)
     return true
 end
 
+---This will update the cached tables for gang counts.
+---This is used to track how many players are in a gang.
+---@param src number
+---@param gangName string
+Framework.AddGangCount = function(src, gangName)
+    if not src or not gangName then return false end
+    if not gangsRegisteredTable[gangName] then gangsRegisteredTable[gangName] = {} end
+    if gangsRegisteredTable[gangName][src] then return false end
+
+    gangsRegisteredTable[gangName][src] = true
+    invertedGangsRegisteredTable[src] = gangName
+
+    local newGangCounts = {}
+    for gang, _ in pairs(gangsRegisteredTable) do
+        newGangCounts[gang] = Framework.GetGangCount(gang)
+    end
+    globalState.gangcounts = newGangCounts
+
+    return true
+end
+
 ---This will return the job name for a given source.
 ---@param src number
 Framework.SearchJobCountBySource = function(src)
     return invertedJobsRegisteredTable[src]
+end
+
+---This will return the gang name for a given source.
+---@param src number
+Framework.SearchGangCountBySource = function(src)
+    return invertedGangsRegisteredTable[src]
 end
 
 ---This will remove the job count for a given source.
@@ -101,14 +166,49 @@ Framework.RemoveJobCount = function(src, jobName)
     return true
 end
 
+
+---This will remove the gang count for a given source.
+---@param src number
+---@param gangName string | nil
+Framework.RemoveGangCount = function(src, gangName)
+    if not src then return false end
+
+    if not gangName then gangName = invertedGangsRegisteredTable[src] end
+    if not gangName then return false end
+
+    invertedGangsRegisteredTable[src] = nil
+    if gangsRegisteredTable[gangName] then
+        gangsRegisteredTable[gangName][src] = nil
+    end
+
+    local newGangCounts = {}
+    for gang, _ in pairs(gangsRegisteredTable) do
+        local count = Framework.GetGangCount(gang)
+        if count > 0 then
+            newGangCounts[gang] = count
+        end
+    end
+    globalState.gangcounts = newGangCounts
+
+    return true
+end
+
 AddEventHandler('community_bridge:Server:OnPlayerJobChange', function(src, newJobName)
     local previousJob = invertedJobsRegisteredTable[src]
     if previousJob then Framework.RemoveJobCount(src, previousJob) end
     if newJobName then Framework.AddJobCount(src, newJobName) end
 end)
 
+AddEventHandler('community_bridge:Server:OnPlayerGangChange', function(src, newGangName)
+    local previousGang = invertedGangsRegisteredTable[src]
+    if previousGang then Framework.RemoveGangCount(src, previousGang) end
+    if newGangName then Framework.AddGangCount(src, newGangName) end
+end)
+
+
 AddEventHandler('community_bridge:Server:OnPlayerUnload', function(src)
     Framework.RemoveJobCount(src)
+    Framework.RemoveGangCount(src)
 end)
 
 return Framework

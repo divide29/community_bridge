@@ -64,6 +64,22 @@ Framework.GetFrameworkJobs = function()
     return jobs
 end
 
+---This will return the gangs registered in the framework in a table.
+---Format of the table is:
+---{name = gangName, label = gangLabel, grade = {name = gradeName, level = gradeLevel}}
+---@return table
+Framework.GetFrameworkGangs = function()
+    local gangs = {}
+    for k, v in pairs(QBCore.Shared.Gangs) do
+        table.insert(gangs, {
+            name = k,
+            label = v.label,
+            grade = v.grades
+        })
+    end
+    return gangs
+end
+
 -- Framework.GetPlayerName(src)
 -- Returns the first and last name of the player.
 ---@return string|nil, string|nil
@@ -373,6 +389,13 @@ Framework.GetPlayersByJob = function(job)
     return Framework.GetPlayerSourcesByJob(job) or {}
 end
 
+---This will get a table of player sources that have the specified gang name.
+---@param gang string
+---@return table
+Framework.GetPlayersByGang = function(gang)
+    return Framework.GetPlayerSourcesByGang(gang) or {}
+end
+
 ---Depricated: Returns the job name, label, grade name, and grade level of the player.
 ---@param src number
 ---@return string | string | string | number | nil
@@ -404,6 +427,25 @@ Framework.GetPlayerJobData = function(src)
         onDuty = jobData.onduty,
     }
 end
+
+---This will return the players gang name, gang label, gang grade label gang grade level, boss status, and duty status in a table
+---@param src number
+---@return table | nil
+Framework.GetPlayerGangData = function(src)
+    local player = Framework.GetPlayer(src)
+    if not player then return end
+    local playerData = player.PlayerData
+    local gangData = playerData.gang
+    return {
+        gangName = gangData.name,
+        gangLabel = gangData.label,
+        gradeName = gangData.grade.name,
+        gradeLabel = gangData.grade.name,
+        gradeRank = gangData.grade.level,
+        boss = gangData.isboss,
+    }
+end
+
 
 ---Returns the players duty status.
 ---@param src number
@@ -437,6 +479,17 @@ Framework.SetPlayerJob = function(src, name, grade)
     local player = Framework.GetPlayer(src)
     if not player then return end
     return player.Functions.SetJob(name, grade)
+end
+
+-- Sets the player's gang to the specified name and grade.
+---@param src number
+---@param name string
+---@param grade string
+---@return nil
+Framework.SetPlayerGang = function(src, name, grade)
+    local player = Framework.GetPlayer(src)
+    if not player then return end
+    return player.Functions.SetGang(name, grade)
 end
 
 ---This will add money based on the type of account (money/bank)
@@ -564,8 +617,14 @@ RegisterNetEvent("QBCore:Server:OnPlayerLoaded", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerLoaded", src)
     local jobData = Framework.GetPlayerJobData(src)
-    if not jobData then return end
-    Framework.AddJobCount(src, jobData.jobName)
+    if jobData then
+        Framework.AddJobCount(src, jobData.jobName)
+    end
+    
+    local gangData = Framework.GetPlayerGangData(src)
+    if gangData then
+        Framework.AddGangCount(src, gangData.gangName)
+    end
 end)
 
 RegisterNetEvent("QBCore:Server:OnPlayerUnload", function(src)
@@ -577,6 +636,12 @@ RegisterNetEvent("QBCore:Server:OnJobUpdate", function(src, job)
     src = src or source
     if not job then return end
     TriggerEvent("community_bridge:Server:OnPlayerJobChange", src, job.name)
+end)
+
+RegisterNetEvent("QBCore:Server:OnGangUpdate", function(src, gang)
+    src = src or source
+    if not gang then return end
+    TriggerEvent("community_bridge:Server:OnPlayerGangChange", src, gang.name)
 end)
 
 AddEventHandler("playerDropped", function()

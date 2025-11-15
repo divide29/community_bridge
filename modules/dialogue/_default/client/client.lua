@@ -56,7 +56,7 @@ function Dialogue.Open( name, dialogue, characterOptions, dialogueOptions, onSel
     -- camera magic!
     if entity then
         Wait(500)
-        local endLocation = GetOffsetFr omEntityInWorldCoords(entity, offset.x, offset.y + 2.0, offset.z)
+        local endLocation = GetOffsetFromEntityInWorldCoords(entity, offset.x, offset.y + 2.0, offset.z)
         local pedHeading = GetEntityHeading(entity)
         -- Get position in front of ped based on their heading
 

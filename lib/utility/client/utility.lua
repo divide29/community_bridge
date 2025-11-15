@@ -120,12 +120,14 @@ end
 function Utility.CreateBlip(coords, sprite, color, scale, label, shortRange, displayType)
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, sprite or 8)
-    SetBlipColour(blip, color or 3)
-    SetBlipScale(blip, scale or 0.8)
+    SetTextFont(0)
     SetBlipDisplay(blip, displayType or 2)
+    SetBlipScale(blip, scale or 0.8)
+    SetBlipColour(blip, color or 3)
     SetBlipAsShortRange(blip, shortRange)
-    AddTextEntry(label, label)
-    BeginTextCommandSetBlipName(label)
+    BeginTextCommandSetBlipName("STRING")
+    --AddTextComponentSubstringPlayerName(label) -- switch to this if below line doesnt show da chinese
+    AddTextComponentString(label)
     EndTextCommandSetBlipName(blip)
     blipIDs[tostring(blip)] = blip
     return blip
@@ -290,9 +292,9 @@ local doingstuff = false
 ---@param text string The text to show
 ---@param coords table The coords to show the message at
 ---@return nil
-function Utility.FloatingHelpText(text, coords) 
+function Utility.FloatingHelpText(text, coords)
     AddTextEntry("community_bridge_"..text, text)
-    SetFloatingHelpTextWorldPosition(1, coords.x, coords.y, coords.z)    
+    SetFloatingHelpTextWorldPosition(1, coords.x, coords.y, coords.z)
     SetFloatingHelpTextStyle(1, 1, 2, -1, 3, 0)
     BeginTextCommandDisplayHelp("community_bridge_"..text)
     EndTextCommandDisplayHelp(2, false, false, 100)
@@ -313,7 +315,7 @@ function Utility.Draw3DHelpText(coords, text, scale)
     end
     local widthFactor = maxLineLen * 0.012 * scale
     local height = 0.06 * scale * lineCount
-    
+
     -- Set text properties
     SetTextScale(scale or 0.35, scale or 0.35)
     SetTextFont(4)
@@ -323,7 +325,7 @@ function Utility.Draw3DHelpText(coords, text, scale)
     SetTextCentre(true)
     AddTextComponentString(text)
     DrawText(x, y)
-    
+
     -- Draw background rectangle
     DrawRect(x, y + height / 2, widthFactor + 0.015 + 0.006, height + 0.015 + 0.006, 10, 25, 47, 200)
     DrawRect(x, y + height / 2, widthFactor + 0.015, height + 0.015, 17, 45, 78, 50)

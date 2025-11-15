@@ -22,7 +22,7 @@ function Dialogue.Close(name)
 
     -- Wait brief moment to see if new dialogue opens
     CreateThread(function()
-        Wait(50) -- Small delay to allow new dialogue to open
+        Wait(200) -- Small delay to allow new dialogue to open
         if pendingCameraDestroy and not activeDialogue then
             -- No new dialogue opened, safe to destroy camera
             RenderScriptCams(false, 1, 1000, 1, 0)
@@ -56,7 +56,7 @@ function Dialogue.Open( name, dialogue, characterOptions, dialogueOptions, onSel
     -- camera magic!
     if entity then
         Wait(500)
-        local endLocation = GetOffsetFromEntityInWorldCoords(entity, offset.x, offset.y + 2.0, offset.z + 0.5)
+        local endLocation = GetOffsetFr omEntityInWorldCoords(entity, offset.x, offset.y + 2.0, offset.z)
         local pedHeading = GetEntityHeading(entity)
         -- Get position in front of ped based on their heading
 

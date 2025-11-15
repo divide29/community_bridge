@@ -7,6 +7,7 @@ Grid.Generated = false
 local Grids = {}
 Point = {}
 Point.All = {}
+Point.LastInside = nil
 
 function Grid.Generate()
     if Grid.Generated then return end
@@ -39,13 +40,21 @@ Points.Started = false
 function Point.StartLoop()
     if Points.Started then return end
     Points.Started = true
-
     CreateThread(function()
         while Points.Started do
             local playerPed = PlayerPedId()
             if playerPed ~= -1 then
                 local coords = GetEntityCoords(playerPed)
                 local cell = Grid.GetCellByCoords(coords)
+                if Point.LastInside ~= cell then
+                    for _, point in pairs(Point.LastInside or {}) do
+                        if point.inside then
+                            point.inside = false
+                            point.args = point?.onExit(point, point.args) or point.args
+                        end
+                    end
+                    Point.LastInside = cell
+                end
                 for _, point in pairs(cell or {}) do
                     local entity = point.target
                     local targetCoords = point.isEntity and DoesEntityExist(entity) and GetEntityCoords(entity) or point.coords

@@ -8,7 +8,7 @@ description 'A Universal Bridge for Our Community, created by a group of contrib
 version '0.13.0'
 
 shared_scripts {
-    -- '@ox_lib/init.lua',
+    '@ox_lib/init.lua',
     'settings/sharedConfig.lua',
     'lib/init.lua',
     'modules/locales/*.lua',
@@ -62,7 +62,6 @@ client_scripts {
     'modules/bossmenu/**/client.lua',
     'modules/zones/**/client.lua',
     'init.lua',
-    -- 'unit_tests/*.lua',
 }
 
 ui_page 'web/dist/index.html'

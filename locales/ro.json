@@ -4,6 +4,7 @@
 		"Input": "Introducere cantitate",
 		"PurchaseAmount": "Cantitate de cumpărare",
 		"PurchasedItem": "Ai cumpărat ",
+		"PurchaseFailed": "Achiziție eșuată, inventar plin",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Confirmă cumpărarea",
 		"AreYouSure": "Ești sigur că vrei să cumperi un %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Numele magazinului"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Sunt un %s %s",
-		"locale-unit-test": "Acesta este un șir de test"
+	"Notifications": {
+		"PlaceholderTitle": "Notificare"
 	},
 	"clipboard": {
 		"copy": "Copiat în clipboard"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Anulează  \n",
 		"object_scroll_up": "[%s] Rotește la dreapta  \n",
 		"object_scroll_down": "[%s] Rotește la stânga  \n",
-		"depth_modifier": "[%s] Modificator control adâncime  \n"
+		"rotate_left": "Rotește la stânga",
+		"rotate_right": "Rotește la dreapta",
+		"rotate_clockwise": "[%s] Rotește în sensul acelor de ceasornic  \n",
+		"rotate_counter_clockwise": "[%s] Rotește în sens invers acelor de ceasornic  \n",
+		"depth_modifier": "[%s] Modificator de control al adâncimii  \n"
+	},
+	"target": {
+		"interact": "[E] Interacționează",
+		"title": "Opțiuni",
+		"description": "Fără descriere"
 	}
 }

@@ -4,6 +4,7 @@
 		"Input": "Kiekio įvestis",
 		"PurchaseAmount": "Pirkimo kiekis",
 		"PurchasedItem": "Jūs nusipirkote ",
+		"PurchaseFailed": "Pirkimas nepavyko, inventorius pilnas",
 		"CurrencySymbol": "%s €",
 		"Confirm": "Patvirtinti pirkimą",
 		"AreYouSure": "Ar tikrai norite nusipirkti %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Parduotuvės pavadinimas"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Aš esu %s %s",
-		"locale-unit-test": "Tai yra testavimo eilutė"
+	"Notifications": {
+		"PlaceholderTitle": "Pranešimas"
 	},
 	"clipboard": {
 		"copy": "Nukopijuota į iškarpinę"
@@ -33,8 +33,17 @@
 		"place_object_scroll_down": "[Slinkti žemyn] Pasukti kairėn  \n",
 		"object_place": "[%s] Pastatyti  \n",
 		"object_cancel": "[%s] Atšaukti  \n",
+		"object_scroll_up": "[%s] Pasukti dešinėn  \n",
+		"object_scroll_down": "[%s] Pasukti kairėn  \n",
+		"rotate_left": "Pasukti kairėn",
+		"rotate_right": "Pasukti dešinėn",
 		"rotate_clockwise": "[%s] Sukti pagal laikrodžio rodyklę  \n",
 		"rotate_counter_clockwise": "[%s] Sukti prieš laikrodžio rodyklę  \n",
 		"depth_modifier": "[%s] Gylio kontrolės modifikatorius  \n"
+	},
+	"target": {
+		"interact": "[E] Sąveika",
+		"title": "Parinktys",
+		"description": "Nėra aprašymo"
 	}
 }

@@ -5,7 +5,7 @@ Framework = Framework or {}
 
 local QBox = exports.qbx_core
 
----Returns the name of the framework being used (if a supported framework).
+---@description Returns the name of the framework being used (if a supported framework).
 ---@return string
 Framework.GetFrameworkName = function()
     return 'qbx_core'
@@ -18,7 +18,7 @@ Framework.GetResourceName = function()
 end
 
 ---@description This will return if the player is an admin in the framework.
----@param src any
+---@param src number
 ---@return boolean
 Framework.GetIsFrameworkAdmin = function(src)
     if not src then return false end
@@ -83,62 +83,110 @@ Framework.GetPlayerName = function(src)
     return playerData.charinfo.firstname, playerData.charinfo.lastname
 end
 
+---@description Adds the specified item to the player's inventory.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@param item string
+---@param amount number
+---@param slot number
+---@param metadata table
+---@return boolean | nil
+Framework.AddItem = function(src, item, amount, slot, metadata)
+    local player = Framework.GetPlayer(src)
+    if not player then return false end
+    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "add", item = item, count = amount, slot = slot, metadata = metadata })
+    return player.Functions.AddItem(item, amount, slot, metadata)
+end
+
+---@description Removes the specified item from the player's inventory.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@param item string
+---@param amount number
+---@param slot number
+---@param metadata table
+---@return boolean | nil
+Framework.RemoveItem = function(src, item, amount, slot, metadata)
+    local player = Framework.GetPlayer(src)
+    if not player then return false end
+    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "remove", item = item, count = amount, slot = slot, metadata = metadata })
+    return player.Functions.RemoveItem(item, amount, slot)
+end
+
+---@description Sets the metadata for the specified item in the player's inventory.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---@param src number
+---@param item string
+---@param slot number
+---@param metadata table
+---@return boolean | nil
+Framework.SetMetadata = function(src, item, slot, metadata)
+    local player = Framework.GetPlayer(src)
+    if not player then return false end
+    player.Functions.RemoveItem(item, 1, slot)
+    return player.Functions.AddItem(item, 1, slot, metadata)
+end
+
 ---@description Returns a table of items matching the specified name and if passed metadata from the player's inventory.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
+---returns {name = v.name, count = v.amount, metadata = v.info, slot = v.slot}
 ---@param src number
 ---@param item string
 ---@param metadata table
 ---@return table|nil {name = v.name, count = v.amount, metadata = v.info, slot = v.slot}
 Framework.GetItem = function(src, item, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
-    local playerInventory = player.PlayerData.items
+    if not player then return { } end
     local repackedTable = {}
-    for _, v in pairs(playerInventory) do
+    for _, v in pairs(player.PlayerData.items) do
         if v.name == item and (not metadata or v.info == metadata) then
-            table.insert(repackedTable, {
+            repackedTable[#repackedTable + 1] = {
                 name = v.name,
-                count = v.amount,
-                metadata = v.info,
+                count = v.amount or v.count,
+                metadata = v.info or v.metadata,
                 slot = v.slot,
-            })
+            }
         end
     end
     return repackedTable
 end
 
 ---@description Returns the count of items matching the specified name and if passed metadata from the player's inventory.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 ---@param src number
 ---@param item string
 ---@param metadata table
 ---@return number | nil
 Framework.GetItemCount = function(src, item, metadata)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerInventory = player.PlayerData.items
     local count = 0
     for _, v in pairs(playerInventory) do
         if v.name == item and (not metadata or v.info == metadata) then
-            count = count + v.amount
+            count = count + (v.amount or v.count)
         end
     end
     return count
 end
 
 ---@description Returns boolean if the player has the specified item in their inventory.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 ---@param src number
 ---@param item string
 ---@return boolean
 Framework.HasItem = function(src, item)
-    local getCount = Framework.GetItemCount(src, item, nil)
+    local getCount = Framework.GetItemCount(src, item)
     return getCount > 0
 end
 
 ---@description Returns the entire inventory of the player as a table.
+---This is an internal function and should not be used outside of bridge, use the Inventory module instead when dealing with items.
 ---@param src number
 ---@return table | nil
 Framework.GetPlayerInventory = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return { } end
     local playerItems = player.PlayerData.items
     local repackedTable = {}
     for _, v in pairs(playerItems) do
@@ -236,7 +284,7 @@ end
 ---@return number | nil
 Framework.GetHunger = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerData = player.PlayerData
     local newHunger = (playerData.metadata.hunger or 0)
     return math.floor((newHunger) + 0.5) or 0
@@ -247,7 +295,7 @@ end
 ---@return boolean|nil
 Framework.GetIsPlayerDead = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return false end
     local playerData = player.PlayerData
     return playerData.metadata.isdead or false
 end
@@ -267,7 +315,7 @@ end
 ---@return number| nil
 Framework.GetThirst = function(src)
     local player = Framework.GetPlayer(src)
-    if not player then return end
+    if not player then return 0 end
     local playerData = player.PlayerData
     local newThirst = (playerData.metadata.thirst or 0)
     return math.floor((newThirst) + 0.5) or 0
@@ -298,7 +346,8 @@ Framework.GetPlayersByJob = function(job)
     return Framework.GetPlayerSourcesByJob(job) or {}
 end
 
----@Deprecated Deprecated: Returns the job name, label, grade name, and grade level of the player.
+---@description Depricated: Returns the job name, label, grade name, and grade level of the player.
+---Please use GetPlayerJobData instead.
 ---@param src number
 ---@return string | string | string | number | nil
 ---@return string | string | string | number | nil
@@ -308,6 +357,7 @@ Framework.GetPlayerJob = function(src)
     local player = Framework.GetPlayer(src)
     if not player then return end
     local playerData = player.PlayerData
+    print("This function is depricated, please use GetPlayerJobData instead.")
     return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
 end
 
@@ -352,7 +402,7 @@ Framework.SetPlayerDuty = function(src, status)
     TriggerEvent('QBCore:Server:SetDuty', src, player.PlayerData.job.onduty)
 end
 
----@descriptionReturns the players duty status.
+---@description Returns the players duty status.
 ---@param src number
 ---@return boolean | nil
 Framework.GetPlayerDuty = function(src)
@@ -372,6 +422,7 @@ Framework.AddAccountBalance = function(src, _type, amount)
     local player = Framework.GetPlayer(src)
     if not player then return end
     if _type == 'money' then _type = 'cash' end
+    if amount <= 0 then return false end
     return player.Functions.AddMoney(_type, amount)
 end
 
@@ -384,6 +435,7 @@ Framework.RemoveAccountBalance = function(src, _type, amount)
     local player = Framework.GetPlayer(src)
     if not player then return end
     if _type == 'money' then _type = 'cash' end
+    if amount <= 0 then return false end
     return player.Functions.RemoveMoney(_type, amount)
 end
 
@@ -396,48 +448,9 @@ Framework.GetAccountBalance = function(src, _type)
     if not player then return end
     local playerData = player.PlayerData
     if _type == 'money' then _type = 'cash' end
-    return playerData.money[_type]
-end
-
----@description Adds the specified item to the player's inventory.
----@param src number
----@param item string
----@param amount number
----@param slot number
----@param metadata table
----@return boolean | nil
-Framework.AddItem = function(src, item, amount, slot, metadata)
-    local player = Framework.GetPlayer(src)
-    if not player then return end
-    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "add", item = item, count = amount, slot = slot, metadata = metadata })
-    return player.Functions.AddItem(item, amount, slot, metadata)
-end
-
----@description Removes the specified item from the player's inventory.
----@param src number
----@param item string
----@param amount number
----@param slot number
----@param metadata table
----@return boolean | nil
-Framework.RemoveItem = function(src, item, amount, slot, metadata)
-    local player = Framework.GetPlayer(src)
-    if not player then return end
-    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, { action = "remove", item = item, count = amount, slot = slot, metadata = metadata })
-    return player.Functions.RemoveItem(item, amount, slot)
-end
-
----@description Sets the metadata for the specified item in the player's inventory.
----@param src number
----@param item string
----@param slot number
----@param metadata table
----@return boolean | nil
-Framework.SetMetadata = function(src, item, slot, metadata)
-    local player = Framework.GetPlayer(src)
-    if not player then return end
-    player.Functions.RemoveItem(item, 1, slot)
-    return player.Functions.AddItem(item, 1, slot, metadata)
+    local balance = playerData.money[_type] or 0
+    if balance <= 0 then return 0 end
+    return balance
 end
 
 ---@description Returns a table of owned vehicles for the player. format is {vehicle = vehicle, plate = plate}
@@ -469,6 +482,8 @@ Framework.RegisterUsableItem = function(itemName, cb)
     return QBox:CreateUseableItem(itemName, func)
 end
 
+---@description Event handler for when a player is loaded in QBX Core framework
+---@param src number
 RegisterNetEvent("QBCore:Server:OnPlayerLoaded", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerLoaded", src)
@@ -477,17 +492,23 @@ RegisterNetEvent("QBCore:Server:OnPlayerLoaded", function(src)
     Framework.AddJobCount(src, jobData.jobName)
 end)
 
+---@description Event handler for when a player is unloaded in QBX Core framework
+---@param src number
 RegisterNetEvent("QBCore:Server:OnPlayerUnload", function(src)
     src = src or source
     TriggerEvent("community_bridge:Server:OnPlayerUnload", src)
 end)
 
+---@description Event handler for when a player's job is updated in QBX Core framework
+---@param src number
+---@param job table
 RegisterNetEvent("QBCore:Server:OnJobUpdate", function(src, job)
     src = src or source
     if not job then return end
     TriggerEvent("community_bridge:Server:OnPlayerJobChange", src, job.name)
 end)
 
+---@description Event handler for when a player disconnects from the server
 AddEventHandler("playerDropped", function()
     local src = source
     TriggerEvent("community_bridge:Server:OnPlayerUnload", src)

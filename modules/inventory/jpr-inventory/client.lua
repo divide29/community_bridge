@@ -1,10 +1,16 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('jpr-inventory') ~= 'started' then return end
+if GetResourceState('jpr-inventory') == 'missing' then return end
 local jpr = exports['jpr-inventory']
 
 Inventory = Inventory or {}
 
----Return the item info in oxs format, {name, label, stack, weight, description, image}
+---@description This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "jpr-inventory"
+end
+
+---@description Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -20,28 +26,7 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "jpr-inventory"
-end
-
-
----Will return boolean if the player has the item.
----@param item string
----@return boolean
-Inventory.HasItem = function(item)
-    return jpr:HasItem(item)
-end
-
----This will return the entire items table from the inventory.
----@return table 
-Inventory.Items = function()
-    return Framework.Shared.Items
-end
-
----This will get the image path for this item, if not found will return placeholder.
+---@description This will get the image path for this item, if not found will return placeholder.
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)

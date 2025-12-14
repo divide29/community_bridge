@@ -4,6 +4,7 @@
 		"Input": "Määrän syöttö",
 		"PurchaseAmount": "Ostomäärä",
 		"PurchasedItem": "Olet ostanut ",
+		"PurchaseFailed": "Osto epäonnistui, varasto täynnä",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Vahvista osto",
 		"AreYouSure": "Oletko varma, että haluat ostaa %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Kaupan nimi"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Olen %s %s",
-		"locale-unit-test": "Tämä on testimerkki"
+	"Notifications": {
+		"PlaceholderTitle": "Ilmoitus"
 	},
 	"clipboard": {
 		"copy": "Kopioitu leikepöydälle"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Peruuta  \n",
 		"object_scroll_up": "[%s] Käännä oikealle  \n",
 		"object_scroll_down": "[%s] Käännä vasemmalle  \n",
+		"rotate_left": "Kierrä vasemmalle",
+		"rotate_right": "Kierrä oikealle",
+		"rotate_clockwise": "[%s] Kierrä myötäpäivään  \n",
+		"rotate_counter_clockwise": "[%s] Kierrä vastapäivään  \n",
 		"depth_modifier": "[%s] Syvyyshallinnan muokkaaja  \n"
+	},
+	"target": {
+		"interact": "[E] Vuorovaikutus",
+		"title": "Vaihtoehdot",
+		"description": "Ei kuvausta"
 	}
 }

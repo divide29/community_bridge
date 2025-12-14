@@ -4,6 +4,7 @@
 		"Input": "Εισαγωγή ποσότητας",
 		"PurchaseAmount": "Ποσότητα αγοράς",
 		"PurchasedItem": "Αγοράσατε ",
+		"PurchaseFailed": "Η αγορά απέτυχε, το αποθέμα είναι γεμάτο",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Επιβεβαίωση αγοράς",
 		"AreYouSure": "Είστε βέβαιοι ότι θέλετε να αγοράσετε ένα %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Όνομα καταστήματος"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Είμαι ένας %s %s",
-		"locale-unit-test": "Αυτό είναι ένα δοκιμαστικό κείμενο"
+	"Notifications": {
+		"PlaceholderTitle": "Ειδοποίηση"
 	},
 	"clipboard": {
 		"copy": "Αντιγράφηκε στο clipboard"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Ακύρωση  \n",
 		"object_scroll_up": "[%s] Περιστροφή δεξιά  \n",
 		"object_scroll_down": "[%s] Περιστροφή αριστερά  \n",
+		"rotate_left": "Περιστροφή αριστερά",
+		"rotate_right": "Περιστροφή δεξιά",
+		"rotate_clockwise": "[%s] Περιστροφή δεξιόστροφα  \n",
+		"rotate_counter_clockwise": "[%s] Περιστροφή αριστερόστροφα  \n",
 		"depth_modifier": "[%s] Τροποποιητής ελέγχου βάθους  \n"
+	},
+	"target": {
+		"interact": "[E] Αλληλεπίδραση",
+		"title": "Επιλογές",
+		"description": "Χωρίς περιγραφή"
 	}
 }

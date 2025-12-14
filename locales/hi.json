@@ -4,6 +4,7 @@
 		"Input": "मात्रा इनपुट",
 		"PurchaseAmount": "खरीदारी की मात्रा",
 		"PurchasedItem": "आपने खरीदा है ",
+		"PurchaseFailed": "खरीदारी विफल, इन्वेंटरी भरी हुई है",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "खरीदारी की पुष्टि करें",
 		"AreYouSure": "क्या आप वाकई %s खरीदना चाहते हैं",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "दुकान का नाम"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "मैं एक %s %s हूं",
-		"locale-unit-test": "यह एक परीक्षण स्ट्रिंग है"
+	"Notifications": {
+		"PlaceholderTitle": "सूचना"
 	},
 	"clipboard": {
 		"copy": "क्लिपबोर्ड पर कॉपी किया गया"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] रद्द करें  \n",
 		"object_scroll_up": "[%s] दाएं मुड़ें  \n",
 		"object_scroll_down": "[%s] बाएं मुड़ें  \n",
+		"rotate_left": "बाएं मुड़ें",
+		"rotate_right": "दाएं मुड़ें",
+		"rotate_clockwise": "[%s] घड़ी की दिशा में घुमाएं  \n",
+		"rotate_counter_clockwise": "[%s] घड़ी की विपरीत दिशा में घुमाएं  \n",
 		"depth_modifier": "[%s] गहराई नियंत्रण संशोधक  \n"
+	},
+	"target": {
+		"interact": "[E] बातचीत करें",
+		"title": "विकल्प",
+		"description": "कोई विवरण नहीं"
 	}
 }

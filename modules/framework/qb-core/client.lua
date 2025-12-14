@@ -11,7 +11,8 @@ Framework.Shared = QBCore.Shared
 ---@description This will get the name of the framework being used (if a supported framework).
 ---@return string
 Framework.GetFrameworkName = function()
-    return 'qb-core'
+    print("This is depricated, please use Framework.GetResourceName() instead.")
+    return Framework.GetResourceName()
 end
 
 ---@description This will get the name of the in use resource.
@@ -149,8 +150,9 @@ end
 ---@return string
 ---@return string
 Framework.GetPlayerJob = function()
-    local playerData = Framework.GetPlayerData()
-    return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
+    print("This is depricated, please use Framework.GetPlayerJobData() instead.")
+    local jobData = Framework.GetPlayerJobData()
+    return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeRank
 end
 
 ---@description This will return the players job name, job label, job grade label job grade level, boss status, and duty status in a table
@@ -169,11 +171,12 @@ Framework.GetPlayerJobData = function()
     }
 end
 
----@description This will return if the player has the specified item in their inventory
+---@description Will return boolean if the player has the item.
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Framework.HasItem = function(item)
-	return QBCore.Functions.HasItem(item)
+Framework.HasItem = function(item, requiredCount)
+	return QBCore.Functions.HasItem(item, requiredCount or 1)
 end
 
 ---@description This will return the item count for the specified item in the players inventory
@@ -201,7 +204,7 @@ Framework.GetPlayerInventory = function()
             label = v.label,
             count = v.amount or v.count,
             slot = v.slot,
-            metadata = v.info,
+            metadata = v.info or v.metadata or {},
             stack = v.unique,
             close = v.useable,
             weight = v.weight
@@ -248,28 +251,21 @@ Framework.GetIsPlayerDead = function()
     return playerData.metadata["isdead"] or playerData.metadata["inlaststand"]
 end
 
+---@description Event handler for when player is loaded in QB-Core framework
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     Wait(1500)
     TriggerEvent('community_bridge:Client:OnPlayerLoaded')
 end)
 
+---@description Event handler for when player is unloaded in QB-Core framework
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     TriggerEvent('community_bridge:Client:OnPlayerUnload')
 end)
 
+---@description Event handler for when player job is updated in QB-Core framework
+---@param data table Job data containing name, label, grade_label, and grade
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(data)
     TriggerEvent('community_bridge:Client:OnPlayerJobUpdate', data.name, data.label, data.grade_label, data.grade)
-end)
-
-RegisterNetEvent('QBCore:Client:OnGangUpdate', function(data)
-    -- Unsure what data is passed in this, but considering the gang data isnt updating I doubt this was tested.
-    --[[
-    PlayerJobName = data.name
-    PlayerJobLabel = data.label
-    PlayerJobGradeName = data.grade.name
-    PlayerJobGradeLevel = data.grade.level
-    TriggerEvent('community_bridge:Client:OnPlayerGangUpdate', PlayerGangName, PlayerGangLabel, PlayerGangGradeName, PlayerGangGradeLevel)
-    --]]
 end)
 
 return Framework

@@ -1,62 +1,62 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('ps-inventory') ~= 'started' then return end
+if GetResourceState('ps-inventory') == 'missing' then return end
 local sloth = exports['ps-inventory']
-local registeredShops = {}
 
 Inventory = Inventory or {}
-Inventory.Stashes = Inventory.Stashes or {}
 
----This will add an item, and return true or false based on success
----@param src number
----@param item string
----@param count number
----@param slot number
----@param metadata table
----@return boolean
-Inventory.AddItem = function(src, item, count, slot, metadata)
-    TriggerClientEvent('ps-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'add', count)
-    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return sloth:AddItem(src, item, count, slot, metadata, 'community_bridge')
-end
-
----This will get the name of the in use resource.
+---@description This will get the name of the in use resource.
 ---@return string
 Inventory.GetResourceName = function()
     return "ps-inventory"
 end
 
----This will remove an item, and return true or false based on success
+---@description This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
----@param slot number
----@param metadata table
+---@param slot number (optional)
+---@param metadata table (optional)
+---@return boolean
+Inventory.AddItem = function(src, item, count, slot, metadata)
+    local success = sloth:AddItem(src, item, count, slot, metadata, 'community_bridge')
+    if not success then return false end
+    TriggerClientEvent('ps-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'add', count)
+    TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
+    return success or false
+end
+
+local function runMetadataSearch(src, metadata)
+    local inv = Framework.GetPlayerInventory(src) or {}
+    for k, v in pairs(inv) do
+        if v.metadata and v.metadata == metadata then
+            return true, v.slot
+        end
+    end
+    return false
+end
+
+---@description This will remove an item, and return true or false based on success
+---@param src number
+---@param item string
+---@param count number
+---@param slot number (optional)
+---@param metadata table (optional)
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    if metadata then
+        local found, itemSlot = runMetadataSearch(src, metadata)
+        if found then
+            slot = itemSlot
+        end
+    end
+    local success = sloth:RemoveItem(src, item, count, slot, 'community_bridge')
+    if not success then return false end
     TriggerClientEvent('ps-inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'remove', count)
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return sloth:RemoveItem(src, item, count, slot, 'community_bridge')
+    return success or false
 end
 
----This will add items to a trunk, and return true or false based on success
----@param identifier string
----@param items table
----@return boolean
-Inventory.AddItemsToTrunk = function(identifier, items)
-    if type(items) ~= "table" then return false end
-    return false, print("AddItemsToTrunk is not implemented in ps-inventory, because of this we dont have a way to add items to a trunk.")
-end
-
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
----@param id string
----@return boolean
-Inventory.ClearStash = function(id, _type)
-    if type(id) ~= "string" then return false end
-    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
-    return false, print("ClearInventory is not implemented in ps-inventory, because of this we dont have a way to clear a stash.")
-end
-
----This will return a table with the item info, {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -72,100 +72,45 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will return the entire items table from the inventory.
----@return table 
-Inventory.Items = function()
-    return Framework.Shared.Items
-end
-
----Returns the specified slot data as a table.
----
----format {weight, name, metadata, slot, label, count}
+---@description Returns the specified slot data as a table.
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
-    local slotData = sloth:GetItemBySlot(src, slot)
-    if not slotData then return {} end
+    local item = sloth:GetItemBySlot(src, slot)
+    if not item then return {} end
     return {
-        name = slotData.name,
-        label = slotData.label or slotData.name,
-        weight = slotData.weight,
+        name = item.name,
+        label = item.label or item.name,
+        weight = item.weight,
         slot = slot,
-        count = slotData.amount,
-        metadata = slotData.info,
-        stack = slotData.unique,
-        description = slotData.description
+        count = item.amount,
+        metadata = item.info,
+        stack = item.unique,
+        description = item.description
     }
 end
 
----This will set the metadata of an item in the inventory.
+---@description This will open the specified stash for the src passed.
 ---@param src number
----@param item string
----@param slot number
----@param metadata table
----@return nil
-Inventory.SetMetadata = function(src, item, slot, metadata)
-    local itemData = Inventory.GetItemBySlot(src, slot)
-    if not itemData then return end
-    if itemData.count > 1 then return print("Items with more than 1 count cannot be set with metadata plase adjust item to unique in the qb shared item name : "..item) end
-    Inventory.RemoveItem(src, item, 1, slot)
-    return Inventory.AddItem(src, item, 1, slot, metadata)
-end
-
----This will open the specified stash for the src passed.
----@param src number
----@param _type string
----@param id number||string
+---@param _type string "stash", "trunk", "glovebox"
+---@param id string
 ---@return nil
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
-    local tbl = Inventory.Stashes[id]
-    TriggerClientEvent('community_bridge:client:ps-inventory:openStash', src, id, { label = tbl.label, maxweight = tbl.weight, slots = tbl.slots, })
+    sloth:OpenInventory(_type, id, nil, src)
 end
 
----This will register a stash
----@param id number|string
----@param label string
----@param slots number
----@param weight number
----@param owner string
----@param groups table
----@param coords table
----@return boolean
----@return string|number
-Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
-    if Inventory.Stashes[id] then return true, id end
-    Inventory.Stashes[id] = {
-        id = id,
-        label = label,
-        slots = slots,
-        weight = weight,
-        owner = owner,
-        groups = groups,
-        coords = coords
-    }
-    return true, id
-end
-
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(src, item)
-    return sloth:HasItem(src, item, 1)
+Inventory.HasItem = function(src, item, requiredCount)
+    return sloth:HasItem(src, item, requiredCount or 1)
 end
 
----This is to get if there is available space in the inventory, will return boolean.
----@param src number
----@param item string
----@param count number
----@return boolean
-Inventory.CanCarryItem = function(src, item, count)
-    return true
-end
-
----This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
+---@description This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
 ---@param oldplate string
 ---@param newplate string
 ---@return boolean
@@ -176,11 +121,12 @@ Inventory.UpdatePlate = function(oldplate, newplate)
     }
     local values = { newplate = newplate, oldplate = oldplate }
     MySQL.transaction.await(queries, values)
+    -- ox standard doesnt return anything so probably shouldnt return so everything else has the same standard. Yeaaaa probably should change this.
     if GetResourceState('jg-mechanic') ~= 'started' then return true end
     return true, exports["jg-mechanic"]:vehiclePlateUpdated(oldplate, newplate)
 end
 
----This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
+---@description This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -190,31 +136,41 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
--- This will open the specified shop for the src passed.
+---@description This will open the specified shop for the src passed.
 ---@param src number
 ---@param shopTitle string
 Inventory.OpenShop = function(src, shopTitle)
     return sloth:OpenShop(src, shopTitle)
 end
 
--- This will register a shop, if it already exists it will return true.
+---@description This will register a shop, if it already exists it will return true.
 ---@param shopTitle string
----@param shopInventory table
+---@param inventory table
 ---@param shopCoords table
 ---@param shopGroups table
-Inventory.RegisterShop = function(src, shopTitle, shopInventory, shopCoords, shopGroups)
-    if not shopTitle or not shopInventory or not shopCoords then return end
-    if registeredShops[shopTitle] then return true end
+Inventory.RegisterShop = function(shopTitle, inventory, shopCoords, shopGroups)
+    assert(shopTitle, "RegisterShop: shopTitle is required")
+    assert(inventory, "RegisterShop: shopInventory is required")
+    assert(shopCoords, "RegisterShop: shopCoords is required")
+    assert(shopGroups, "RegisterShop: shopGroups is required")
 
     local repackItems = {}
-    local repackedShopItems = {name = shopTitle, label = shopTitle, coords = shopCoords, items = repackItems, slots = #shopInventory, }
-    for k, v in pairs(shopInventory) do
-        table.insert(repackItems, { name = v.name, price = v.price or 1000, amount = v.count or 1, slot = k })
+    for k, v in pairs(inventory) do
+        table.insert(repackItems, { name = v.name, price = v.price or 1000, amount = v.amount or v.count or 1, slot = k })
     end
+    local repackedShopItems = {name = shopTitle, label = shopTitle, coords = shopCoords, items = repackItems, slots = #inventory, }
 
     sloth:CreateShop(repackedShopItems)
-    registeredShops[shopTitle] = true
     return true
+end
+
+---@description This will open a players inventory, used for admin purposes and stuff.
+---@param src number
+---@param target number
+Inventory.OpenPlayerInventory = function(src, target)
+    assert(src, "OpenPlayerInventory: src is required")
+    assert(target, "OpenPlayerInventory: target is required")
+    sloth:OpenInventoryById(src, target)
 end
 
 return Inventory

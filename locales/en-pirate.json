@@ -4,6 +4,7 @@
 		"Input": "Amount o' Booty",
 		"PurchaseAmount": "Plunder Quantity",
 		"PurchasedItem": "Ye Have Plundered ",
+		"PurchaseFailed": "Plunder failed, yer hold be full",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Aye, Plunder!",
 		"AreYouSure": "Be ye sure ye want to plunder a %s?",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Pirate's Emporium"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "I be a %s %s",
-		"locale-unit-test": "This be a test string, arrr!"
+	"Notifications": {
+		"PlaceholderTitle": "Parley Notice"
 	},
 	"clipboard": {
 		"copy": "Copied to ye clipboard, matey!"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Abandon Ship!  \n",
 		"object_scroll_up": "[%s] Turn starboard  \n",
 		"object_scroll_down": "[%s] Turn port  \n",
+		"rotate_left": "Turn Port",
+		"rotate_right": "Turn Starboard",
+		"rotate_clockwise": "[%s] Spin Clockwise, arrr!  \n",
+		"rotate_counter_clockwise": "[%s] Spin Counter-Clockwise, matey!  \n",
 		"depth_modifier": "[%s] Depth Control, savvy?  \n"
+	},
+	"target": {
+		"interact": "[E] Parley",
+		"title": "Choices, matey",
+		"description": "No tale to tell"
 	}
 }

@@ -5,8 +5,6 @@ if (configValue == "auto" and GetResourceState(resourceName) == "missing") or (c
 
 Input = {}
 
-if not lib then Require('init.lua', 'ox_lib') end
-
 function Input.Open(title, data, isQBFormat, submitText)
     local inputs = data.inputs
     if isQBFormat then

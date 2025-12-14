@@ -1,6 +1,11 @@
 ---@diagnostic disable: duplicate-set-field
-local resourceName = "lb-phone"
+local resourceName = "qb-phone"
 if GetResourceState(resourceName) == 'missing' then return end
+if GetResourceState("lb-phone") ~= 'missing' then return end
+if GetResourceState("gksphone") ~= 'missing' then return end
+if GetResourceState("okokPhone") ~= 'missing' then return end
+if GetResourceState("qs-smartphone") ~= 'missing' then return end
+if GetResourceState("yseries") ~= 'missing' then return end
 Phone = Phone or {}
 
 ---This will get the name of the Phone system being being used.
@@ -17,7 +22,7 @@ end
 ---@param src number
 ---@return number|boolean
 Phone.GetPlayerPhone = function(src)
-    return exports["lb-phone"]:GetEquippedPhoneNumber(src) or false
+    return Bridge.Framework.GetPlayerPhone(src) or false
 end
 
 ---This will send an email to the passed source, email address, title and message.
@@ -27,17 +32,12 @@ end
 ---@param message string
 ---@return boolean
 Phone.SendEmail = function(src, email, title, message)
-    local numberNumber = exports["lb-phone"]:GetEquippedPhoneNumber(src)
-    if not numberNumber then return false, print(" ^6 Could not Find Phone number ^0") end
-    local playerEmail = exports["lb-phone"]:GetEmailAddress(numberNumber)
-    if not playerEmail then return false, print(" ^6 Could not Find email ^0")  end
-    local success, id = exports["lb-phone"]:SendMail({
-        to = playerEmail,
-        sender = email,
-        subject = title,
-        message = message,
-    })
-    return success or false
+    local identifier = Bridge.Framework.GetPlayerIdentifier(src)
+    if not identifier then return false, print(" ^6 Could not Find Player Identifier ^0") end
+
+    local mailData = { sender = email, subject = title, message = message }
+    exports["qb-phone"]:sendNewMailToOffline(identifier, mailData)
+    return true
 end
 
 RegisterNetEvent('community_bridge:Server:genericEmail', function(data)

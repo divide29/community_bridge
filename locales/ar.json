@@ -4,6 +4,7 @@
 		"Input": "إدخال الكمية",
 		"PurchaseAmount": "كمية الشراء",
 		"PurchasedItem": "لقد قمت بشراء ",
+		"PurchaseFailed": "فشل الشراء، المخزون ممتلئ",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "تأكيد الشراء",
 		"AreYouSure": "هل أنت متأكد أنك تريد شراء %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "اسم المتجر"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "أنا %s %s",
-		"locale-unit-test": "هذا نص تجريبي"
+	"Notifications": {
+		"PlaceholderTitle": "إشعار"
 	},
 	"clipboard": {
 		"copy": "تم النسخ إلى الحافظة"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] إلغاء  \n",
 		"object_scroll_up": "[%s] استدارة يمين  \n",
 		"object_scroll_down": "[%s] استدارة يسار  \n",
-		"depth_modifier": "[%s] تعديل التحكم بالعمق  \n"
+		"rotate_left": "استدارة يسار",
+		"rotate_right": "استدارة يمين",
+		"rotate_clockwise": "[%s] استدارة مع عقارب الساعة  \n",
+		"rotate_counter_clockwise": "[%s] استدارة عكس عقارب الساعة  \n",
+		"depth_modifier": "[%s] معدل التحكم في العمق  \n"
+	},
+	"target": {
+		"interact": "[E] تفاعل",
+		"title": "خيارات",
+		"description": "لا يوجد وصف"
 	}
 }

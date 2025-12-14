@@ -1,28 +1,10 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('core_inventory') ~= 'started' then return end
+if GetResourceState('core_inventory') == 'missing' then return end
 local core = exports.core_inventory
+-- Core inventory docs available at https://docs.c8re.store/core-inventory/api/server#getitemslist
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 
 Inventory = Inventory or {}
-
----Return the item info in oxs format, {name, label, stack, weight, description, image}
----@param item string
----@return table
-Inventory.GetItemInfo = function(item)
-    local frameworkName = Framework.GetFrameworkName()
-    if not frameworkName then return {} end
-    local dataRepack = {}
-    if frameworkName == 'es_extended' then
-        local callbackData = Callback.Trigger('community_bridge:Callback:core_inventory', false)
-        -- really really wish this inventory allowed me to pull the item list client side....
-        dataRepack = callbackData[item]
-        if not dataRepack then return {} end
-    elseif frameworkName == 'qb-core' then
-        dataRepack = Framework.Shared.Items[item]
-        if not dataRepack then return {} end
-    end
-    return {name = dataRepack.name, label = dataRepack.label, stack = dataRepack.stack, weight = dataRepack.weight, description = dataRepack.description, image = Inventory.GetImagePath(dataRepack.name) }
-end
 
 ---This will get the name of the in use resource.
 ---@return string
@@ -30,6 +12,15 @@ Inventory.GetResourceName = function()
     return "core_inventory"
 end
 
+local cachedItemList = nil
+--- Return the item info in oxs format, {name, label, stack, weight, description, image}
+--- https://docs.c8re.store/core-inventory/api/server#getitemslist
+--- @param item string
+--- @return table
+Inventory.GetItemInfo = function(item)
+    local itemList = Inventory.Items()
+    return itemList[item] or {}
+end
 
 ---This will return the entire items table from the inventory.
 ---@return table 
@@ -38,13 +29,16 @@ Inventory.Items = function()
     if not frameworkName then return {} end
     local dataRepack = {}
     if frameworkName == 'es_extended' then
-        local callbackData = Callback.Trigger('community_bridge:Callback:core_inventory', false)
-        -- really really wish this inventory allowed me to pull the item list client side....
-        dataRepack = callbackData
-        if not dataRepack then return {} end
+        if not cachedItemList then cachedItemList = Callback.Trigger('community_bridge:Callback:core_inventory', false) end
+        dataRepack = cachedItemList or {}
     elseif frameworkName == 'qb-core' then
-        dataRepack = Framework.Shared.Items
-        if not dataRepack then return {} end
+        dataRepack = Framework.Shared.Items or {}
+    end
+    for itemName, itemData in pairs(dataRepack) do
+        if itemData and itemData.name then
+            dataRepack[itemName].image = Inventory.GetImagePath(itemData.name)
+            dataRepack[itemName].stack = dataRepack[itemName].unique or false
+        end
     end
     return dataRepack
 end
@@ -56,11 +50,12 @@ Inventory.HasItem = function(item)
     return core:hasItem(item, 1)
 end
 
----This will return th count of the item in the players inventory, if not found will return 0.
+---@description Will return boolean if the player has the item.
 ---@param item string
----@return number
-Inventory.GetItemCount = function(item)
-    return core:getItemCount(item)
+---@param requiredCount number (optional)
+---@return boolean
+Inventory.HasItem = function(item, requiredCount)
+    return core:getItemCount(item) >= (requiredCount or 1)
 end
 
 ---This will get the image path for this item, if not found will return placeholder.
@@ -81,9 +76,9 @@ Inventory.GetPlayerInventory = function()
     for _, v in pairs(playerItems) do
         table.insert(repackedTable, {
             name = v.name,
-            count = v.count,
-            metadata = v.metadata,
-            slot = v.id,
+            count = v.count or v.amount,
+            metadata = v.metadata or v.info,
+            slot = v.id or v.slot,
         })
     end
     return repackedTable

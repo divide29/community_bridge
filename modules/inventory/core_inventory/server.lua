@@ -1,10 +1,16 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('core_inventory') ~= 'started' then return end
+if GetResourceState('core_inventory') == 'missing' then return end
 
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 local core = exports.core_inventory
+
+---This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "core_inventory"
+end
 
 ---This will add an item, and return true or false based on success
 ---@param src number
@@ -14,17 +20,13 @@ local core = exports.core_inventory
 ---@param metadata table
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
+    -- docs specify a table returned on success, on failure it returns false.
+    -- https://docs.c8re.store/core-inventory/api/server#additem
+    local success = core:addItem(src, item, count, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return core:addItem(src, item, count, metadata)
+    return success or false
 end
-
-
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "core_inventory"
-end
-
 
 ---This will remove an item, and return true or false based on success
 ---@param src number
@@ -39,7 +41,7 @@ Inventory.RemoveItem = function(src, item, count, slot, metadata)
         if not inv then return false end
         for _, v in pairs(inv) do
             if v.name == item and v.metadata == metadata then
-                slot = v.slot
+                slot = v.id or v.slot
                 break
             end
         end
@@ -53,11 +55,12 @@ Inventory.RemoveItem = function(src, item, count, slot, metadata)
             identifier = string.gsub(identifier, ":", "")
         end
         local weirdInventoryName = 'content-' .. identifier
+        -- No return value specified in docs, so we assume none.
+        -- https://docs.c8re.store/core-inventory/api/server#removeitemexact
         return core:removeItemExact(weirdInventoryName, slot, count)
     end
     core:removeItem(src, item, count)
     return true
-    -- I hate this inventory so much, I am so sorry for this.
 end
 
 ---This will return the count of the item in the players inventory, if not found will return 0.
@@ -93,24 +96,24 @@ Inventory.GetPlayerInventory = function(src)
     local playerItems = core:getInventory(src)
     local repackedTable = {}
     for _, v in pairs(playerItems) do
-        if v.metadata and v.count > 1 then
+        if (v.metadata or v.info) and (v.count or v.amount) > 1 then
             local plaseFixThisExportCuzThisIsPainful = core:getItems(src, v.name)
             if plaseFixThisExportCuzThisIsPainful then
                 for _, item in pairs(plaseFixThisExportCuzThisIsPainful) do
                     table.insert(repackedTable, {
                         name = v.name,
-                        count = item.count,
-                        metadata = item.metadata,
-                        slot = item.id,
+                        count = item.count or item.amount,
+                        metadata = item.metadata or item.info,
+                        slot = item.id or item.slot,
                     })
                 end
             end
         else
             table.insert(repackedTable, {
                 name = v.name,
-                count = v.count,
-                metadata = v.metadata,
-                slot = v.id,
+                count = v.count or v.amount,
+                metadata = v.metadata or v.info,
+                slot = v.id or v.slot,
             })
         end
     end
@@ -126,12 +129,12 @@ Inventory.GetItemBySlot = function(src, slot)
     local inv = Inventory.GetPlayerInventory(src)
     if not inv then return {} end
     for _, v in pairs(inv) do
-        if v.slot == slot then
+        if (v.slot == slot) or (v.id == slot) then
             return {
                 name = v.name,
                 count = v.count,
                 metadata = v.metadata,
-                slot = v.slot,
+                slot = v.id or v.slot,
             }
         end
     end
@@ -156,7 +159,7 @@ end
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
     local tbl = Inventory.Stashes[id]
-    core:openInventory(src, id, _type, tbl.slots, tbl.weight, true, nil, false)
+    core:openInventory(src, id, _type, tbl.slots or 30, tbl.weight or 50000, true, nil, false)
 end
 
 ---This will register a stash
@@ -185,12 +188,14 @@ Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coor
     return true, id
 end
 
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(src, item)
-    return core:getItemCount(src, item) > 0
+Inventory.HasItem = function(src, item, requiredCount)
+    local count = Inventory.GetItemCount(src, item, nil)
+    return count >= (requiredCount or 1)
 end
 
 ---This is to get if there is available space in the inventory, will return boolean.
@@ -210,15 +215,6 @@ end
 Inventory.AddTrunkItems = function(identifier, items)
     if type(items) ~= "table" then return false end
     return false, print("AddItemsToTrunk is not implemented in core_inventory, because of this we dont have a way to add items to a trunk.")
-end
-
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
----@param id string
----@return boolean
-Inventory.ClearStash = function(id, _type)
-    if type(id) ~= "string" then return false end
-    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
-    return false, print("ClearInventory is not implemented in core_inventory, because of this we dont have a way to clear a stash.")
 end
 
 ---This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
@@ -267,9 +263,7 @@ end
 
 Inventory.OpenPlayerInventory = function(src, target)
     assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
+    assert(target, "OpenPlayerInventory: target is required")
     local identifier = Framework.GetPlayerIdentifier(target)
     if not identifier then return false end
     exports.core_inventory:openInventory(src, 'stash-'.. identifier:gsub(':',''), 'stash', nil, nil, true, nil, false)

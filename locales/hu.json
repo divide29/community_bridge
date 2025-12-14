@@ -4,6 +4,7 @@
 		"Input": "Mennyiség bevitel",
 		"PurchaseAmount": "Vásárlási mennyiség",
 		"PurchasedItem": "Megvásároltad ",
+		"PurchaseFailed": "Vásárlás sikertelen, leltár tele",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Vásárlás megerősítése",
 		"AreYouSure": "Biztosan meg akarsz vásárolni egy %s-t",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Bolt neve"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Én egy %s %s vagyok",
-		"locale-unit-test": "Ez egy teszt string"
+	"Notifications": {
+		"PlaceholderTitle": "Értesítés"
 	},
 	"clipboard": {
 		"copy": "Vágólapra másolva"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Mégse  \n",
 		"object_scroll_up": "[%s] Jobbra fordítás  \n",
 		"object_scroll_down": "[%s] Balra fordítás  \n",
+		"rotate_left": "Balra fordítás",
+		"rotate_right": "Jobbra fordítás",
+		"rotate_clockwise": "[%s] Forgatás óramutató járásával megegyezően  \n",
+		"rotate_counter_clockwise": "[%s] Forgatás óramutató járásával ellentétesen  \n",
 		"depth_modifier": "[%s] Mélység vezérlő módosító  \n"
+	},
+	"target": {
+		"interact": "[E] Interakció",
+		"title": "Lehetőségek",
+		"description": "Nincs leírás"
 	}
 }

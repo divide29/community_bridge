@@ -4,6 +4,7 @@
 		"Input": "Amount Input",
 		"PurchaseAmount": "Purchase Quantity",
 		"PurchasedItem": "You Have Purchased ",
+		"PurchaseFailed": "Purchase failed, inventory full",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Confirm Purchase",
 		"AreYouSure": "Are you sure you want to purchase a %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Shop Name"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "I'm a %s %s",
-		"locale-unit-test": "This is a test string"
+	"Notifications": {
+		"PlaceholderTitle": "Notification"
 	},
 	"clipboard": {
 		"copy": "Copied to clipboard"
@@ -33,6 +33,10 @@
 		"place_object_scroll_down": "[Scroll Down] Turn left  \n",
 		"object_place": "[%s] Place  \n",
 		"object_cancel": "[%s] Cancel  \n",
+		"object_scroll_up": "[%s] Turn right  \n",
+		"object_scroll_down": "[%s] Turn left  \n",
+		"rotate_left": "Rotate Left",
+		"rotate_right": "Rotate Right",
 		"rotate_clockwise": "[%s] Rotate Clockwise  \n",
 		"rotate_counter_clockwise": "[%s] Rotate Counter-Clockwise  \n",
 		"depth_modifier": "[%s] Depth Control Modifier  \n"

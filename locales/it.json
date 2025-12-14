@@ -4,6 +4,7 @@
 		"Input": "Inserimento quantità",
 		"PurchaseAmount": "Quantità di acquisto",
 		"PurchasedItem": "Hai acquistato ",
+		"PurchaseFailed": "Acquisto fallito, inventario pieno",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Conferma acquisto",
 		"AreYouSure": "Sei sicuro di voler acquistare un %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Nome negozio"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Sono un %s %s",
-		"locale-unit-test": "Questa è una stringa di test"
+	"Notifications": {
+		"PlaceholderTitle": "Notifica"
 	},
 	"clipboard": {
 		"copy": "Copiato negli appunti"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Annulla  \n",
 		"object_scroll_up": "[%s] Ruota a destra  \n",
 		"object_scroll_down": "[%s] Ruota a sinistra  \n",
-		"depth_modifier": "[%s] Modificatore controllo profondità  \n"
+		"rotate_left": "Ruota a sinistra",
+		"rotate_right": "Ruota a destra",
+		"rotate_clockwise": "[%s] Ruota in senso orario  \n",
+		"rotate_counter_clockwise": "[%s] Ruota in senso antiorario  \n",
+		"depth_modifier": "[%s] Modificatore di controllo della profondità  \n"
+	},
+	"target": {
+		"interact": "[E] Interagisci",
+		"title": "Opzioni",
+		"description": "Nessuna descrizione"
 	}
 }

@@ -4,6 +4,7 @@
 		"Input": "Mengde inndata",
 		"PurchaseAmount": "Kjøpsmengde",
 		"PurchasedItem": "Du har kjøpt ",
+		"PurchaseFailed": "Kjøp mislyktes, inventar fullt",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Bekreft kjøp",
 		"AreYouSure": "Er du sikker på at du vil kjøpe en %s",
@@ -14,9 +15,8 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Butikknavn"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Jeg er en %s %s",
-		"locale-unit-test": "Dette er en teststreng"
+	"Notifications": {
+		"PlaceholderTitle": "Varsling"
 	},
 	"clipboard": {
 		"copy": "Kopiert til utklippstavle"
@@ -35,6 +35,15 @@
 		"object_cancel": "[%s] Avbryt  \n",
 		"object_scroll_up": "[%s] Snu til høyre  \n",
 		"object_scroll_down": "[%s] Snu til venstre  \n",
-		"depth_modifier": "[%s] Dybdekontroll modifikator  \n"
+		"rotate_left": "Roter til venstre",
+		"rotate_right": "Roter til høyre",
+		"rotate_clockwise": "[%s] Roter med klokken  \n",
+		"rotate_counter_clockwise": "[%s] Roter mot klokken  \n",
+		"depth_modifier": "[%s] Dybdekontroll Modifikator  \n"
+	},
+	"target": {
+		"interact": "[E] Samhandle",
+		"title": "Alternativer",
+		"description": "Ingen beskrivelse"
 	}
 }

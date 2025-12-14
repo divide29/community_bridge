@@ -17,7 +17,7 @@ end
 ---@param message string
 ---@return boolean
 Phone.SendEmail = function(email, title, message)
-    return false, Print.Error('There Is No Phone Bridged.')
+    return false, print('^6 There is no phone bridged in community_bridge. ^0')
 end
 
 return Phone

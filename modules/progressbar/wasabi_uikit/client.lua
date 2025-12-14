@@ -1,5 +1,5 @@
 ---@diagnostic disable: duplicate-set-field
-local resourceName = "ox_lib"
+local resourceName = "wasabi_uikit"
 local configValue = BridgeClientConfig.ProgressBarSystem
 if (configValue == "auto" and GetResourceState(resourceName) ~= "started") or (configValue ~= "auto" and configValue ~= resourceName) then return end
 
@@ -58,7 +58,7 @@ function ProgressBar.Open(options, cb, isQBInput)
     end
 
     local style = options.style or 'bar'
-    local success = style == 'circle' and exports.ox_lib:progressCircle(options) or exports.ox_lib:progressBar(options)
+    local success = style == 'circle' and exports.wasabi_uikit:ProgressBar(options, 'circle') or exports.wasabi_uikit:ProgressBar(options, 'bar')
 
     if cb then cb(success) end
     return success

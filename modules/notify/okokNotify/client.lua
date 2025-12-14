@@ -9,13 +9,16 @@ Notify.GetResourceName = function()
 end
 
 ---This will send a notify message of the type and time passed
+---@param title string
 ---@param message string
 ---@param _type string
 ---@param time number
+---@props table optional
 ---@return nil
-Notify.SendNotify = function(message, _type, time)
+Notify.SendNotification = function(title, message, _type, time, props)
     time = time or 3000
-    return exports['okokNotify']:Alert('Notification', message, time, _type or "Success", false)
+    if not title then title = Bridge.Language.Locale("Notifications.PlaceholderTitle") end
+    return exports['okokNotify']:Alert(title, message, time, _type or "Success", false)
 end
 
 return Notify

@@ -3,41 +3,46 @@ Shops = Shops or {}
 
 local registeredShops = {}
 
+local Language = Language or Require("modules/locales/shared.lua")
+local locales = Language.Locale
+
 ---This can open a shop for the client
 ---@param src number
----@param shopTitle string
+---@param shopName string
 ---@return boolean
-Shops.OpenShop = function(src, shopTitle)
-    if not shopTitle and not registeredShops[shopTitle] then return false end
-    TriggerClientEvent('community_bridge:openShop', src, 'shop', shopTitle, registeredShops[shopTitle])
+Shops.OpenShop = function(src, shopName)
+    if not shopName and not registeredShops[shopName] then return false, print("community_bridge PLAYERID "..src.." attempted to open invalid shop: "..shopName) end
+    TriggerClientEvent('community_bridge:Client:openShop', src, 'shop', shopName, registeredShops[shopName])
     return true
 end
 
 ---This will create a shop to use on the client side, shops must be registered server side and exsist in the shop inventory table to allow any purchases passed.
----@param shopTitle string
+---@param shopName string
 ---@param shopInventory table
 ---@param shopCoords table
 ---@param shopGroups table
 ---@return boolean
-Shops.CreateShop = function(shopTitle, shopInventory, shopCoords, shopGroups)
-    if not shopTitle and not shopInventory and not shopCoords then return false end
-    if registeredShops[shopTitle] then return true end
-    registeredShops[shopTitle] = {name = shopTitle, inventory = shopInventory, shopCoords = shopCoords, groups = shopGroups}
+Shops.CreateShop = function(shopName, shopInventory, shopCoords, shopGroups)
+    if not shopName and not shopInventory and not shopCoords then return false end
+    if registeredShops[shopName] then return true end
+    registeredShops[shopName] = {name = shopName, inventory = shopInventory, shopCoords = shopCoords, groups = shopGroups}
     return true
 end
 
----This is an internal event to complete a shop transaction, it will verify pass items and amounts are registered to the created shop.
+---This is an internal event to complete a shop transaction, it will verify pass items and amounts are registered to the created shop. Please do not use this function directly.
 ---@param src number
 ---@param shopName string
 ---@param item string
 ---@param amount number
----@param paymentType string
+---@param account string
 ---@return nil
-Shops.CompleteCheckout = function(src, shopName, item, amount, paymentType)
-    if not src and not shopName and not item and not amount and not paymentType then return end
-    local ilocale = Language.Locale
+Shops.CompleteCheckout = function(src, shopName, item, amount, account)
+    if not src or not shopName or not item or not amount or not account then return end
+    if not amount or amount <= 0 then return end
+
     local shopData = registeredShops[shopName]
     if not shopData then return end
+
     local itemData = nil
     for _, data in pairs(shopData.inventory) do
         if data.name == item then
@@ -45,22 +50,38 @@ Shops.CompleteCheckout = function(src, shopName, item, amount, paymentType)
             break
         end
     end
-    if not itemData then return Prints.Error("Player ID "..src.." Is Possibly A Cheater And Has Attempted To Purchase A "..item) end
-    if not itemData.price then return end
-    local balance = Framework.GetAccountBalance(src, paymentType)
-    local mathStuff = tonumber(itemData.price) * tonumber(amount)
-    if balance < mathStuff then return Notify.SendNotify(src, ilocale('Shops.NotEnoughMoney'), "error", 5000) end
-    if not Framework.RemoveAccountBalance(src, paymentType, mathStuff) then return end
-    Inventory.AddItem(src, itemData.name, tonumber(amount))
-    local itemLabel = Inventory.GetItemInfo(itemData.name).label
-    Notify.SendNotify(src, ilocale('Shops.PurchasedItem')..itemLabel, "success", 5000)
+    if not itemData or not itemData.price then return print("community_bridge Player ID "..src.." attempted to purchase invalid item from shop: "..shopName) end
+    if itemData.count and itemData.count <= 0 then return Notify.SendNotify(src, locales('Shops.NotEnoughStock'), "error", 5000) end
+    local totalCost = tonumber(itemData.price) * amount
+    local balance = Framework.GetAccountBalance(src, account)
+    if not balance then return end
+    if balance <= 0 then return Notify.SendNotify(src, locales('Shops.NotEnoughMoney'), "error", 5000) end
+    if balance < totalCost then return Notify.SendNotify(src, locales('Shops.NotEnoughMoney'), "error", 5000) end
+
+    if not Framework.RemoveAccountBalance(src, account, totalCost) then return end
+
+    local success = Inventory.AddItem(src, itemData.name, amount)
+    if not success then
+        Framework.AddAccountBalance(src, account, totalCost)
+        return Notify.SendNotify(src, locales('Shops.PurchaseFailed'), "error", 5000)
+    end
+
+    local itemLabel = Inventory.GetItemInfo(itemData.name).label or itemData.name
+    Notify.SendNotify(src, locales('Shops.PurchasedItem', itemLabel), "success", 5000)
 end
 
-RegisterNetEvent("community_bridge:completeCheckout", function(shopName, item, amount, paymentType)
+---This is an internal event to complete a checkout, complete with multiple validations. Please do not use this event directly.
+---@param shopName string
+---@param item string
+---@param amount number
+---@param account string
+RegisterNetEvent("community_bridge:Server:completeCheckout", function(shopName, item, amount, account)
     local src = source
-    if not shopName and not item and not paymentType then return end
-    if not paymentType == "money" or not paymentType == "bank" then return end
-    Shops.CompleteCheckout(src, shopName, item, amount, paymentType)
+    if not shopName or not item or not account or not amount then return end
+    if account ~= "money" and account ~= "bank" then return end
+    amount = tonumber(amount)
+    if not amount or amount <= 0 then return end
+    Shops.CompleteCheckout(src, shopName, item, amount, account)
 end)
 
 return Shops

@@ -5,18 +5,30 @@ Notify.GetResourceName = function()
     return "default"
 end
 
----This will send a notify message of the type and time passed
+---DEPRICATED: PLEASE SWITCH TO Notify.SendNotification
+---12/13/25
 ---@param message string
 ---@param _type string
 ---@param time number
 ---@return nil
 Notify.SendNotify = function(message, _type, time)
+    return Notify.SendNotification(nil, message, _type, time)
+end
+
+---This will send a notify message of the type and time passed
+---@param title string
+---@param message string
+---@param _type string
+---@param time number
+---@props table optional
+---@return nil
+Notify.SendNotification = function(title, message, _type, time, props)
     time = time or 3000
     return Framework.Notify(message, nil, time)
 end
 
-RegisterNetEvent('community_bridge:Client:Notify', function(message, _type, time)
-    Notify.SendNotify(message, _type, time)
+RegisterNetEvent('community_bridge:Client:Notify', function(title, message, _type, time, props)
+    Notify.SendNotification(title, message, _type, time, props)
 end)
 
 ---------[[Depricated Stuff Below, please adjust to the HelpText module instead]]--------

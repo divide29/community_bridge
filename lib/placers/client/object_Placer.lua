@@ -1,5 +1,6 @@
 Placeable = Placeable or {}
 Utility = Utility or Require("lib/utility/client/utility.lua")
+if not lib then Require('init.lua', 'ox_lib') end
 
 local activePlacementProp = nil
 lib.locale()
@@ -31,7 +32,7 @@ Placeable.PlaceObject = function(object, distance, snapToGround, allowedMats, of
     distance = tonumber(distance or 10.0 )
     if activePlacementProp then return end
 
-    if not object then Prints.Error('placeable_object.no_prop_defined') end
+    if not object then print('^6 placeable_object.no_prop_defined ^0') end
 
     local propObject = type(object) == 'string' and joaat(object) or object
     local heading = 0.0

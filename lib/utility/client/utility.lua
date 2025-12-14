@@ -1,6 +1,7 @@
 Utility = Utility or {}
 local blipIDs = {}
 local spawnedPeds = {}
+local spawnedProps = {}
 
 Locales = Locales or Require('modules/locales/shared.lua')
 Point = Point or Require('lib/points/client/points.lua')
@@ -39,10 +40,11 @@ end
 ---@return number|nil
 function Utility.CreateProp(model, coords, heading, networked)
     local loaded, hash = ensureModelLoaded(model)
-    if not loaded then return nil, Prints and Prints.Error and Prints.Error("Model Has Not Loaded") end
+    if not loaded then return nil, print("^6 Model was unable to load "..tostring(model).." ^0") end
     local propEntity = CreateObject(hash, coords.x, coords.y, coords.z, networked, false, false)
     SetEntityHeading(propEntity, heading)
     SetModelAsNoLongerNeeded(hash)
+    spawnedProps[tostring(propEntity)] = true
     return propEntity
 end
 
@@ -62,7 +64,7 @@ end
 ---@return number|nil, table
 function Utility.CreateVehicle(model, coords, heading, networked)
     local loaded, hash = ensureModelLoaded(model)
-    if not loaded then return nil, {}, Prints and Prints.Error and Prints.Error("Model Has Not Loaded") end
+    if not loaded then return nil, {}, print("^6 Model was unable to load "..tostring(model).." ^0") end
     local vehicle = CreateVehicle(hash, coords.x, coords.y, coords.z, heading, networked, false)
     SetVehicleHasBeenOwnedByPlayer(vehicle, true)
     SetVehicleNeedsToBeHotwired(vehicle, false)
@@ -80,7 +82,7 @@ end
 ---@return number|nil
 function Utility.CreatePed(model, coords, heading, networked, settings)
     local loaded, hash = ensureModelLoaded(model)
-    if not loaded then return nil, Prints and Prints.Error and Prints.Error("Model Has Not Loaded") end
+    if not loaded then return nil, print("^6 Model was unable to load "..tostring(model).." ^0") end
     local spawnedEntity = CreatePed(0, hash, coords.x, coords.y, coords.z, heading, networked, false)
     SetModelAsNoLongerNeeded(hash)
     spawnedPeds[tostring(spawnedEntity)] = true
@@ -124,8 +126,8 @@ function Utility.CreateBlip(coords, sprite, color, scale, label, shortRange, dis
     SetBlipScale(blip, scale or 0.8)
     SetBlipDisplay(blip, displayType or 2)
     SetBlipAsShortRange(blip, shortRange)
-    AddTextEntry(label, label)
-    BeginTextCommandSetBlipName(label)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentSubstringPlayerName(label)
     EndTextCommandSetBlipName(blip)
     blipIDs[tostring(blip)] = blip
     return blip
@@ -172,7 +174,7 @@ end
 ---@param blip number
 ---@return boolean
 function Utility.RemoveBlip(blip)
-    if not blipIDs[tostring(blip)] then return false, print("NO BLIP BY ID") end
+    if not blipIDs[tostring(blip)] then return false, print("^6 No blip to remove with matching ID ^0") end
     RemoveBlip(blipIDs[tostring(blip)])
     blipIDs[tostring(blip)] = nil
     return true
@@ -205,6 +207,18 @@ end
 function Utility.RemovePed(entity)
     if not spawnedPeds[tostring(entity)] then return false end
     spawnedPeds[tostring(entity)] = nil
+    if not DoesEntityExist(entity) then return false end
+    SetEntityAsMissionEntity(entity, true, true)
+    DeleteEntity(entity)
+    return true
+end
+
+---Remove a ped if it exists
+---@param entity number
+---@return boolean
+function Utility.RemoveProp(entity)
+    if not spawnedProps[tostring(entity)] then return false end
+    spawnedProps[tostring(entity)] = nil
     if not DoesEntityExist(entity) then return false end
     SetEntityAsMissionEntity(entity, true, true)
     DeleteEntity(entity)
@@ -290,9 +304,9 @@ local doingstuff = false
 ---@param text string The text to show
 ---@param coords table The coords to show the message at
 ---@return nil
-function Utility.FloatingHelpText(text, coords) 
+function Utility.FloatingHelpText(text, coords)
     AddTextEntry("community_bridge_"..text, text)
-    SetFloatingHelpTextWorldPosition(1, coords.x, coords.y, coords.z)    
+    SetFloatingHelpTextWorldPosition(1, coords.x, coords.y, coords.z)
     SetFloatingHelpTextStyle(1, 1, 2, -1, 3, 0)
     BeginTextCommandDisplayHelp("community_bridge_"..text)
     EndTextCommandDisplayHelp(2, false, false, 100)
@@ -313,7 +327,7 @@ function Utility.Draw3DHelpText(coords, text, scale)
     end
     local widthFactor = maxLineLen * 0.012 * scale
     local height = 0.06 * scale * lineCount
-    
+
     -- Set text properties
     SetTextScale(scale or 0.35, scale or 0.35)
     SetTextFont(4)
@@ -323,7 +337,7 @@ function Utility.Draw3DHelpText(coords, text, scale)
     SetTextCentre(true)
     AddTextComponentString(text)
     DrawText(x, y)
-    
+
     -- Draw background rectangle
     DrawRect(x, y + height / 2, widthFactor + 0.015 + 0.006, height + 0.015 + 0.006, 10, 25, 47, 200)
     DrawRect(x, y + height / 2, widthFactor + 0.015, height + 0.015, 17, 45, 78, 50)
@@ -611,6 +625,11 @@ AddEventHandler('onResourceStop', function(resource)
     for _, ped in pairs(spawnedPeds) do
         if ped and DoesEntityExist(tonumber(ped)) then
             DeleteEntity(tonumber(ped))
+        end
+    end
+    for _, prop in pairs(spawnedProps) do
+        if prop and DoesEntityExist(tonumber(prop)) then
+            DeleteEntity(tonumber(prop))
         end
     end
 end)

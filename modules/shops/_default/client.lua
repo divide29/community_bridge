@@ -1,46 +1,57 @@
 ---@diagnostic disable: duplicate-set-field
 Shops = Shops or {}
 
-RegisterNetEvent('community_bridge:openShop', function(_type, _title, shopData)
+---This is an internal event used to be hit from server for the shop context menus. Please do not use this event directly.
+---@param shopType string
+---@param shopLabel string
+---@param shopData table
+RegisterNetEvent('community_bridge:Client:openShop', function(shopType, shopLabel, shopData)
     if source ~= 65535 then return end
-    if not _title and not _title and not shopData then return end
-    if _type ~= 'shop' then return end
-    Shops.OpenShop(_title, shopData.inventory)
+    if not shopType or not shopLabel or not shopData then return end
+    if shopType ~= 'shop' then return end
+    Shops.OpenShop(shopLabel, shopData.inventory)
 end)
 
----This is an internal event that is used to complete a transaction and offer cash/card pay
+---This is an internal function that is used to complete a transaction and offer cash/card pay. Please do not use this function directly.
+---@param shopName string
+---@param item string
+---@param itemLabel string
+---@param price number
+---@param amount number
 Shops.FinalizeCheckOut = function(shopName, item, itemLabel, price, amount)
     if not shopName and not item and not itemLabel and not price then return end
-    local mathStuff = tonumber(price) * tonumber(amount)
+    local mathStuff = (tonumber(price) * tonumber(amount))
     local generatedID = Ids.CreateUniqueId()
     local buildMenu = {
         {
-            title = string.format(locale('Shops.PayByCash'), tostring(mathStuff)),
-            description = string.format(locale('Shops.AreYouSure'), itemLabel),
+            title = locale('Shops.PayByCash', tostring(mathStuff)),
+            description = locale('Shops.AreYouSure', itemLabel),
             icon = locale('Shops.CashIcon'),
             onSelect = function(_, __, ___)
-                TriggerServerEvent('community_bridge:completeCheckout', shopName, item, amount, "money")
+                TriggerServerEvent('community_bridge:Server:completeCheckout', shopName, item, amount, "money")
             end
         },
         {
-            title = string.format(locale('Shops.PayByCard'), tostring(mathStuff)),
-            description = string.format(locale('Shops.AreYouSure'), itemLabel),
+            title = locale('Shops.PayByCard', tostring(mathStuff)),
+            description = locale('Shops.AreYouSure', itemLabel),
             icon = locale('Shops.CardIcon'),
             onSelect = function(_, __, ___)
-                TriggerServerEvent('community_bridge:completeCheckout', shopName, item, amount, "bank")
+                TriggerServerEvent('community_bridge:Server:completeCheckout', shopName, item, amount, "bank")
             end
         }
     }
     Menu.Open({ id = generatedID, title = locale("Shops.Input"), options = buildMenu }, false)
 end
 
----This is an internal event that is used to open the amount select menu
+---This is an internal functions that is used to open the amount select menu. Please do not use this function directly.
 ---@param shopName string
 ---@param item string
 ---@param itemLabel string
 ---@param price number
 Shops.AmountSelect = function(shopName, item, itemLabel, price)
     if not shopName and not item and not itemLabel and not price then return end
+    if not tonumber(price) then return end
+    if price <= 0 then return end
     local numberOptions = {}
     for i = 1, 100 do
         table.insert(numberOptions, {label = tostring(i), value = i})
@@ -54,28 +65,27 @@ Shops.AmountSelect = function(shopName, item, itemLabel, price)
     end
 end
 
----This will open a shop with the passed title and data. It will create a menu with the items in the shopData table. The items will be clickable and will open a checkout menu.
+---This will open a shop with the passed shopName and data. It will create a menu with the items in the shopData table. The items will be clickable and will open a checkout menu.
 ---This also verifies the shop exsists and was made first server side. This will not work when only used client side and the server side verifies the item exsists in the table as well as the shop id.
----@param title any
----@param shopData any
+---@param shopName string
+---@param shopData table
 ---@return nil
-Shops.OpenShop = function(title, shopData)
-    if not title and not shopData and not title then return Prints.Error("No Title Passed") end
+Shops.OpenShop = function(shopName, shopData)
+    if not shopName and not shopData then return print("^6 No Shop Name or Shop Data Passed ^0") end
     local generatedID = Ids.CreateUniqueId()
     local buildMenu = {}
     for _, v in pairs(shopData) do
         local getItemName = Inventory.GetItemInfo(v.name).label
         table.insert(buildMenu, {
             title = getItemName,
-            description = string.format(locale('Shops.CurrencySymbol'), tostring(v.price)),
+            description = locale('Shops.CurrencySymbol', tostring(v.price)),
             icon = locale('Shops.ShopIcon'),
             onSelect = function(selected, secondary, args)
-                Shops.AmountSelect(title, v.name, getItemName, v.price)
-                --Shops.FinalizeCheckOut(title, v.name, getItemName, v.price)
+                Shops.AmountSelect(shopName, v.name, getItemName, v.price)
             end
         })
     end
-    Menu.Open({ id = generatedID,  title = title, options = buildMenu }, false)
+    Menu.Open({ id = generatedID,  title = shopName, options = buildMenu }, false)
 end
 
 return Shops

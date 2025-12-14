@@ -1,6 +1,5 @@
-
-local GRIDE_SIZE_X = 8968.83 / 2 
-local GRIDE_SIZE_Y = 126200.40 / 2
+local GRIDE_SIZE_X = 8968.83
+local GRIDE_SIZE_Y = 126200.40
 local CELL_SIZE = 500
 
 local Grid = {}
@@ -8,6 +7,7 @@ Grid.Generated = false
 local Grids = {}
 Point = {}
 Point.All = {}
+Point.LastInside = nil
 
 function Grid.Generate()
     if Grid.Generated then return end
@@ -40,31 +40,27 @@ Points.Started = false
 function Point.StartLoop()
     if Points.Started then return end
     Points.Started = true
-
     CreateThread(function()
         while Points.Started do
             local playerPed = PlayerPedId()
             if playerPed ~= -1 then
                 local coords = GetEntityCoords(playerPed)
                 local cell = Grid.GetCellByCoords(coords)
-                for _, point in pairs(cell or {}) do
-                    if point.isEntity then
-                        local entity = point.target
-                        if DoesEntityExist(entity) then
-                            local entityCoords = GetEntityCoords(entity)
-                            local distance = #(coords - entityCoords)
-                            if distance < point.distance then
-                                if not point.inside then
-                                    point.inside = true
-                                    point.args = point?.onEnter(point, point.args) or point.args
-                                end
-                            elseif point.inside then
-                                point.inside = false
-                                point.args = point?.onExit(point, point.args) or point.args
-                            end
+                if Point.LastInside ~= cell then
+                    for _, point in pairs(Point.LastInside or {}) do
+                        if point.inside then
+                            point.inside = false
+                            point.args = point?.onExit(point, point.args) or point.args
                         end
-                    else
-                        local distance = #(vector3(coords.x, coords.y, coords.z) - vector3(point.coords.x, point.coords.y, point.coords.z))
+                    end
+                    Point.LastInside = cell
+                end
+                for _, point in pairs(cell or {}) do
+                    local entity = point.target
+                    local targetCoords = point.isEntity and DoesEntityExist(entity) and GetEntityCoords(entity) or point.coords
+                    if not point.disable and targetCoords then
+                        targetCoords = vector3(targetCoords.x, targetCoords.y, targetCoords.z)
+                        local distance = #(coords - targetCoords)
                         if distance < point.distance then
                             if not point.inside then
                                 point.inside = true

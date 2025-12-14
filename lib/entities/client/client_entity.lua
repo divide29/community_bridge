@@ -80,9 +80,9 @@ local function UpdateEntity(_entityData)
     entityData.oldCoords = entityData.oldCoords and vector3(entityData.oldCoords.x, entityData.oldCoords.y, entityData.oldCoords.z) or coords
     local dist = #(coords - entityData.oldCoords)
     if entityData.oldCoords and dist > 0.5 then
-        if entityData.spawned then 
-            SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, true)
-        end    
+        -- if entityData.spawned then 
+        --     SetEntityCoords(entityData.spawned, coords.x, coords.y, coords.z, false, false, false, false)
+        -- end    
         -- ClientEntity.UpdateCoords(entityData.id, entityData.coords)       
         if entityData.OnMove then
             pcall(function (...)
@@ -167,7 +167,20 @@ end
 function ClientEntity.Set(id, key, value)
     local entityData = ClientEntity.Get(id)
     if not entityData then return print(string.format("[ClientEntity] SetKey: Entity %s does not exist", id)) end
-    entityData[key] = value
+    local oldData = entityData[key]
+    if oldData == value then return end
+    if entityData.OnSet then 
+        pcall(function (...)
+            return entityData.OnSet(entityData, key, value, oldData)
+        end)
+    end
+    if value then 
+        entityData[key] = value
+        Behaviors.Trigger("OnSet", entityData, key, value, oldData)  
+        return 
+    end        
+    Behaviors.Trigger("OnSet", entityData, key, value, oldData)
+    entityData[key] = nil      
 end
 
 function ClientEntity.Get(id)

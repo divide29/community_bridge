@@ -4,6 +4,7 @@
 		"Input": "Mängd inmatning",
 		"PurchaseAmount": "Inköpsmängd",
 		"PurchasedItem": "Du har köpt ",
+		"PurchaseFailed": "Köp misslyckades, inventarium fullt",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Bekräfta köp",
 		"AreYouSure": "Är du säker på att du vill köpa en %s",
@@ -14,12 +15,14 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Butiksnamn"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Jag är en %s %s",
-		"locale-unit-test": "Detta är en teststräng"
+	"Notifications": {
+		"PlaceholderTitle": "Avisering"
 	},
 	"clipboard": {
 		"copy": "Kopierat till urklipp"
+	},
+	"input": {
+		"submit_text": "Skicka"
 	},
 	"placeable_object": {
 		"no_prop_defined": "Du har inte definierat något objekt att placera",
@@ -32,6 +35,15 @@
 		"object_cancel": "[%s] Avbryt  \n",
 		"object_scroll_up": "[%s] Vrid höger  \n",
 		"object_scroll_down": "[%s] Vrid vänster  \n",
-		"depth_modifier": "[%s] Djupkontroll modifierare  \n"
+		"rotate_left": "Rotera vänster",
+		"rotate_right": "Rotera höger",
+		"rotate_clockwise": "[%s] Rotera medurs  \n",
+		"rotate_counter_clockwise": "[%s] Rotera moturs  \n",
+		"depth_modifier": "[%s] Djupkontroll Modifierare  \n"
+	},
+	"target": {
+		"interact": "[E] Interagera",
+		"title": "Alternativ",
+		"description": "Ingen beskrivning"
 	}
 }

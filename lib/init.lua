@@ -11,9 +11,6 @@ function Require(modulePath, resourceName)
 
     local id = resourceName .. ":" .. modulePath
     if loadedModules[id] then
-        if BridgeSharedConfig.DebugLevel ~= 0 then
-            print("^2 Returning cached module [" .. id .. "] ^0")
-        end
         return loadedModules[id]
     end
 
@@ -45,8 +42,6 @@ cLib = {
     Prints = Prints or Require("lib/utility/shared/prints.lua"),
     Math = Math or Require("lib/utility/shared/math.lua"),
     LA = LA or Require("lib/utility/shared/la.lua")
-    -- Zones = Poly or Require("lib/zones/shared/zones.lua"),
-    -- Action = Action or Require("lib/entities/shared/actions.lua"),
 }
 
 exports('cLib', cLib)

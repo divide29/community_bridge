@@ -11,7 +11,7 @@ VehicleKey = VehicleKey or {}
 VehicleKey.GiveKeys = function(vehicle, plate)
     assert(vehicle, "vehicle is nil")
     assert(DoesEntityExist(vehicle), "vehicle does not exist")
-    
+
     if not plate then
         plate = GetVehicleNumberPlateText(vehicle)
     end
@@ -26,11 +26,11 @@ end
 VehicleKey.RemoveKeys = function(vehicle, plate)
     assert(vehicle, "vehicle is nil")
     assert(DoesEntityExist(vehicle), "vehicle does not exist")
-    
+
     if not plate then
         plate = GetVehicleNumberPlateText(vehicle)
     end
-    
+
     return exports.MrNewbVehicleKeys:RemoveKeysByPlate(plate)
 end
 

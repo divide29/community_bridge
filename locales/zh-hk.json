@@ -4,6 +4,7 @@
 		"Input": "數量輸入",
 		"PurchaseAmount": "購買數量",
 		"PurchasedItem": "您已購買 ",
+		"PurchaseFailed": "購買失敗，庫存已滿",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "確認購買",
 		"AreYouSure": "您確定要購買 %s 嗎",
@@ -14,12 +15,14 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "商店名稱"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "我是一個 %s %s",
-		"locale-unit-test": "這是一個測試字符串"
+	"Notifications": {
+		"PlaceholderTitle": "通知"
 	},
 	"clipboard": {
 		"copy": "已復制到剪貼板"
+	},
+	"input": {
+		"submit_text": "提交"
 	},
 	"placeable_object": {
 		"no_prop_defined": "您沒有定義任何要放置的對象",
@@ -32,6 +35,15 @@
 		"object_cancel": "[%s] 取消  \n",
 		"object_scroll_up": "[%s] 向右轉  \n",
 		"object_scroll_down": "[%s] 向左轉  \n",
+		"rotate_left": "向左旋轉",
+		"rotate_right": "向右旋轉",
+		"rotate_clockwise": "[%s] 順時針旋轉  \n",
+		"rotate_counter_clockwise": "[%s] 逆時針旋轉  \n",
 		"depth_modifier": "[%s] 深度控制修改器  \n"
+	},
+	"target": {
+		"interact": "[E] 互動",
+		"title": "選項",
+		"description": "無描述"
 	}
 }

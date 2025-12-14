@@ -28,21 +28,20 @@ end
 ---@return boolean
 Phone.SendEmail = function(src, email, title, message)
     local numberNumber = exports["lb-phone"]:GetEquippedPhoneNumber(src)
-    if not numberNumber then return false, Prints.Error("Could not Find Phone number") end
+    if not numberNumber then return false, print(" ^6 Could not Find Phone number ^0") end
     local playerEmail = exports["lb-phone"]:GetEmailAddress(numberNumber)
-    if not playerEmail then return false, Prints.Error("Could not Find email")  end
+    if not playerEmail then return false, print(" ^6 Could not Find email ^0")  end
     local success, id = exports["lb-phone"]:SendMail({
         to = playerEmail,
         sender = email,
         subject = title,
         message = message,
     })
-    return success
+    return success or false
 end
 
 RegisterNetEvent('community_bridge:Server:genericEmail', function(data)
     local src = source
-    Prints.Debug('community_bridge:Server:genericEmail Hit')
     return Phone.SendEmail(src, data.email, data.title, data.message)
 end)
 

@@ -1,13 +1,21 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('ox_inventory') ~= 'started' then return end
-if GetResourceState('qs-inventory') == 'started' then return end
-if GetResourceState('origen_inventory') == 'started' then return end
+if GetResourceState('ox_inventory') == 'missing' then return end
+if GetResourceState('tgiann-inventory') ~= 'missing' then return end
+if GetResourceState('qs-inventory') ~= 'missing' then return end
+if GetResourceState('origen_inventory') ~= 'missing' then return end
+--check for providers =/
 
 local ox_inventory = exports.ox_inventory
 
 Inventory = Inventory or {}
 
----Return the item info in oxs format, {name, label, stack, weight, description, image}
+---@description This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "ox_inventory"
+end
+
+---@description Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -23,33 +31,28 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "ox_inventory"
-end
-
----This will return the entire items table from the inventory.
+---@description This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()
     return ox_inventory:Items()
 end
 
----Will return boolean if the player has the item.
+---@description Will return boolean if the player has the item.
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(item)
-    return ox_inventory:Search('count', item) > 0
+Inventory.HasItem = function(item, requiredCount)
+    return ox_inventory:Search('count', item, nil) >= (requiredCount or 1)
 end
 
----This will return th count of the item in the players inventory, if not found will return 0.
+---@description This will return their count of the item in the players inventory, if not found will return 0.
 ---@param item string
 ---@return number
 Inventory.GetItemCount = function(item)
     return ox_inventory:GetItemCount(item, nil, false)
 end
 
----This will get the image path for this item, if not found will return placeholder.
+---@description This will get the image path for this item, if not found will return placeholder.
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -59,7 +62,7 @@ Inventory.GetImagePath = function(item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
 end
 
----This will return the players inventory in the format of {name, label, count, slot, metadata}
+---@description This will return the players inventory in the format of {name, label, count, slot, metadata}
 ---@return table
 Inventory.GetPlayerInventory = function()
     return ox_inventory:GetPlayerItems()

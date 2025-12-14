@@ -1,40 +1,41 @@
 ---@diagnostic disable: duplicate-set-field
 Inventory = Inventory or {}
 
----Return the item info in oxs format, {name, label, stack, weight, description, image}
+---@description This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "default"
+end
+
+---@description Return the item info in oxs format, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
     return Framework.GetItemInfo(item)
 end
 
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "default"
-end
-
----Will return boolean if the player has the item.
+---@description Will return boolean if the player has the item.
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(item)
-    return Framework.HasItem(item)
+Inventory.HasItem = function(item, requiredCount)
+    return Framework.HasItem(item, requiredCount)
 end
 
----This will return th count of the item in the players inventory, if not found will return 0.
+---@description This will return their count of the item in the players inventory, if not found will return 0.
 ---@param item string
 ---@return number
 Inventory.GetItemCount = function(item)
     return Framework.GetItemCount(item)
 end
 
----This will return the players inventory in the format of {name, label, count, slot, metadata}
+---@description This will return the players inventory in the format of {name, label, count, slot, metadata}
 ---@return table
 Inventory.GetPlayerInventory = function()
     return Framework:GetPlayerInventory()
 end
 
----This will get the image path for this item, if not found will return placeholder.
+---@description This will get the image path for this item, if not found will return placeholder.
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -42,8 +43,7 @@ Inventory.GetImagePath = function(item)
     return "https://avatars.githubusercontent.com/u/47620135"
 end
 
----This will remove the file extension from the item name if present.
----example: "item.png" will become "item"
+---@description This will remove the file extension from the item name if present.
 ---@param item string
 ---@return string
 Inventory.StripPNG = function(item)
@@ -53,8 +53,7 @@ Inventory.StripPNG = function(item)
     return item
 end
 
----This will remove the file extension from the item name if present.
----example: "item.webp" will become "item"
+---@description This will remove the file extension from the item name if present.
 ---@param item string
 ---@return string
 Inventory.StripWebp = function(item)
@@ -64,8 +63,8 @@ Inventory.StripWebp = function(item)
     return item
 end
 
----This will return the entire items table from the inventory.
----@return table 
+---@description This will return the entire items table from the inventory.
+---@return table
 Inventory.Items = function()
     if not Framework.Shared or not Framework.Shared.Items then
         local itemList = Framework.ItemList() or { Items = {} }
@@ -73,7 +72,5 @@ Inventory.Items = function()
     end
     return Framework.Shared.Items
 end
-
-
 
 return Inventory

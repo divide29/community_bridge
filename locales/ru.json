@@ -4,6 +4,7 @@
 		"Input": "Ввод количества",
 		"PurchaseAmount": "Количество покупки",
 		"PurchasedItem": "Вы купили ",
+		"PurchaseFailed": "Покупка не удалась, инвентарь полон",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Подтвердить покупку",
 		"AreYouSure": "Вы уверены, что хотите купить %s",
@@ -14,12 +15,14 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Название магазина"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Я %s %s",
-		"locale-unit-test": "Это тестовая строка"
+	"Notifications": {
+		"PlaceholderTitle": "Уведомление"
 	},
 	"clipboard": {
 		"copy": "Скопировано в буфер обмена"
+	},
+	"input": {
+		"submit_text": "Отправить"
 	},
 	"placeable_object": {
 		"no_prop_defined": "Вы не определили никакого объекта для размещения",
@@ -32,6 +35,15 @@
 		"object_cancel": "[%s] Отменить  \n",
 		"object_scroll_up": "[%s] Повернуть вправо  \n",
 		"object_scroll_down": "[%s] Повернуть влево  \n",
+		"rotate_left": "Повернуть влево",
+		"rotate_right": "Повернуть вправо",
+		"rotate_clockwise": "[%s] Вращать по часовой стрелке  \n",
+		"rotate_counter_clockwise": "[%s] Вращать против часовой стрелки  \n",
 		"depth_modifier": "[%s] Модификатор контроля глубины  \n"
+	},
+	"target": {
+		"interact": "[E] Взаимодействовать",
+		"title": "Опции",
+		"description": "Нет описания"
 	}
 }

@@ -15,7 +15,7 @@ end
 ---@param src number
 ---@return number|boolean
 Phone.GetPlayerPhone = function(src)
-    return false, Print.Error('There Is No Phone Bridged.')
+    return false, print('^6 There is no phone bridged in community_bridge. ^0')
 end
 
 ---This will send an email to the passed source, email address, title and message.
@@ -25,7 +25,7 @@ end
 ---@param message string
 ---@return boolean
 Phone.SendEmail = function(src, email, title, message)
-    return false, Print.Error('There Is No Phone Bridged.')
+    return false, print('^6 There is no phone bridged in community_bridge. ^0')
 end
 
 return Phone

@@ -22,8 +22,7 @@ local function setupButton(scaleform, button)
                 N_0xe83a3e3557a56640(GetControlInstructionalButton(CONTROL_TYPE, keyCode, true))
             end
         else
-            ScaleformMovieMethodAddParamPlayerNameString(GetControlInstructionalButton(CONTROL_TYPE, button.keyIndex[1],
-                true))
+            ScaleformMovieMethodAddParamPlayerNameString(GetControlInstructionalButton(CONTROL_TYPE, button.keyIndex[1], true))
         end
     end
 

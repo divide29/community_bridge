@@ -25,14 +25,14 @@ function Language.Locale(str, ...)
 
     -- Handle nested tables via dot notation
     local current = locales
-    for part in str:gmatch("[^%.]+") do
+    for part in str:gmatch("([^%.]+)") do
         if type(current) ~= "table" then
-            warn(("Invalid nested locale path: %s"):format(str))
+            warn(("Invalid nested locale path: %s for resource: %s"):format(str, resource))
             return str
         end
         current = current[part]
         if not current then
-            warn(("Locale not found for key: %s in language: %s"):format(str, Lang))
+            warn(("Locale not found for key: %s in language: %s for resource: %s"):format(str, Lang, resource))
             return str
         end
     end

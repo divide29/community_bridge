@@ -12,7 +12,7 @@ RegisterKeyMapping('+rotate_left', locale('placeable_object.rotate_left'), 'keyb
 RegisterKeyMapping('+rotate_right', locale('placeable_object.rotate_right'), 'keyboard', 'RIGHT')
 RegisterKeyMapping('+scroll_up', locale('placeable_object.object_scroll_up'), 'mouse_wheel', 'IOM_WHEEL_UP')
 RegisterKeyMapping('+scroll_down', locale('placeable_object.object_scroll_down'), 'mouse_wheel', 'IOM_WHEEL_DOWN')
-RegisterKeyMapping('+depth_modifier', locale('placeable_object.depth_modifier'), 'keyboard', 'LCONTROL') 
+RegisterKeyMapping('+depth_modifier', locale('placeable_object.depth_modifier'), 'keyboard', 'LCONTROL')
 
 local state = {
     isPlacing = false,
@@ -50,7 +50,7 @@ local placementText = {
     string.format(locale('placeable_object.rotate_clockwise'), Utility.GetCommandKey('+scroll_up')),
     string.format(locale('placeable_object.rotate_counter_clockwise'), Utility.GetCommandKey('+scroll_down')),
     string.format(locale('placeable_object.depth_modifier'), Utility.GetCommandKey('+depth_modifier'))
-    
+
 }
 
 -- Command handlers for key mappings
@@ -134,63 +134,6 @@ local function getMouseWorldPos(depth)
     return playerPos + normal * depth
 end
 
--- local function isInBoundary(pos, boundary)
---     if not boundary then return true end
-
---     local x, y, z = table.unpack(pos)
-
---     -- Handle legacy min/max boundary format for backwards compatibility
---     if boundary.min and boundary.max then
---         local minX, minY, minZ = table.unpack(boundary.min)
---         local maxX, maxY, maxZ = table.unpack(boundary.max)
---         return x >= minX and x <= maxX and y >= minY and y <= maxY and z >= minZ and z <= maxZ
---     end
-
---     -- Handle list of points (polygon boundary)
---     if boundary.points and #boundary.points > 0 then
---         local points = boundary.points
---         local minZ = boundary.minZ or -math.huge
---         local maxZ = boundary.maxZ or math.huge
-
---         -- Check Z bounds first
---         if z < minZ or z > maxZ then
---             return false
---         end
-
---         -- Point-in-polygon test using ray casting algorithm (improved version)
---         local inside = false
---         local n = #points
-
---         for i = 1, n do
---             local j = i == n and 1 or i + 1 -- Next point (wrap around)
-
---             local xi, yi = points[i].x or points[i][1], points[i].y or points[i][2]
---             local xj, yj = points[j].x or points[j][1], points[j].y or points[j][2]
-
---             -- Ensure xi, yi, xj, yj are numbers
---             if not (xi and yi and xj and yj) then
---                 goto continue
---             end
-
---             -- Ray casting test
---             if ((yi > y) ~= (yj > y)) then
---                 -- Calculate intersection point
---                 local intersect = (xj - xi) * (y - yi) / (yj - yi) + xi
---                 if x < intersect then
---                     inside = not inside
---                 end
---             end
-
---             ::continue::
---         end
-
---         return inside
---     end
-
---     -- Fallback to true if boundary format is not recognized
---     return true
--- end
-
 local function checkMaterialAndBoundary()
     if not state.currentEntity then return true end
 
@@ -259,41 +202,6 @@ local function checkMaterialAndBoundaryDetailed()
 
     return inBounds, inBounds, customCheckPassed
 end
-
--- local function setupInstructionalButtons()
---     local buttons = {}
-
---     -- Common buttons
---     table.insert(buttons, {type = "SET_DATA_SLOT", name = state.settings.config?.place_object?.name or 'Place Object:', keyIndex = state.settings.config?.place_object?.key or {223}, int = 5})
---     table.insert(buttons, {type = "SET_DATA_SLOT", name = state.settings.config?.cancel_placement?.name or 'Cancel:', keyIndex = state.settings.config?.cancel_placement?.key or {25}, int = 4})
-
---     if state.mode == 'normal' then
---         table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Rotate:', keyIndex = {241, 242}, int = 3})
---         table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Depth:', keyIndex = {224}, int = 2})
---         if state.settings.allowVertical then
---             table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Height:', keyIndex = {16, 17}, int = 1})
---             table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Toggle Ground Snap:', keyIndex = {19}, int = 0})
---         end
---         if state.settings.allowMovement then
---             table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Movement Mode:', keyIndex = {38}, int = 6})
---         end
---     elseif state.mode == 'movement' then
---         table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Move:', keyIndex = {32, 33, 34, 35}, int = 3})
---         table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Rotate:', keyIndex = {174, 175}, int = 2})
---         if state.settings.allowVertical then
---             table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Up/Down:', keyIndex = {85, 48}, int = 1})
---         end
---         if state.settings.allowNormal then
---             table.insert(buttons, {type = "SET_DATA_SLOT", name = 'Normal Mode:', keyIndex = {38}, int = 0})
---         end
---     end
-
---     table.insert(buttons, {type = "DRAW_INSTRUCTIONAL_BUTTONS"})
---     table.insert(buttons, {type = "SET_BACKGROUND_COLOUR"})
-
---     -- return Scaleform.SetupInstructionalButtons(buttons)
---     return nil -- Scaleform disabled for now
--- end
 
 local function drawBoundaryBox(boundary)
     if not boundary then return end
@@ -567,7 +475,7 @@ local function placementLoop()
                     -- if not state.settings.allowVertical or state.snapToGround then
                     --     local groundZ, _z = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z + 50, false)
                     --     if groundZ then
-                           
+
                     --     end
                     -- end
                     coords = vector3(coords.x, coords.y, coords.z - 0.2) -- Adjust Z to ground level

@@ -1,12 +1,18 @@
 ---@diagnostic disable: duplicate-set-field
-if GetResourceState('qs-inventory') ~= 'started' then return end
+if GetResourceState('qs-inventory') == 'missing' then return end
 
 local quasar = exports['qs-inventory']
 
 Inventory = Inventory or {}
 Inventory.Stashes = Inventory.Stashes or {}
 
----This will add an item, and return true or false based on success
+---@description This will get the name of the in use resource.
+---@return string
+Inventory.GetResourceName = function()
+    return "qs-inventory"
+end
+
+---@description This will add an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
@@ -15,17 +21,13 @@ Inventory.Stashes = Inventory.Stashes or {}
 ---@return boolean
 Inventory.AddItem = function(src, item, count, slot, metadata)
     if not quasar:CanCarryItem(src, item, count) then return false end
+    local success = quasar:AddItem(src, item, count, slot, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "add", item = item, count = count, slot = slot, metadata = metadata})
-    return quasar:AddItem(src, item, count, slot, metadata)
+    return success
 end
 
----This will get the name of the in use resource.
----@return string
-Inventory.GetResourceName = function()
-    return "qs-inventory"
-end
-
----This will remove an item, and return true or false based on success
+---@description This will remove an item, and return true or false based on success
 ---@param src number
 ---@param item string
 ---@param count number
@@ -33,46 +35,22 @@ end
 ---@param metadata table
 ---@return boolean
 Inventory.RemoveItem = function(src, item, count, slot, metadata)
+    local success = quasar:RemoveItem(src, item, count, slot, metadata)
+    if not success then return false end
     TriggerClientEvent("community_bridge:client:inventory:updateInventory", src, {action = "remove", item = item, count = count, slot = slot, metadata = metadata})
-    return quasar:RemoveItem(src, item, count, slot, metadata)
+    return success
 end
 
----This will add items to a trunk, and return true or false based on success
----@param identifier string
----@param items table
----@return boolean
-Inventory.AddTrunkItems = function(identifier, items)
-    if type(items) ~= "table" then return false end
-    return false
-    --[[
-    for k, v in pairs(items) do
-        -- 
-        In testing this inventory allowed it on owned vehicle but not unowned vehicles, 
-        also attempted registering it as a stash with no luck.
-        was thinking about just forcing it in sql but there is data attached that I assume is a timestamp
-        kinda not sure on this one atm...
-        Also there is no GetInventory(identifier) only by player source
-        --quasar:AddToTrunk(identifier, v.count, v.metadata, v.item, v.metadata)
-    end
-    return true
-    --]]
-end
-
----This will clear the specified inventory, will always return true unless a value isnt passed correctly.
+---@description This will clear the specified inventory, will always return true unless a value isnt passed correctly.
 ---@param id string
 ---@return boolean
 Inventory.ClearStash = function(id, _type)
     if type(id) ~= "string" then return false end
-    if Inventory.Stashes[id] then Inventory.Stashes[id] = nil end
-    return false
-    --[[
     quasar:ClearOtherInventory(_type, id)
-
     return true
-    --]]
 end
 
----This will return a table with the item info, {name, label, stack, weight, description, image}
+---@description This will return a table with the item info, {name, label, stack, weight, description, image}
 ---@param item string
 ---@return table
 Inventory.GetItemInfo = function(item)
@@ -90,24 +68,23 @@ Inventory.GetItemInfo = function(item)
     }
 end
 
----This will return the entire items table from the inventory.
+---@description This will return the entire items table from the inventory.
 ---@return table 
 Inventory.Items = function()
     return quasar:GetItemList()
 end
 
----This will return the count of the item in the players inventory, if not found will return 0.
----
----if metadata is passed it will find the matching items count.
+---@description This will return the count of the item in the players inventory, if not found will return 0.
 ---@param src number
 ---@param item string
 ---@param metadata table
 ---@return number
 Inventory.GetItemCount = function(src, item, metadata)
-    return quasar:GetItemTotalAmount(src, item)
+    if metadata then print("qs-inventory does not support metadata searching for item counts, you will need to get the inventory and parse it manually.") end
+    return quasar:GetItemTotalAmount(src, item) or 0
 end
 
----This wil return the players inventory.
+---@description This wil return the players inventory.
 ---@param src number
 ---@return table
 Inventory.GetPlayerInventory = function(src)
@@ -116,20 +93,18 @@ Inventory.GetPlayerInventory = function(src)
     for _, v in pairs(playerItems) do
         table.insert(repackedTable, {
             name = v.name,
-            count = v.amount,
-            metadata = v.info,
+            count = v.amount or v.count,
+            metadata = v.info or v.metadata or {},
             slot = v.slot,
         })
     end
     return repackedTable
 end
 
----Returns the specified slot data as a table.
----
----format {weight, name, metadata, slot, label, count}
+---@description Returns the specified slot data as a table.
 ---@param src number
 ---@param slot number
----@return table
+---@return table {weight, name, metadata, slot, label, count}
 Inventory.GetItemBySlot = function(src, slot)
     local playerItems = quasar:GetInventory(src)
     for _, item in pairs(playerItems) do
@@ -139,9 +114,9 @@ Inventory.GetItemBySlot = function(src, slot)
                 label = item.label,
                 weight = item.weight,
                 slot = slot,
-                count = item.amount,
-                metadata = item.info,
-                stack = item.unique or false,
+                count = item.amount or item.count,
+                metadata = item.info or item.metadata or {},
+                stack = item.unique or item.stack or false,
                 description = item.description
             }
         end
@@ -149,7 +124,7 @@ Inventory.GetItemBySlot = function(src, slot)
     return {}
 end
 
----This will set the metadata of an item in the inventory.
+---@description This will set the metadata of an item in the inventory.
 ---@param src number
 ---@param item string
 ---@param slot number
@@ -159,62 +134,40 @@ Inventory.SetMetadata = function(src, item, slot, metadata)
     return quasar:SetItemMetadata(src, slot, metadata)
 end
 
----This will open the specified stash for the src passed.
+---@description This will open the specified stash for the src passed.
 ---@param src number
 ---@param _type string
 ---@param id number||string
 ---@return nil
 Inventory.OpenStash = function(src, _type, id)
     _type = _type or "stash"
+    if not Inventory.Stashes[id] then return end
     local tbl = Inventory.Stashes[id]
-    TriggerEvent("inventory:server:OpenInventory", _type, id, tbl and { maxweight = tbl.weight, slots = tbl.slots })
+    TriggerEvent("inventory:server:OpenInventory", _type, id, tbl and { maxweight = tbl.weight or 5000, slots = tbl.slots or 20 })
     TriggerClientEvent("inventory:client:SetCurrentStash",src, id)
 end
 
----This will register a stash
----@param id number|string
----@param label string
----@param slots number
----@param weight number
----@param owner string
----@param groups table
----@param coords table
----@return boolean
----@return string|number
-Inventory.RegisterStash = function(id, label, slots, weight, owner, groups, coords)
-    if Inventory.Stashes[id] then return true, id end
-    Inventory.Stashes[id] = {
-        id = id,
-        label = label,
-        slots = slots,
-        weight = weight,
-        owner = owner,
-        groups = groups,
-        coords = coords
-    }
-    return true, id
-end
-
----This will return a boolean if the player has the item.
+---@description This will return a boolean if the player has the item.
 ---@param src number
 ---@param item string
+---@param requiredCount number (optional)
 ---@return boolean
-Inventory.HasItem = function(src, item)
+Inventory.HasItem = function(src, item, requiredCount)
     local count = quasar:GetItemTotalAmount(src, item)
     if not count then return false end
-    return count > 0
+    return count >= (requiredCount or 1)
 end
 
----This is to get if there is available space in the inventory, will return boolean.
+---@description This is to get if there is available space in the inventory, will return boolean.
 ---@param src number
 ---@param item string
 ---@param count number
 ---@return boolean
 Inventory.CanCarryItem = function(src, item, count)
-    return quasar:CanCarryItem(src, item, count)
+    return quasar:CanCarryItem(src, item, count) or false
 end
 
----This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
+---@description This will update the plate to the vehicle inside the inventory. (It will also update with jg-mechanic if using it)
 ---@param oldplate string
 ---@param newplate string
 ---@return boolean
@@ -229,7 +182,7 @@ Inventory.UpdatePlate = function(oldplate, newplate)
     return true, exports["jg-mechanic"]:vehiclePlateUpdated(oldplate, newplate)
 end
 
----This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
+---@description This will get the image path for an item, it is an alternate option to GetItemInfo. If a image isnt found will revert to community_bridge logo (useful for menus)
 ---@param item string
 ---@return string
 Inventory.GetImagePath = function(item)
@@ -237,14 +190,6 @@ Inventory.GetImagePath = function(item)
     local file = LoadResourceFile("qs-inventory", string.format("html/images/%s.png", item))
     local imagePath = file and string.format("nui://qs-inventory/html/images/%s.png", item)
     return imagePath or "https://avatars.githubusercontent.com/u/47620135"
-end
-
-Inventory.OpenPlayerInventory = function(src, target)
-    assert(src, "OpenPlayerInventory: src is required")
-    if not target then
-        target = src
-    end
-    exports['qs-inventory']:OpenInventory(src, target)
 end
 
 return Inventory

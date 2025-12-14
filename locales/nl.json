@@ -4,6 +4,7 @@
 		"Input": "Hoeveelheid invoer",
 		"PurchaseAmount": "Aankoop hoeveelheid",
 		"PurchasedItem": "Je hebt gekocht ",
+		"PurchaseFailed": "Aankoop mislukt, inventaris vol",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Aankoop bevestigen",
 		"AreYouSure": "Weet je zeker dat je een %s wilt kopen",
@@ -14,12 +15,14 @@
 		"ShopIcon": "fa-solid fa-basket-shopping",
 		"ShopName": "Winkelnaam"
 	},
-	"UNITTEST": {
-		"UNITTESTA": "Ik ben een %s %s",
-		"locale-unit-test": "Dit is een test string"
+	"Notifications": {
+		"PlaceholderTitle": "Melding"
 	},
 	"clipboard": {
 		"copy": "Gekopieerd naar klembord"
+	},
+	"input": {
+		"submit_text": "Indienen"
 	},
 	"placeable_object": {
 		"no_prop_defined": "Je hebt geen object gedefinieerd om te plaatsen",
@@ -32,6 +35,15 @@
 		"object_cancel": "[%s] Annuleren  \n",
 		"object_scroll_up": "[%s] Rechtsom draaien  \n",
 		"object_scroll_down": "[%s] Linksom draaien  \n",
+		"rotate_left": "Linksom draaien",
+		"rotate_right": "Rechtsom draaien",
+		"rotate_clockwise": "[%s] Draai met de klok mee  \n",
+		"rotate_counter_clockwise": "[%s] Draai tegen de klok in  \n",
 		"depth_modifier": "[%s] Diepte controle modifier  \n"
+	},
+	"target": {
+		"interact": "[E] Interactie",
+		"title": "Opties",
+		"description": "Geen beschrijving"
 	}
 }

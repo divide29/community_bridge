@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Non hai abbastanza denaro per comprare questo articolo",
 		"Input": "Inserimento quantità",
 		"PurchaseAmount": "Quantità di acquisto",
-		"PurchasedItem": "Hai acquistato ",
+		"PurchasedItem": "Hai acquistato %s %s",
 		"PurchaseFailed": "Acquisto fallito, inventario pieno",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Conferma acquisto",

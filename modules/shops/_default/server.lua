@@ -4,7 +4,7 @@ Shops = Shops or {}
 local registeredShops = {}
 
 local Language = Language or Require("modules/locales/shared.lua")
-local locales = Language.Locale
+local locale = Language.Locale
 
 ---This can open a shop for the client
 ---@param src number
@@ -51,23 +51,23 @@ Shops.CompleteCheckout = function(src, shopName, item, amount, account)
         end
     end
     if not itemData or not itemData.price then return print("community_bridge Player ID "..src.." attempted to purchase invalid item from shop: "..shopName) end
-    if itemData.count and itemData.count <= 0 then return Notify.SendNotify(src, locales('Shops.NotEnoughStock'), "error", 5000) end
+    if itemData.count and itemData.count <= 0 then return Notify.SendNotify(src, locale('Shops.NotEnoughStock'), "error", 5000) end
     local totalCost = tonumber(itemData.price) * amount
     local balance = Framework.GetAccountBalance(src, account)
     if not balance then return end
-    if balance <= 0 then return Notify.SendNotify(src, locales('Shops.NotEnoughMoney'), "error", 5000) end
-    if balance < totalCost then return Notify.SendNotify(src, locales('Shops.NotEnoughMoney'), "error", 5000) end
+    if balance <= 0 then return Notify.SendNotify(src, locale('Shops.NotEnoughMoney'), "error", 5000) end
+    if balance < totalCost then return Notify.SendNotify(src, locale('Shops.NotEnoughMoney'), "error", 5000) end
 
     if not Framework.RemoveAccountBalance(src, account, totalCost) then return end
 
     local success = Inventory.AddItem(src, itemData.name, amount)
     if not success then
         Framework.AddAccountBalance(src, account, totalCost)
-        return Notify.SendNotify(src, locales('Shops.PurchaseFailed'), "error", 5000)
+        return Notify.SendNotify(src, locale('Shops.PurchaseFailed'), "error", 5000)
     end
 
     local itemLabel = Inventory.GetItemInfo(itemData.name).label or itemData.name
-    Notify.SendNotify(src, locales('Shops.PurchasedItem', itemLabel), "success", 5000)
+    Notify.SendNotify(src, locale('Shops.PurchasedItem', amount, itemLabel), "success", 5000)
 end
 
 ---This is an internal event to complete a checkout, complete with multiple validations. Please do not use this event directly.

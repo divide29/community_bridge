@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "您没有足够的钱购买此物品",
 		"Input": "数量输入",
 		"PurchaseAmount": "购买数量",
-		"PurchasedItem": "您已购买 ",
+		"PurchasedItem": "您已购买 %s %s",
 		"PurchaseFailed": "购买失败，库存已满",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "确认购买",

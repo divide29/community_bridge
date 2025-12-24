@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Nemáte dostatek peněz na koupi této položky",
 		"Input": "Zadání množství",
 		"PurchaseAmount": "Množství nákupu",
-		"PurchasedItem": "Zakoupili jste ",
+		"PurchasedItem": "Zakoupili jste %s %s",
 		"PurchaseFailed": "Nákup se nezdařil, inventář je plný",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Potvrdit nákup",

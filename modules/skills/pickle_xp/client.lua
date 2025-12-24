@@ -6,14 +6,14 @@ if (configValue == "auto" and GetResourceState(resourceName) ~= "started") or (c
 
 ---This will get the name of the Skills system being used.
 ---@return string
-Skills.GetResourceName = function()
+function Skills.GetResourceName()
     return resourceName
 end
 
 ---This will return the skill level of the passed skill name.
 ---@param skillName string
 ---@return number
-Skills.GetSkillLevel = function(skillName)
+function Skills.GetSkillLevel(skillName)
     local skillData = exports.pickle_xp:GetLevel(skillName)
     return skillData or 0
 end

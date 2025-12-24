@@ -50,9 +50,7 @@ if not IsDuplicityVersion() then goto client end
 
 cLib.SQL = SQL or Require("lib/sql/server/sqlHandler.lua")
 cLib.Logs = Logs or Require("lib/logs/server/logs.lua")
-cLib.Cache = Cache or Require("lib/cache/shared/cache.lua")
 cLib.Marker = Marker or Require("lib/markers/server/server.lua")
-cLib.Particle = Particle or Require("lib/particles/server/particles.lua")
 cLib.Shell = Shells or Require("lib/shells/server/shells.lua")
 cLib.Entity = ServerEntity or Require("lib/entities/server/server_entity.lua")
 
@@ -69,7 +67,6 @@ cLib.PlaceableObject = ObjectPlacer or Require("lib/placers/client/placeable_obj
 cLib.Raycast = Raycast or Require("lib/raycast/client/raycast.lua")
 cLib.Point = Point or Require("lib/points/client/points.lua")
 cLib.Particle = Particle or Require("lib/particles/client/particles.lua")
-cLib.Cache = Cache or Require("lib/cache/client/cache.lua")
 cLib.Marker = Marker or Require("lib/markers/client/markers.lua")
 cLib.Anim = Anim or Require("lib/anim/client/client.lua")
 cLib.Cutscene = Cutscene or Require("lib/cutscenes/client/cutscene.lua")

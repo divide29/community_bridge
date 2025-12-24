@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Du har ikke nok penge til at købe denne vare",
 		"Input": "Mængde input",
 		"PurchaseAmount": "Købs mængde",
-		"PurchasedItem": "Du har købt ",
+		"PurchasedItem": "Du har købt %s %s",
 		"PurchaseFailed": "Køb mislykkedes, inventar fuldt",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Bekræft køb",

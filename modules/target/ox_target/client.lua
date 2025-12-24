@@ -4,11 +4,8 @@ if GetResourceState(resourceName) == 'missing' then return end
 
 Target = Target or {}
 local targetDebug = BridgeSharedConfig and BridgeSharedConfig.DebugLevel == 2 or false
-
 local ox_target = exports.ox_target
 local targetZones = {}
-
-Target = Target or {}
 
 Target.GetResourceName = function()
     return "ox_target"
@@ -17,7 +14,7 @@ end
 ---This is an internal function that is used to fix the options passed to fit alternative target systems, for example qb-ox or ox-qb etc.
 ---@param options table
 ---@return table
-Target.FixOptions = function(options)
+function Target.FixOptions(options)
     for _, v in pairs(options) do
         local action = v.onSelect or v.action
         if not action then 
@@ -50,45 +47,45 @@ end
 
 ---This will toggle the targeting system on or off. This is useful for when you want to disable the targeting system for a specific player entirely.
 ---@param bool boolean
-Target.DisableTargeting = function(bool)
+function Target.DisableTargeting(bool)
     ox_target:disableTargeting(bool)
 end
 
 ---This will add target options to players.
 ---@param options table
-Target.AddGlobalPlayer = function(options)
+function Target.AddGlobalPlayer(options)
     options = Target.FixOptions(options)
     ox_target:addGlobalPlayer(options)
 end
 
 ---This will remove target options from all players.
-Target.RemoveGlobalPlayer = function()
+function Target.RemoveGlobalPlayer()
     ox_target:removeGlobalPlayer()
 end
 
 ---This will add target options to all specified models. This is useful for when you want to add target options to all models of a specific type.
 ---@param options table
-Target.AddGlobalPed = function(options)
+function Target.AddGlobalPed(options)
     options = Target.FixOptions(options)
     ox_target:addGlobalPed(options)
 end
 
 ---This will remove target options from all peds. This is useful for when you want to remove target options from all peds.
 ---@param options any
-Target.RemoveGlobalPed = function(options)
+function Target.RemoveGlobalPed(options)
     ox_target:removeGlobalPed(options)
 end
 
 ---This will add taget options to all vehicles.
 ---@param options table
-Target.AddGlobalVehicle = function(options)
+function Target.AddGlobalVehicle(options)
     options = Target.FixOptions(options)
     ox_target:addGlobalVehicle(options)
 end
 
 ---This will remove target options from all vehicles.
 ---@param options table
-Target.RemoveGlobalVehicle = function(options)
+function Target.RemoveGlobalVehicle(options)
     local assembledLables = {}
     for k, v in pairs(options) do
         table.insert(assembledLables, v.name)
@@ -99,7 +96,7 @@ end
 ---This will generate targets on non networked entites with the passed options.
 ---@param entities number | table
 ---@param options table
-Target.AddLocalEntity = function(entities, options)
+function Target.AddLocalEntity(entities, options)
     options = Target.FixOptions(options)
     ox_target:addLocalEntity(entities, options)
 end
@@ -107,14 +104,14 @@ end
 ---This will remove the target options from a local entity. This is useful for when you want to remove target options from a specific entity.
 ---@param entities table
 ---@param optionNames string | table | nil
-Target.RemoveLocalEntity = function(entities, optionNames)
+function Target.RemoveLocalEntity(entities, optionNames)
     ox_target:removeLocalEntity(entities, optionNames)
 end
 
 ---This will add a networked entity to the target system.
 ---@param netids table | number
 ---@param options table
-Target.AddNetworkedEntity = function(netids, options)
+function Target.AddNetworkedEntity(netids, options)
     options = Target.FixOptions(options)
     ox_target:addEntity(netids, options)
 end
@@ -122,21 +119,21 @@ end
 ---This will remove a networked entity from the target system.
 ---@param netids table | number
 ---@param optionNames string
-Target.RemoveNetworkedEntity = function(netids, optionNames)
+function Target.RemoveNetworkedEntity(netids, optionNames)
     ox_target:removeEntity(netids, optionNames)
 end
 
 ---This will add target options to all specified models. This is useful for when you want to add target options to all models of a specific type.
 ---@param models number | table
 ---@param options table
-Target.AddModel = function(models, options)
+function Target.AddModel(models, options)
     options = Target.FixOptions(options)
     ox_target:addModel(models, options)
 end
 
 ---This will remove target options from all specified models.
 ---@param model number
-Target.RemoveModel = function(model)
+function Target.RemoveModel(model)
     ox_target:removeModel(model)
 end
 
@@ -146,7 +143,7 @@ end
 ---@param size table
 ---@param heading number
 ---@param options table
-Target.AddBoxZone = function(name, coords, size, heading, options, debug)
+function Target.AddBoxZone(name, coords, size, heading, options, debug)
     options = Target.FixOptions(options or {})
     if not next(options) then return end
     local target = ox_target:addBoxZone({
@@ -165,7 +162,7 @@ end
 ---@param coords table
 ---@param radius number
 ---@param options table
-Target.AddSphereZone = function(name, coords, radius, options, debug)
+function Target.AddSphereZone(name, coords, radius, options, debug)
     options = Target.FixOptions(options)
     local target = ox_target:addSphereZone({
         coords = coords,
@@ -180,7 +177,7 @@ end
 
 ---This will remove target options from a specific zone.
 ---@param name string
-Target.RemoveZone = function(name)
+function Target.RemoveZone(name)
     if not name then return end
     for _, data in pairs(targetZones) do
         if data.name == name then

@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Neturite pakankamai pinigų šiam daiktui nusipirkti",
 		"Input": "Kiekio įvestis",
 		"PurchaseAmount": "Pirkimo kiekis",
-		"PurchasedItem": "Jūs nusipirkote ",
+		"PurchasedItem": "Jūs nusipirkote %s %s",
 		"PurchaseFailed": "Pirkimas nepavyko, inventorius pilnas",
 		"CurrencySymbol": "%s €",
 		"Confirm": "Patvirtinti pirkimą",

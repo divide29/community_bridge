@@ -2,16 +2,21 @@
 Target = Target or {}
 Ids = Ids or Require("lib/utility/shared/ids.lua")
 
+local InteractIds = {}
+
 local function warnUser()
     print("Currently Only Targeting Is Supported By Community Bridge, You Are Using A Resource That Requires The Target Module To Be Used.")
 end
-local InteractIds = {}
 
-Target.GetCanInteract = function(id)
+function Target.GetResourceName()
+    return "default"
+end
+
+function Target.GetCanInteract(id)
     return InteractIds[id]
 end
 
-Target.CreateCanInteract = function(cb)
+function Target.CreateCanInteract(cb)
     if not cb then return end
     local id = Ids.CreateUniqueId(InteractIds)
     InteractIds[id] = {
@@ -22,7 +27,7 @@ Target.CreateCanInteract = function(cb)
     return id
 end
 
-Target.CanInteract = function(id, ...)
+function Target.CanInteract(id, ...)
     local interactData = InteractIds[id]
     if not interactData then return true end
     if interactData.ableToInteract == -1 then
@@ -36,7 +41,7 @@ Target.CanInteract = function(id, ...)
     return interactData.ableToInteract > 0
 end
 
-Target.FixOptions = function(options)
+function Target.FixOptions(options)
     for k, v in pairs(options) do
         local action = v.onSelect or v.action
         local select = function(entityOrData)
@@ -57,19 +62,19 @@ Target.FixOptions = function(options)
     return options
 end
 
-Target.AddGlobalPlayer = function(options)
+function Target.AddGlobalPlayer(options)
     warnUser()
 end
 
-Target.AddGlobalVehicle = function(options)
+function Target.AddGlobalVehicle(options)
     warnUser()
 end
 
-Target.RemoveGlobalVehicle = function(options)
+function Target.RemoveGlobalVehicle(options)
     warnUser()
 end
 
-Target.AddLocalEntity = function(entities, _options)
+function Target.AddLocalEntity(entities, _options)
     local fixedOptions = Target.FixOptions(_options)
     if type(entities) == "string" or type(entities) == "number" then
         entities = { entities }
@@ -117,11 +122,11 @@ Target.AddLocalEntity = function(entities, _options)
     end
 end
 
-Target.AddModel = function(models, options)
+function Target.AddModel(models, options)
     warnUser()
 end
 
-Target.AddBoxZone = function(name, coords, size, heading, options)
+function Target.AddBoxZone(name, coords, size, heading, options)
     local fixedOptions = Target.FixOptions(options)
     local id = Ids.RandomString()
     local title =  Bridge.Language.Locale("target.title")
@@ -162,24 +167,20 @@ Target.AddBoxZone = function(name, coords, size, heading, options)
     end)
 end
 
-Target.RemoveGlobalPlayer = function()
+function Target.RemoveGlobalPlayer()
     warnUser()
 end
 
-Target.RemoveLocalEntity = function(entity)
+function Target.RemoveLocalEntity(entity)
     warnUser()
 end
 
-Target.RemoveModel = function(model)
+function Target.RemoveModel(model)
     warnUser()
 end
 
-Target.RemoveZone = function(name)
+function Target.RemoveZone(name)
     warnUser()
-end
-
-Target.GetResourceName = function()
-    return "default"
 end
 
 return Target

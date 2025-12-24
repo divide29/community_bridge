@@ -357,7 +357,7 @@ Framework.GetPlayerJob = function(src)
     local player = Framework.GetPlayer(src)
     if not player then return end
     local playerData = player.PlayerData
-    print("This function is depricated, please use GetPlayerJobData instead.")
+    --print("This function is depricated, please use GetPlayerJobData instead.")
     return playerData.job.name, playerData.job.label, playerData.job.grade.name, playerData.job.grade.level
 end
 

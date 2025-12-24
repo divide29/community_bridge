@@ -13,7 +13,7 @@ end
 ---This will return the skill level of the passed skill name.
 ---@param skillName string
 ---@return number
-Skills.GetSkillLevel = function(skillName)
+function Skills.GetSkillLevel(skillName)
     local skillData = exports.evolent_skills:getSkillLevel(skillName)
     return skillData or 0
 end

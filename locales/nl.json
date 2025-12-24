@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Je hebt niet genoeg geld om dit item te kopen",
 		"Input": "Hoeveelheid invoer",
 		"PurchaseAmount": "Aankoop hoeveelheid",
-		"PurchasedItem": "Je hebt gekocht ",
+		"PurchasedItem": "Je hebt gekocht %s %s",
 		"PurchaseFailed": "Aankoop mislukt, inventaris vol",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Aankoop bevestigen",

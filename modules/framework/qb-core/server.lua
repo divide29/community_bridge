@@ -372,7 +372,7 @@ end
 ---@return string | string | string | number | nil
 ---@return string | string | string | number | nil
 Framework.GetPlayerJob = function(src)
-    print("[Community Bridge] Warning: Framework.GetPlayerJob is deprecated, use Framework.GetPlayerJobData instead.")
+    --print("[Community Bridge] Warning: Framework.GetPlayerJob is deprecated, use Framework.GetPlayerJobData instead.")
     local jobData = Framework.GetPlayerJobData(src)
     if not jobData then return end
     return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeLevel

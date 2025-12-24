@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Nincs elég pénzed ennek a tételnek a megvásárlásához",
 		"Input": "Mennyiség bevitel",
 		"PurchaseAmount": "Vásárlási mennyiség",
-		"PurchasedItem": "Megvásároltad ",
+		"PurchasedItem": "Megvásároltad %s %s",
 		"PurchaseFailed": "Vásárlás sikertelen, leltár tele",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Vásárlás megerősítése",

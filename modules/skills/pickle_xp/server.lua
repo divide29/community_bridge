@@ -7,7 +7,7 @@ if (configValue == "auto" and GetResourceState(resourceName) ~= "started") or (c
 
 ---This will get the name of the Skills system being used.
 ---@return string
-Skills.GetResourceName = function()
+function Skills.GetResourceName()
     return resourceName
 end
 
@@ -15,7 +15,7 @@ end
 ---@param src number
 ---@param skillName string
 ---@return number
-Skills.GetSkillLevel = function(src, skillName)
+function Skills.GetSkillLevel(src, skillName)
     local skillData = exports.pickle_xp:GetPlayerLevel(src, skillName)
     return skillData or 0
 end
@@ -25,15 +25,11 @@ end
 ---@param skillName string
 ---@param amount number
 ---@return boolean
-Skills.AddXp = function(src, skillName, amount)
+function Skills.AddXp(src, skillName, amount)
     local skillData = exports.pickle_xp:GetPlayerLevel(src, skillName)
-    if not skillData then return false, print("Skill not found") end
-    if not Skills.All[skillName] then
-       Skills.All[skillName] = Skills.Create(skillName, 99, 50)
-    end
-    -- if not amount or amount < 0 then
-    --     amount = Skills.GetScaledXP(Skills.All[skillName].baseXP, Skills.GetSkillLevel(src, skillName))
-    -- end
+    if not skillData then return false, print("^6 Skill "..skillName.." not found ^0 ") end
+    if not Skills.All[skillName] then Skills.All[skillName] = Skills.Create(skillName, 99, 50) end
+
     exports.pickle_xp:AddPlayerXP(src, skillName, amount)
     return true
 end
@@ -43,7 +39,7 @@ end
 ---@param skillName string
 ---@param amount number
 ---@return boolean
-Skills.RemoveXp = function(src, skillName, amount)
+function Skills.RemoveXp(src, skillName, amount)
     local skillData = exports.pickle_xp:GetPlayerLevel(src, skillName)
     if not skillData then return false, print("Skill not found") end
     exports.pickle_xp:RemovePlayerXP(src, skillName, amount)

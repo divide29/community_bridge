@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "You don't have enough money to buy this item",
 		"Input": "Amount Input",
 		"PurchaseAmount": "Purchase Quantity",
-		"PurchasedItem": "You Have Purchased ",
+		"PurchasedItem": "You Have Purchased %s %s",
 		"PurchaseFailed": "Purchase failed, inventory full",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Confirm Purchase",

@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "इस वस्तु को खरीदने के लिए आपके पास पर्याप्त पैसे नहीं हैं",
 		"Input": "मात्रा इनपुट",
 		"PurchaseAmount": "खरीदारी की मात्रा",
-		"PurchasedItem": "आपने खरीदा है ",
+		"PurchasedItem": "आपने खरीदा है %s %s",
 		"PurchaseFailed": "खरीदारी विफल, इन्वेंटरी भरी हुई है",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "खरीदारी की पुष्टि करें",

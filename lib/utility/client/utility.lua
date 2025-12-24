@@ -40,7 +40,7 @@ end
 ---@return number|nil
 function Utility.CreateProp(model, coords, heading, networked)
     local loaded, hash = ensureModelLoaded(model)
-    if not loaded then return nil, print("^6 Model was unable to load "..tostring(model).." ^0") end
+    if not loaded then return nil, print("^6 community_bridge model was unable to load "..tostring(model).." ^0") end
     local propEntity = CreateObject(hash, coords.x, coords.y, coords.z, networked, false, false)
     SetEntityHeading(propEntity, heading)
     SetModelAsNoLongerNeeded(hash)
@@ -64,7 +64,7 @@ end
 ---@return number|nil, table
 function Utility.CreateVehicle(model, coords, heading, networked)
     local loaded, hash = ensureModelLoaded(model)
-    if not loaded then return nil, {}, print("^6 Model was unable to load "..tostring(model).." ^0") end
+    if not loaded then return nil, {}, print("^6 community_bridge model was unable to load "..tostring(model).." ^0") end
     local vehicle = CreateVehicle(hash, coords.x, coords.y, coords.z, heading, networked, false)
     SetVehicleHasBeenOwnedByPlayer(vehicle, true)
     SetVehicleNeedsToBeHotwired(vehicle, false)
@@ -82,7 +82,7 @@ end
 ---@return number|nil
 function Utility.CreatePed(model, coords, heading, networked, settings)
     local loaded, hash = ensureModelLoaded(model)
-    if not loaded then return nil, print("^6 Model was unable to load "..tostring(model).." ^0") end
+    if not loaded then return nil, print("^6 community_bridge model was unable to load "..tostring(model).." ^0") end
     local spawnedEntity = CreatePed(0, hash, coords.x, coords.y, coords.z, heading, networked, false)
     SetModelAsNoLongerNeeded(hash)
     spawnedPeds[tostring(spawnedEntity)] = true
@@ -174,7 +174,7 @@ end
 ---@param blip number
 ---@return boolean
 function Utility.RemoveBlip(blip)
-    if not blipIDs[tostring(blip)] then return false, print("^6 No blip to remove with matching ID ^0") end
+    if not blipIDs[tostring(blip)] then return false end
     RemoveBlip(blipIDs[tostring(blip)])
     blipIDs[tostring(blip)] = nil
     return true
@@ -297,8 +297,6 @@ function Utility.HelpText(text, duration)
     BeginTextCommandDisplayHelp(text)
     EndTextCommandDisplayHelp(0, false, true, duration or 5000)
 end
-
-local doingstuff = false
 
 ---Show a floating help text in the world
 ---@param text string The text to show
@@ -452,20 +450,24 @@ function Utility.GetClosestVehicle(coords, distanceScope, includePlayerVeh)
     return vehicleEntity, vehicleCoords, vehicleNetID
 end
 
--- Deprecated point functions (no changes)
+-- Deprecated point functions (no changes) 12/14/25
 function Utility.RegisterPoint(pointID, pointCoords, pointDistance, _onEnter, _onExit)
+    print("^6 community_bridge ^: ^3Utility.RegisterPoint is deprecated. Please use Point.Register instead. ^0")
     return Point.Register(pointID, pointCoords, pointDistance, nil, _onEnter, _onExit)
 end
 
 function Utility.GetPointById(pointID)
+    print("^6 community_bridge ^: ^3Utility.GetPointById is deprecated. Please use Point.Get instead. ^0")
     return Point.Get(pointID)
 end
 
 function Utility.GetActivePoints()
+    print("^6 community_bridge ^: ^3Utility.GetActivePoints is deprecated. Please use Point.GetAll instead. ^0")
     return Point.GetAll()
 end
 
 function Utility.RemovePoint(pointID)
+    print("^6 community_bridge ^: ^3Utility.RemovePoint is deprecated. Please use Point.Remove instead. ^0")
     return Point.Remove(pointID)
 end
 

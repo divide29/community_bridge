@@ -19,7 +19,7 @@ end
 ---@description This will get the name of the framework being used (if a supported framework).
 ---@return string
 Framework.GetFrameworkName = function()
-    print("This is depricated, please use Framework.GetResourceName() instead.")
+    --print("This is depricated, please use Framework.GetResourceName() instead.")
     return Framework.GetResourceName()
 end
 
@@ -108,7 +108,7 @@ end
 ---@return string
 ---@return string
 Framework.GetPlayerJob = function()
-    print("This is depricated, please use Framework.GetPlayerJobData() instead.")
+    --print("This is depricated, please use Framework.GetPlayerJobData() instead.")
     local jobData = Framework.GetPlayerJobData()
     return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeRank
 end

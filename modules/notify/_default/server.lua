@@ -5,6 +5,10 @@ Notify.GetResourceName = function()
     return "default"
 end
 
+local Language = Language or Require("modules/locales/shared.lua")
+local locale = Language.Locale
+local placeHolderText = locale("Notifications.PlaceholderTitle")
+
 ---DEPRICATED: PLEASE SWITCH TO Notify.SendNotification
 ---12/13/25
 ---@param src number
@@ -27,7 +31,7 @@ end
 Notify.SendNotification = function(src, title, message, _type, time, props)
     time = time or 3000
     if not title then
-        title = Bridge.Language.Locale("Notifications.PlaceholderTitle")
+        title = placeHolderText
     end
     TriggerClientEvent('community_bridge:Client:Notify', src, title, message, _type, time, props)
 end

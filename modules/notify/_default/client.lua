@@ -5,6 +5,8 @@ Notify.GetResourceName = function()
     return "default"
 end
 
+
+
 ---DEPRICATED: PLEASE SWITCH TO Notify.SendNotification
 ---12/13/25
 ---@param message string
@@ -12,7 +14,8 @@ end
 ---@param time number
 ---@return nil
 Notify.SendNotify = function(message, _type, time)
-    return Notify.SendNotification(nil, message, _type, time)
+    time = time or 3000
+    return Framework.Notify(message, nil, time)
 end
 
 ---This will send a notify message of the type and time passed

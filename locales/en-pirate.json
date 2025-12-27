@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Ye don't have enough booty to plunder this here item",
 		"Input": "Amount o' Booty",
 		"PurchaseAmount": "Plunder Quantity",
-		"PurchasedItem": "Ye Have Plundered ",
+		"PurchasedItem": "Ye Have Plundered %s %s",
 		"PurchaseFailed": "Plunder failed, yer hold be full",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Aye, Plunder!",

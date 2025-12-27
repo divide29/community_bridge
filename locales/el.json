@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Δεν έχετε αρκετά χρήματα για να αγοράσετε αυτό το αντικείμενο",
 		"Input": "Εισαγωγή ποσότητας",
 		"PurchaseAmount": "Ποσότητα αγοράς",
-		"PurchasedItem": "Αγοράσατε ",
+		"PurchasedItem": "Αγοράσατε %s %s",
 		"PurchaseFailed": "Η αγορά απέτυχε, το αποθέμα είναι γεμάτο",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Επιβεβαίωση αγοράς",

@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "이 아이템을 구매할 돈이 부족합니다",
 		"Input": "수량 입력",
 		"PurchaseAmount": "구매 수량",
-		"PurchasedItem": "구매했습니다 ",
+		"PurchasedItem": "구매했습니다 %s %s",
 		"PurchaseFailed": "구매 실패, 인벤토리가 가득 찼습니다",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "구매 확인",

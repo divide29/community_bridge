@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "คุณไม่มีเงินเพียงพอที่จะซื้อสิ่งนี้",
 		"Input": "ป้อนจำนวน",
 		"PurchaseAmount": "จำนวนที่ซื้อ",
-		"PurchasedItem": "คุณได้ซื้อ ",
+		"PurchasedItem": "คุณได้ซื้อ %s %s",
 		"PurchaseFailed": "การซื้อล้มเหลว คลังเต็ม",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "ยืนยันการซื้อ",

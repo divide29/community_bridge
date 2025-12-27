@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "У вас недостаточно денег для покупки этого предмета",
 		"Input": "Ввод количества",
 		"PurchaseAmount": "Количество покупки",
-		"PurchasedItem": "Вы купили ",
+		"PurchasedItem": "Вы купили %s %s",
 		"PurchaseFailed": "Покупка не удалась, инвентарь полон",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Подтвердить покупку",

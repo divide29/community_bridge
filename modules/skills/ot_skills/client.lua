@@ -7,14 +7,14 @@ if (configValue == "auto" and GetResourceState(resourceName) ~= "started") or (c
 
 ---This will return the name of the Skills system being used.
 ---@return string
-Skills.GetResourceName = function()
+function Skills.GetResourceName()
     return resourceName
 end
 
 ---This will return the skill level of the passed skill name.
 ---@param skillName string
 ---@return number
-Skills.GetSkillLevel = function(skillName)
+function Skills.GetSkillLevel(skillName)
     local skillData = exports.OT_skills:getSkill(skillName)
     return skillData.level or 0
 end

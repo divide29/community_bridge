@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Nu ai destui bani să cumperi acest articol",
 		"Input": "Introducere cantitate",
 		"PurchaseAmount": "Cantitate de cumpărare",
-		"PurchasedItem": "Ai cumpărat ",
+		"PurchasedItem": "Ai cumpărat %s %s",
 		"PurchaseFailed": "Achiziție eșuată, inventar plin",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Confirmă cumpărarea",

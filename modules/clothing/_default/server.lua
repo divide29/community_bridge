@@ -3,23 +3,32 @@ Clothing = Clothing or {}
 Clothing.LastAppearance = Clothing.LastAppearance or {}
 Callback = Callback or Require("lib/callback/shared/callback.lua")
 
-function Clothing.IsMale(src)
-    local ped = GetPlayerPed(src)
-    if not ped or not DoesEntityExist(ped) then return end
-    return GetEntityModel(ped) == `mp_m_freemode_01`
-end
-
 ---This will get the name of the in use resource.
 ---@return string
 Clothing.GetResourceName = function()
     return 'default'
 end
 
+---This will check if the player model if male/female
+---@param src number
+---@return boolean
+function Clothing.IsMale(src)
+    local ped = GetPlayerPed(src)
+    if not ped or not DoesEntityExist(ped) then return false end
+    return GetEntityModel(ped) == `mp_m_freemode_01`
+end
+
+---Get the skin data of a player
+---@param src number
+---@return table
 function Clothing.GetAppearance(src)
     return Callback.Trigger('community_bridge:cb:GetAppearance', src)
 end
 
-Clothing.SetAppearance = function(src, data)
+---Apply skin data to a player
+---@param src number
+---@param data table
+function Clothing.SetAppearance(src, data)
     local strSrc = tostring(src)
     Clothing.LastAppearance[strSrc] = Clothing.GetAppearance(src)
     TriggerClientEvent('community_bridge:client:SetAppearance', src, data)
@@ -34,29 +43,10 @@ function Clothing.SetAppearanceExt(src, data)
     Clothing.SetAppearance(src, tbl)
 end
 
-Clothing.RestoreAppearance = function(src)
+---Restore the last saved appearance of a player
+---@param src number
+function Clothing.RestoreAppearance(src)
     TriggerClientEvent('community_bridge:client:RestoreAppearance', src)
 end
-
-
--- RegisterNetEvent('community_bridge:client:SetAppearance', function(data)
---     local src = source
---     Clothing.SetAppearance(src, data)
--- end)
-
--- RegisterNetEvent('community_bridge:client:GetAppearance', function()
---     local src = source
---     Clothing.GetAppearance(src)
--- end)
-
--- RegisterNetEvent('community_bridge:client:RestoreAppearance', function()
---     local src = source
---     Clothing.RestoreAppearance(src)
--- end)
-
--- RegisterNetEvent('community_bridge:client:ReloadSkin', function()
---     local src = source
---     Clothing.ReloadSkin(src)
--- end)
 
 return Clothing

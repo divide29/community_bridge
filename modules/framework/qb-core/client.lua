@@ -150,7 +150,7 @@ end
 ---@return string
 ---@return string
 Framework.GetPlayerJob = function()
-    print("This is depricated, please use Framework.GetPlayerJobData() instead.")
+    --print("This is depricated, please use Framework.GetPlayerJobData() instead.")
     local jobData = Framework.GetPlayerJobData()
     return jobData.jobName, jobData.jobLabel, jobData.gradeName, jobData.gradeRank
 end

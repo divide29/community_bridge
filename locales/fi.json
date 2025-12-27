@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Sinulla ei ole tarpeeksi rahaa ostaaksesi tätä tuotetta",
 		"Input": "Määrän syöttö",
 		"PurchaseAmount": "Ostomäärä",
-		"PurchasedItem": "Olet ostanut ",
+		"PurchasedItem": "Olet ostanut %s %s",
 		"PurchaseFailed": "Osto epäonnistui, varasto täynnä",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Vahvista osto",

@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "ليس لديك ما يكفي من المال لشراء هذا العنصر",
 		"Input": "إدخال الكمية",
 		"PurchaseAmount": "كمية الشراء",
-		"PurchasedItem": "لقد قمت بشراء ",
+		"PurchasedItem": "لقد قمت بشراء %s %s",
 		"PurchaseFailed": "فشل الشراء، المخزون ممتلئ",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "تأكيد الشراء",

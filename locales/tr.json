@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Bu öğeyi satın almak için yeterli paranız yok",
 		"Input": "Miktar girişi",
 		"PurchaseAmount": "Satın alma miktarı",
-		"PurchasedItem": "Satın aldınız ",
+		"PurchasedItem": "Satın aldınız %s %s",
 		"PurchaseFailed": "Satın alma başarısız, envanter dolu",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Satın almayı onayla",

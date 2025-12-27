@@ -8,6 +8,16 @@ Notify.GetResourceName = function()
     return resourceName
 end
 
+local Language = Language or Require("modules/locales/shared.lua")
+local locale = Language.Locale
+local placeHolderText = locale("Notifications.PlaceholderTitle")
+
+Notify.SendNotify = function(message, _type, time)
+    time = time or 3000
+    return exports['pNotify']:SendNotification({ text = message, type = _type, timeout = time, layout = 'centerRight' })
+end
+
+
 ---This will send a notify message of the type and time passed
 ---@param title string
 ---@param message string
@@ -17,7 +27,7 @@ end
 ---@return nil
 Notify.SendNotification = function(title, message, _type, time, props)
     time = time or 3000
-    if not title then title = Bridge.Language.Locale("Notifications.PlaceholderTitle") end
+    if not title then title = placeHolderText end
     return exports['pNotify']:SendNotification({ title = title, text = message, type = _type or "success", timeout = time, layout = 'centerRight' })
 end
 

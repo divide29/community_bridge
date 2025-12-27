@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "このアイテムを購入するのに十分なお金がありません",
 		"Input": "数量入力",
 		"PurchaseAmount": "購入数量",
-		"PurchasedItem": "購入しました ",
+		"PurchasedItem": "購入しました %s %s",
 		"PurchaseFailed": "購入に失敗しました、インベントリがいっぱいです",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "購入を確認",

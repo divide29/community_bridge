@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Nemate dovoljno novca za kupnju ovog predmeta",
 		"Input": "Unos količine",
 		"PurchaseAmount": "Količina kupnje",
-		"PurchasedItem": "Kupili ste ",
+		"PurchasedItem": "Kupili ste %s %s",
 		"PurchaseFailed": "Kupnja nije uspjela, inventar pun",
 		"CurrencySymbol": "%s kn",
 		"Confirm": "Potvrdi kupnju",

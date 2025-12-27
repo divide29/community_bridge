@@ -146,6 +146,13 @@ function Clothing.OpenMenu(src)
     TriggerClientEvent('esx_skin:openMenu', src)
 end
 
+---Callback handler for retrieving a player's appearance data
+Callback.Register('community_bridge:cb:GetAppearance', function(source)
+    local src = source
+    return Clothing.GetAppearance(src)
+end)
+
+
 ---Event handler for when a player loads into the server
 ---Caches the player's appearance data
 AddEventHandler('community_bridge:Server:OnPlayerLoaded', function(src)
@@ -175,10 +182,4 @@ AddEventHandler('onResourceStart', function(resource)
             Clothing.Players[strSrc] = Clothing.GetAppearance(src)
         end
     end
-end)
-
----Callback handler for retrieving a player's appearance data
-Callback.Register('community_bridge:cb:GetAppearance', function(source)
-    local src = source
-    return Clothing.GetAppearance(src)
 end)

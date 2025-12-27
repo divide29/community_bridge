@@ -3,7 +3,7 @@
 		"NotEnoughMoney": "Du har inte tillräckligt med pengar för att köpa denna vara",
 		"Input": "Mängd inmatning",
 		"PurchaseAmount": "Inköpsmängd",
-		"PurchasedItem": "Du har köpt ",
+		"PurchasedItem": "Du har köpt %s %s",
 		"PurchaseFailed": "Köp misslyckades, inventarium fullt",
 		"CurrencySymbol": "$ %s",
 		"Confirm": "Bekräfta köp",

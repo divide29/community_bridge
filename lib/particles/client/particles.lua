@@ -92,32 +92,6 @@ function Particle.Stop(particle)
     Particles[tostring(particle)] = nil
 end
 
-RegisterNetEvent("community_bridge:Client:Particle", function(data)
-    if not data then return end
-    Particle.Create(data)
-end)
-
-RegisterNetEvent("community_bridge:Client:ParticleBulk", function(datas)
-    if not datas then return end
-    for _, data in pairs(datas) do
-        Particle.Create(data)
-    end
-end)
-
-RegisterNetEvent("community_bridge:Client:ParticleRemove", function(id)
-    local particle = Particles[id]
-    if not particle then return end
-    Particle.Stop(id)
-end)
-
-RegisterNetEvent("community_bridge:Client:ParticleRemoveBulk", function(ids)
-    for _, id in pairs(ids) do
-        Particle.Stop(id)
-    end
-end)
-
-
-
 function Particle.CreateOnEntity(dict, ptfx, entity, offset, rot, scale, color, looped, loopLength)
     LoadPtfxAsset(dict)
     UseParticleFxAssetNextCall(dict)

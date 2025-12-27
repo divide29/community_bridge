@@ -13,7 +13,7 @@ local cachedItemList = nil
 --- @description This will return the name of the framework in use
 --- @return string
 Framework.GetFrameworkName = function()
-    print("This is deprecated, please use Framework.GetResourceName() instead.")
+    --print("This is deprecated, please use Framework.GetResourceName() instead.")
     return Framework.GetResourceName()
 end
 
